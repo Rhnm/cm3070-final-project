@@ -1,4 +1,4 @@
-Design System: TaskMaster
+Design System: TaskPulse
 
 This folder houses the core design assets and guidelines for the TaskMaster task management application. TaskMaster's design system aims to deliver a streamlined, intuitive, and visually pleasing user experience across all platforms.
 
