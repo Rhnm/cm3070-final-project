@@ -1,5 +1,10 @@
-import React, { useState } from 'react'; 
-import { View, TextInput, Button, StyleSheet, DatePickerAndroid, Picker } from 'react-native'; 
+import React, { useState,useEffect } from 'react'; 
+import { View, TextInput, Button, StyleSheet, Text, Alert } from 'react-native'; 
+import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { baseURL } from '../apiConfig';
 
 const NewTaskScreen = () => { // Define a functional component called NewTaskScreen
   // Initialize states for task title, description, duedate and priority using the useState hook
@@ -7,23 +12,125 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
   const [description, setDescription] = useState(''); 
   const [dueDate, setDueDate] = useState(null); 
   const [priority, setPriority] = useState('Low'); 
-
-const openDatePicker = async () => { // Define a function to open the date picker
-    try { // Try to open the date picker
-      const { action, year, month, day } = await DatePickerAndroid.open({ // Await the result of opening the date picker
-        date: new Date(), // Set the initial date of the date picker to the current date
-      });
-      if (action !== DatePickerAndroid.dismissedAction) { // If the date picker action is not dismissed
-        const selectedDate = new Date(year, month, day); // Create a new date object with the selected date
-        setDueDate(selectedDate); // Set the due date state to the selected date
+  const [taskType, setTaskType] = useState('Personal'); 
+  const [showDatePicker, setShowDatePicker] = useState(false); 
+  const [taskTypes, setTaskTypes] = useState([]);
+  const [priorities, setPriorities] = useState([]);
+  const [userId, setUserId] = useState(null);
+  
+  useEffect(() => {
+    // Fetch task types from the backend
+    const fetchTaskTypes = async () => {
+      try {
+        const response = await axios.get(`${baseURL}:3001/resources/tasktypes`);
+        if (Array.isArray(response.data)) {
+          setTaskTypes(response.data);
+        } else {
+          console.error('Task types data is not an array:', response.data);
+          Alert.alert('Error', 'Unexpected data format for task types');
+        }
+      } catch (error) {
+        console.error('Error fetching task types:', error);
+        Alert.alert('Error', 'Failed to fetch task types');
       }
-    } catch ({ code, message }) { // Catch any errors that occur while opening the date picker
-      console.warn('Cannot open date picker', message); // Log a warning message if the date picker cannot be opened
+    };
+
+    const fetchPriorities = async () => {
+      try {
+        const response = await axios.get(`${baseURL}:3001/resources/priority`);
+        if (Array.isArray(response.data)) {
+          setPriorities(response.data);
+        } else {
+          console.error('Priorities data is not an array:', response.data);
+          Alert.alert('Error', 'Unexpected data format for priorities');
+        }
+      } catch (error) {
+        console.error('Error fetching priorities:', error);
+        Alert.alert('Error', 'Failed to fetch priorities');
+      }
+    };
+    const fetchUserId = async () => {
+      try {
+        const uid = await AsyncStorage.getItem('uid');
+        if (uid !== null) {
+          setUserId(uid); // Set the user ID in the state
+          console.log('User ID:', uid);
+        } else {
+          console.log('No user ID found');
+        }
+      } catch (error) {
+        console.error('Error fetching user ID:', error);
+      }
+    };
+
+    fetchTaskTypes();
+    fetchPriorities();
+    fetchUserId();
+  }, [userId]);
+
+  const openDatePicker = () => { 
+    setShowDatePicker(true); 
+  };
+
+  const handleDateChange = (event, selectedDate) => { 
+    setShowDatePicker(false); 
+    if (selectedDate) { 
+      setDueDate(selectedDate); 
     }
   };
 
-  const saveTask = () => { 
-    console.log('Task saved:', { title, description, dueDate, priority, taskType }); 
+  const predictTaskPriority = async (description) => {
+    try {
+        // Log the description being sent for prediction
+        console.log('Sending description for prediction:', description);
+        
+        // Send a POST request to the prediction API with the task description
+        const response = await axios.post(`${baseURL}:3001/predict`, { description });
+        
+        // Log the received prediction response
+        console.log('Received prediction:', response.data);
+        
+        // Set the priority state with the received prediction
+        setPriority(response.data.priority);
+    } catch (error) {
+        // Log the error for debugging purposes
+        console.error('Error:', error);
+
+        // Show an alert to the user indicating that the prediction failed
+        Alert.alert('Error', 'Failed to predict task priority: ' + error.message);
+    }
+};
+
+const sanitizeData = async (data) => {
+  // Basic sanitization: trimming whitespace and removing special characters
+  return {
+    ...data,
+    title: data.title.trim(),
+    description: data.description.trim(),
+    user_id: userId,
+  };
+};
+
+  const saveTask = async () => { 
+    console.log('Task saved:', sanitizeData({title, description, dueDate, priority, taskType })); 
+    const sanitizedData = sanitizeData({title, description, dueDate, priority, taskType });
+    try {
+      const response = await axios.post(`${baseURL}:3001/resources/savetask`, sanitizedData);
+      console.log('Task saved Success:', response.data);
+      if(response.data = "New data inserted !"){
+        Alert.alert('Success', 'Task saved successfully');
+        setTitle('');
+        setDescription('');
+        setDueDate(null);
+        setPriority('Low');
+        setTaskType('Personal');
+        setShowDatePicker(false);
+        setUserId('');
+      }
+    } catch (error) {
+      console.error('Error saving task:', error);
+      Alert.alert('Error', 'Failed to save task');
+    }
   };
 
   return ( 
@@ -34,11 +141,11 @@ const openDatePicker = async () => { // Define a function to open the date picke
           <Picker 
             selectedValue={taskType} 
             style={styles.picker} 
-            onValueChange={(itemValue, itemIndex) => setTaskType(itemValue)} 
+            onValueChange={(itemValue) => setTaskType(itemValue)}
           >
-            <Picker.Item label="Type A" value="Type A" /> 
-            <Picker.Item label="Type B" value="Type B" /> 
-            <Picker.Item label="Type C" value="Type C" /> 
+             {taskTypes.map((type) => (
+              <Picker.Item key={type.id} label={type.name} value={type.name} />
+            ))}
           </Picker>
         </View>
       </View>
@@ -48,11 +155,11 @@ const openDatePicker = async () => { // Define a function to open the date picke
           <Picker 
             selectedValue={priority} 
             style={styles.picker} 
-            onValueChange={(itemValue, itemIndex) => setPriority(itemValue)} 
+            onValueChange={(itemValue) => setPriority(itemValue)}
           >
-            <Picker.Item label="Low" value="Low" /> 
-            <Picker.Item label="Medium" value="Medium" /> 
-            <Picker.Item label="High" value="High" /> 
+            {priorities.map((priority) => (
+              <Picker.Item key={priority.id} label={priority.name} value={priority.name} />
+            ))}
           </Picker>
         </View>
       </View>
@@ -67,7 +174,13 @@ const openDatePicker = async () => { // Define a function to open the date picke
         style={styles.input} 
         placeholder="Task Description" 
         value={description}
-        onChangeText={setDescription} 
+        onChangeText={(text) => {
+          setDescription(text);
+          
+        }} 
+        onEndEditing={(event)=>{
+          predictTaskPriority(event.nativeEvent.text);
+        }} 
         multiline 
       />
       <View style={styles.labelContainer}>
@@ -80,6 +193,7 @@ const openDatePicker = async () => { // Define a function to open the date picke
             onChange={handleDateChange}
           />
         )}
+        {dueDate && <Text>Selected Date: {dueDate.toDateString()}</Text>}
       </View>
       
       <Button title="Save Task" onPress={saveTask} />
