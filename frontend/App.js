@@ -94,12 +94,12 @@ const App = () => {
   const [userisLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Simulate loading time (you can replace this with actual loading logic)
+    // Simulate loading time when the app starts with this logic
     setTimeout(() => {
       setAppReady(false);
-    }, 2000); // Adjust the timeout duration as needed
+    }, 2000); // Adjusts the timeout duration as needed for the app
 
-    // Check login status from AsyncStorage when the app starts
+    // Check login status from AsyncStorage when the app starts up
     const checkLoginStatus = async () => {
       try {
         const value = await AsyncStorage.getItem('isLoggedIn');
@@ -107,10 +107,10 @@ const App = () => {
         if (value !== null) {
           setIsLoggedIn(value === 'true');
         }
-        //setAppReady(false); // Set app ready state after checking login status
+        //setAppReady(false); // Sets app ready state after checking login status
       } catch (error) {
         console.error('Error reading login status', error);
-        setAppReady(false); // Set app ready state even if there's an error
+        setAppReady(false); // Sets app ready state even if there's an error
       }
     };
     checkLoginStatus();
@@ -149,8 +149,8 @@ export default App;
 
 const styles = StyleSheet.create({
   tabIconBackground: {
-    width: 70, // Adjust according to your preference
-    height: 70, // Adjust according to your preference
+    width: 70, // Adjust value according to preference
+    height: 70, // Adjust value according to preference
     borderRadius: 50, // Make it a circle
     justifyContent: 'center',
     alignItems: 'center',
@@ -158,6 +158,6 @@ const styles = StyleSheet.create({
     color:'black',
   },
   iconStyle: {
-    marginBottom:30, // Adjust the margin according to your preference
+    marginBottom:30, // Adjusts the margin according to preference
   },
 });
