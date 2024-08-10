@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
+import { baseURL } from '../apiConfig';
 
 const Register = ({ navigation }) => {
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleRegister = async () => {
     try {
-      const response = await axios.post('http://localhost:3001/main/register', {
+      const response = await axios.post(`${baseURL}:3001/main/register`, {
         name,
+        email,
         username,
         password,
       });
@@ -34,6 +37,12 @@ const Register = ({ navigation }) => {
         placeholder="Name"
         value={name}
         onChangeText={setName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
       />
       <TextInput
         style={styles.input}
