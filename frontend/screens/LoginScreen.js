@@ -1,21 +1,33 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { baseURL } from '../apiConfig';
 
-const Login = ({ navigation }) => {
+const Login = ({ navigation,onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:3001/main/login', {
+      const response = await axios.post(`${baseURL}:3001/main/login`, {
         username,
         password,
       });
-
+      // Ensure the response structure is as expected
+      console.log('Login response:', response.data);
       if (response.data.Login) {
         // Navigate to the Home screen or another authenticated screen
-        navigation.navigate('Home');
+        console.log('User ID:', response.data.uid);
+        await AsyncStorage.setItem('isLoggedIn', JSON.stringify(response.data.Login));
+        await AsyncStorage.setItem('uid',JSON.stringify(response.data.uid));
+        onLogin(); // Notify App.js about the login
+        navigation.navigate('HomeTabs', {
+          screen: 'Home',
+          params: {
+            userId: response.data.uid, // You can pass any parameters you need here
+          },
+        });
       } else {
         Alert.alert('Login Failed', 'Incorrect username or password');
       }
