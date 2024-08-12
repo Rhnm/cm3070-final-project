@@ -12,6 +12,7 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
   const [description, setDescription] = useState(''); 
   const [dueDate, setDueDate] = useState(null); 
   const [priority, setPriority] = useState('Low'); 
+  const [timeframe, setTimeframe] = useState(''); 
   const [taskType, setTaskType] = useState('Personal'); 
   const [showDatePicker, setShowDatePicker] = useState(false); 
   const [taskTypes, setTaskTypes] = useState([]);
@@ -101,6 +102,35 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
     }
 };
 
+const predictTaskTimeframe = async (description) => {
+  try {
+      // Log the description being sent for prediction
+      console.log('Sending description for prediction:', description);
+      
+      // Send a POST request to the prediction API with the task description
+      const response = await axios.post(`${baseURL}:3001/predictTimeframe`, { description });
+      
+      // Log the received prediction response
+      console.log('Received Timeframe prediction:', response.data);
+
+      // Get the predicted timeframe
+      let predictedTimeframe = response.data.timeframe;
+
+      // Round off to the nearest whole number and ensure it's a positive value
+      const roundedTimeframe = Math.abs(Math.round(predictedTimeframe));
+
+      // Set the rounded timeframe
+      setTimeframe(roundedTimeframe);
+      
+  } catch (error) {
+      // Log the error for debugging purposes
+      console.error('Error:', error);
+
+      // Show an alert to the user indicating that the prediction failed
+      Alert.alert('Error', 'Failed to predict task priority: ' + error.message);
+  }
+};
+
 const sanitizeData = async (data) => {
   // Basic sanitization: trimming whitespace and removing special characters
   return {
@@ -108,12 +138,13 @@ const sanitizeData = async (data) => {
     title: data.title.trim(),
     description: data.description.trim(),
     user_id: userId,
+    timeframe: timeframe,
   };
 };
 
   const saveTask = async () => { 
     console.log('Task saved:', sanitizeData({title, description, dueDate, priority, taskType })); 
-    const sanitizedData = sanitizeData({title, description, dueDate, priority, taskType });
+    const sanitizedData = sanitizeData({title, description, dueDate, priority, taskType, timeframe });
     try {
       const response = await axios.post(`${baseURL}:3001/resources/savetask`, sanitizedData);
       console.log('Task saved Success:', response.data);
@@ -180,6 +211,7 @@ const sanitizeData = async (data) => {
         }} 
         onEndEditing={(event)=>{
           predictTaskPriority(event.nativeEvent.text);
+          predictTaskTimeframe(event.nativeEvent.text);
         }} 
         multiline 
       />
@@ -194,6 +226,13 @@ const sanitizeData = async (data) => {
           />
         )}
         {dueDate && <Text>Selected Date: {dueDate.toDateString()}</Text>}
+      </View>
+
+      <View style={styles.labelContainer}>
+        <Text style={styles.label}>Predicted Timeframe</Text>
+        <Text style={styles.timeframeText}>
+          {timeframe ? `${timeframe} minutes` : 'Not predicted yet'}
+        </Text>
       </View>
       
       <Button title="Save Task" onPress={saveTask} />
