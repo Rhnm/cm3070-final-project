@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Modal, Button, TextInput } from 'react-native';
 import CheckBox from 'expo-checkbox';
 import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig'; // Make sure this path is correct
 
@@ -35,18 +36,27 @@ const PeopleScreen = () => {
 
     checkLoginStatus();
   }, []);
+  useFocusEffect(
+    useCallback(() => {
+      if (userIdFrom) {
+        fetchTasks();
+      fetchContacts();
+      fetchSharedUsers();
+      }
+    }, [userIdFrom,fetchTasks,fetchSharedUsers])
+  );
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (isLoggedIn) {
       fetchTasks();
       fetchContacts();
       fetchSharedUsers();
     }
   }, [isLoggedIn, fetchTasks]);
-
+ */
   const fetchContacts = async () => {
     try {
-      const response = await axios.get(`${baseURL}:3001/resources/getUsers`);
+      const response = await axios.get(`${baseURL}:3001/resources/getUsers/${userIdFrom}`);
       setContacts(response.data);
       console.log(response.data);
     } catch (error) {
@@ -129,7 +139,7 @@ const PeopleScreen = () => {
     setEmailInput(text);
     if (text.length > 2) {
       try {
-        const response = await axios.get(`${baseURL}:3001/resources/suggestions`, { params: { email: text } });
+        const response = await axios.get(`${baseURL}:3001/resources/suggestions/${userIdFrom}`, { params: { email: text } });
         setEmailSuggestions(response.data);
       } catch (error) {
         console.error('Error fetching email suggestions:', error);
