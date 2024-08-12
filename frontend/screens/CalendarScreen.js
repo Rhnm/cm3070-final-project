@@ -2,9 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Alert, TextInput, FlatList, Modal, Button, ScrollView, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import axios from 'axios';
-import { useNavigation,useFocusEffect } from '@react-navigation/native'; 
+import { useNavigation, useFocusEffect } from '@react-navigation/native'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig'; // Make sure this path is correct
+import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState([]);
@@ -20,20 +22,21 @@ const CalendarScreen = () => {
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('');
   const [timeframe, setTimeframe] = useState('');
-  const [userId,setUserId] = useState('');
+  const [type, setType] = useState('');
+  const [dueDate, setDueDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [userId, setUserId] = useState('');
 
   const fetchTasks = useCallback(async () => {
     setLoading(true);
     try {
-      if(userId!=null){
+      if(userId != null){
         const response = await axios.get(`${baseURL}:3001/resources/gettasks/${userId}`);
         const tasksFromDB = response.data;
-        console.log(tasksFromDB);
 
         // Fetch shared tasks
         const sharedTasksResponse = await axios.get(`${baseURL}:3001/resources/getsharedtasks/${userId}`);
         const sharedTasksFromDB = sharedTasksResponse.data;
-        console.log('Shared tasks from DB:', sharedTasksFromDB);
 
         // Combine tasks and shared tasks
         const allTasks = [...tasksFromDB, ...sharedTasksFromDB];
@@ -65,12 +68,7 @@ const CalendarScreen = () => {
         });
         setMarkedDates(markedDatesTemp);
   
-        // Debugging: Check formatted tasks and marked dates
-        console.log('Formatted Tasks:', formattedTasks);
-        console.log('Formatted Shared Tasks:', formattedSharedTasks);
-        console.log('Marked Dates:', markedDatesTemp);
       }
-
     } catch (error) {
       console.error('Error fetching tasks:', error);
     } finally {
@@ -121,7 +119,10 @@ const CalendarScreen = () => {
         await axios.put(`${baseURL}:3001/resources/updatetask/${editedTask.id}`, {
           title,
           description,
-          priority
+          priority,
+          timeframe,
+          type,
+          dueDate: dueDate.toISOString().split('T')[0] // Format date to YYYY-MM-DD
         });
         Alert.alert('Success', 'Task updated successfully!');
         setEditModalVisible(false);
@@ -220,92 +221,128 @@ const CalendarScreen = () => {
               <Text style={styles.priority}>Priority: {item.priority}</Text>
               <Text style={styles.priority}>TimeFrame: {item.timeframe} minutes</Text>
               <Text style={styles.taskType}>Task Type: {item.type}</Text>
-              <Text style={[styles.taskStatus, item.status === 'Completed' ? styles.completedStatus : styles.pendingStatus]}>
-                Task Status: {item.status}
+              <Text style={[styles.taskStatus, item.status === 'Completed' ? styles.completed : styles.pending]}>
+                Status: {item.status}
               </Text>
+              <Text style={styles.dueDate}>Due Date: {item.due_date}</Text>
               <View style={styles.buttonContainer}>
                 <Button title="Delete" color="#c5705d" onPress={() => handleDelete(item.id)} />
                 <Button title="Edit" color="#4CAF50" onPress={() => {
-                  setEditModalVisible(true);
                   setEditedTask(item);
                   setTitle(item.title);
                   setDescription(item.description);
                   setPriority(item.priority);
                   setTimeframe(item.timeframe);
+                  setType(item.type);
+                  setDueDate(new Date(item.due_date)); // Convert to Date object
+                  setEditModalVisible(true);
                 }} />
+                
               </View>
             </View>
           )}
         />
-        
-      )}
-      {selectedDate.length > 0 && (
-        <FlatList
+        )}
+        {shared_Tasks.length > 0 && (
+          <FlatList
           style={styles.sharedList}
-          data={shared_Tasks}
-          keyExtractor={(item) => uniqueKey(item)}
-          renderItem={({ item }) => (
-            
-            <View style={styles.taskCard}>
-              <View>
-                <Text style={styles.sharedHeader}>SHARED</Text>
+            data={shared_Tasks}
+            keyExtractor={(item) => uniqueKey(item)}
+            renderItem={({ item }) => (
+              
+              <View style={styles.taskCard}>
+                <View>
+                  <Text style={styles.sharedHeader}>SHARED</Text>
+                </View>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.description}>{item.description}</Text>
+                <Text style={styles.priority}>Priority: {item.priority}</Text>
+                <Text style={styles.priority}>TimeFrame: {item.timeframe} minutes</Text>
+                <Text style={styles.taskType}>Task Type: {item.type}</Text>
+                <Text style={[styles.taskStatus, item.status === 'Completed' ? styles.completed : styles.pending]}>
+                  Status: {item.status}
+                </Text>
+                <Text style={styles.dueDate}>Due Date: {item.due_date}</Text>
+                <View style={styles.buttonContainer}>
+                    <Button title="Delete" color="#c5705d" onPress={() => handleDelete(item.id)} />
+                    <Button title="Edit" color="#4CAF50" onPress={() => {
+                        setEditedTask(item);
+                        setTitle(item.title);
+                        setDescription(item.description);
+                        setPriority(item.priority);
+                        setTimeframe(item.timeframe);
+                        setType(item.type);
+                        setDueDate(new Date(item.due_date)); // Convert to Date object
+                        setEditModalVisible(true);
+                    }} />
+                  
+                </View>
               </View>
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.description}>{item.description}</Text>
-              <Text style={styles.priority}>Priority: {item.priority}</Text>
-              <Text style={styles.priority}>TimeFrame: {item.timeframe} minutes</Text>
-              <Text style={styles.taskType}>Task Type: {item.type}</Text>
-              <Text style={[styles.taskStatus, item.status === 'Completed' ? styles.completedStatus : styles.pendingStatus]}>
-                Task Status: {item.status}
-              </Text>
-              <View style={styles.buttonContainer}>
-                <Button title="Delete" color="#c5705d" onPress={() => handleDelete(item.id)} />
-                <Button title="Edit" color="#4CAF50" onPress={() => {
-                  setEditModalVisible(true);
-                  setEditedTask(item);
-                  setTitle(item.title);
-                  setDescription(item.description);
-                  setPriority(item.priority);
-                  setTimeframe(item.timeframe);
-                }} />
-              </View>
-            </View>
+            )}
+          />
           )}
-        />
-        
-      )}
-      </ScrollView>
-      <Modal
-        visible={editModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setEditModalVisible(false)}
-      >
+        </ScrollView>
+
+      {/* Edit Modal */}
+      <Modal visible={editModalVisible} animationType="slide">
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalHeader}>Edit Task</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Title"
-              value={title}
-              onChangeText={setTitle}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Description"
-              value={description}
-              onChangeText={setDescription}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Priority"
-              value={priority}
-              onChangeText={setPriority}
-            />
-            <View style={styles.buttonContainer}>
+          <Text style={styles.modalTitle}>Edit Task</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Title"
+            value={title}
+            onChangeText={setTitle}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Description"
+            value={description}
+            onChangeText={setDescription}
+          />
+          <Picker
+            selectedValue={priority}
+            style={styles.pickerContainer}
+            onValueChange={(itemValue) => setPriority(itemValue)}
+          >
+            <Picker.Item label="Low" value="Low" />
+            <Picker.Item label="Medium" value="Medium" />
+            <Picker.Item label="High" value="High" />
+          </Picker>
+          <Picker
+            selectedValue={type}
+            style={styles.pickerContainer}
+            onValueChange={(itemValue) => setType(itemValue)}
+          >
+            <Picker.Item label="Professional" value="Professional" />
+            <Picker.Item label="Personal" value="Personal" />
+            <Picker.Item label="Other" value="Other" />
+          </Picker>
+          <TextInput
+            style={styles.input}
+            placeholder="Timeframe (minutes)"
+            value={timeframe}
+            keyboardType="numeric"
+            onChangeText={setTimeframe}
+          />
+          <View>
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <Text style={styles.datePickerText}>Due Date: {dueDate.toDateString()}</Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={dueDate}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(false);
+                  if (selectedDate) setDueDate(selectedDate);
+                }}
+              />
+            )}
+          </View>
+          <View style={styles.buttonContainer}>
             <Button title="Cancel" color="#ef9c66" onPress={() => setEditModalVisible(false)} />
-            <Button title="Save Changes" color="#78aba8"  onPress={handleEdit} />
-            </View>
+            <Button title="Save" color="#78aba8" onPress={handleEdit} />
           </View>
         </View>
       </Modal>
@@ -316,16 +353,55 @@ const CalendarScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
+  },
+  modalContainer: {
+    flex: 1,
     padding: 20,
+    backgroundColor: 'white',
+  },
+  modalTitle: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 8,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    marginBottom: 20,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    width: '100%',
+  },
+  datePickerText: {
+    fontSize: 18,
+    color: 'blue',
+    marginBottom: 20,
+    borderWidth:1,
+    borderColor: '#ccc',
+    padding:15,
   },
   scrollContainer: {
     flex: 1,
+    marginTop: 10,
   },
   taskCard: {
-    marginBottom: 20,
+    backgroundColor: '#f9f9f9',
     padding: 15,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    marginBottom: 10,
     borderRadius: 5,
   },
   title: {
@@ -335,73 +411,51 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   description: {
-    marginBottom: 10,
+    fontSize: 14,
     color: '#666',
-    fontSize: 12,
+    marginBottom: 5,
   },
   priority: {
+    fontSize: 14,
     marginBottom: 5,
-    fontWeight: 'bold',
     color: '#888',
   },
-  taskType: {
+  dueDate: {
+    fontSize: 14,
     marginBottom: 5,
-    fontWeight: 'bold',
+  },
+  taskType: {
+    fontSize: 14,
+    marginBottom: 5,
     color: '#888',
   },
   taskStatus: {
+    fontSize: 14,
     marginBottom: 5,
-    fontWeight: 'bold',
   },
-  completedStatus: {
+  completed: {
     color: 'green',
   },
-  pendingStatus: {
+  pending: {
     color: 'red',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-  },
   sharedHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#4CAF50',
-    marginBottom: 10,
+    backgroundColor: 'green',
+    padding: 4,
+    marginBottom: 5,
+    color: 'white',
   },
   regularHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 20,
-    marginBottom: 10,
+    backgroundColor: 'orange',
+    padding: 4,
+    marginBottom: 5,
+    color: 'white',
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  sharedList: {
+    marginBottom: 20,
   },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    width: '80%',
-    maxWidth: 400,
-  },
-  modalHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    fontSize: 16,
+  regularList: {
+    marginBottom: 20,
   },
 });
 
