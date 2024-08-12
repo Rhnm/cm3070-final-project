@@ -9,7 +9,7 @@ const assert = require('assert');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 //const { default: App } = require("../../frontend/src/App");
 const expectedPassword = '0000';
 
@@ -34,64 +34,53 @@ router.get('/login', (req, res) => {
     
   });
 
-  router.post('/register', async(req, res) => {
-    
-    
-    const password = req.body.registerpassword;
-    const username = req.body.registerusername;
-    //const { user_id, name, username, password } = req.body; // Assuming you're receiving user data
-    const name = req.body.registername;
-    
+router.post('/register', async(req, res) => {
+  console.log("Here in register");
+  const name = req.body.name;
+  const email = req.body.email;
+  const username = req.body.username;
+  const password = req.body.password;
+  
+  // Generate a salt to use for hashing
+  const saltRounds = 10; // You can adjust this value according to your security needs
+  const salt = await bcrypt.genSalt(saltRounds);
 
-    // Generate a salt to use for hashing
-    const saltRounds = 10; // You can adjust this value according to your security needs
-    const salt = await bcrypt.genSalt(saltRounds);
+  // Hash the plain password with the generated salt
+  const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Hash the plain password with the generated salt
-    const hashedPassword = await bcrypt.hash(password, salt);
+  // Check if the username already exists
+  const usernameQuery = 'SELECT * FROM Users WHERE username = ?';
+  db.get(usernameQuery, [username], (err, row) => {
+    if (err) {
+      console.error('Error checking username:', err);
+      res.status(500).send('Error checking username');
+      return;
+    }
 
+    if (row) {
+      // Username already exists
+      res.status(400).send('Username already exists');
+      return;
+    }
 
-    // Check if the username already exists
-    const usernameQuery = 'SELECT * FROM Users WHERE username = ?';
-    db.get(usernameQuery, [username], (err, row) => {
+    // Insert user data into the users table if doesnt exist
+    const insertQuery = 'INSERT INTO Users (name,username,email,password_hash) VALUES (?, ?, ?,?)';
+    // Execute the INSERT query
+    db.run(insertQuery, [name,username, email, hashedPassword], (err) => {
       if (err) {
-        console.error('Error checking username:', err);
-        res.status(500).send('Error checking username');
-        return;
+        console.error('Error inserting user data:', err);
+        res.status(500).send('Error inserting user data');
+      } else {
+        res.status(200).send('User data inserted successfully');
       }
-
-      if (row) {
-        // Username already exists
-        res.status(400).send('Username already exists');
-        return;
-      }
-
-      // Insert user data into the users table if doesnt exist
-      const insertQuery = 'INSERT INTO Users (name, username, password) VALUES (?, ?, ?)';
-      // Execute the INSERT query
-      db.run(insertQuery, [name, username, hashedPassword], (err) => {
-        if (err) {
-          console.error('Error inserting user data:', err);
-          res.status(500).send('Error inserting user data');
-        } else {
-          
-          res.status(200).send('User data inserted successfully');
-          //res.status(201).json({ message: "Data inserted successfully!" }); // Sending success response
-        }
-      });
     });
   });
+});
   
 router.post('/login', async(req, res) => {
-  
-  
   const password = req.body.password;
   const username = req.body.username;
-  //const { user_id, name, username, password } = req.body; // Assuming you're receiving user data
-  
-  
 
-  
   const usernameQuery = 'SELECT * FROM Users WHERE username = ?';
 
   db.get(usernameQuery, [username], (err, row) => {
@@ -102,15 +91,13 @@ router.post('/login', async(req, res) => {
       return;
     }
     if (!row) {
-      // Username doesn't exist
-      //res.status(404).send('Username not found');
       res.send("Incorrect");
       return;
     }
 
     if (row) {
       // Username already exists
-      bcrypt.compare(password, row.password, function(err, result) {
+      bcrypt.compare(password, row.password_hash, function(err, result) {
         if (err) {
           // Handle error
           console.error(err);
@@ -119,33 +106,21 @@ router.post('/login', async(req, res) => {
       
         if (result) {
           // Passwords match, user is authenticated
-          
           req.session.username = username;
-      
-          
-          
-          
           req.session.isLoggedIn = true;
-          req.session.uid = row.user_id;
-          
+          req.session.uid = row.id;
           
           res.json({'Login':req.session.isLoggedIn,'uid':req.session.uid});
           
           return; 
-      
         } else {
           // Passwords do not match, authentication failed
-          
           res.send('Incorrect'); 
           return; 
         }
       });
-      
     }
-      
-    
   });
-  
 });
 
 
