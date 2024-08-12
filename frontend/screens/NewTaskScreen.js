@@ -1,9 +1,10 @@
-import React, { useState,useEffect } from 'react'; 
+import React, { useState,useEffect,useCallback } from 'react'; 
 import { View, TextInput, Button, StyleSheet, Text, Alert } from 'react-native'; 
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 import { baseURL } from '../apiConfig';
 
 const NewTaskScreen = () => { // Define a functional component called NewTaskScreen
@@ -18,56 +19,66 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
   const [taskTypes, setTaskTypes] = useState([]);
   const [priorities, setPriorities] = useState([]);
   const [userId, setUserId] = useState(null);
-  
+
   useEffect(() => {
-    // Fetch task types from the backend
-    const fetchTaskTypes = async () => {
-      try {
-        const response = await axios.get(`${baseURL}:3001/resources/tasktypes`);
-        if (Array.isArray(response.data)) {
-          setTaskTypes(response.data);
-        } else {
-          console.error('Task types data is not an array:', response.data);
-          Alert.alert('Error', 'Unexpected data format for task types');
-        }
-      } catch (error) {
-        console.error('Error fetching task types:', error);
-        Alert.alert('Error', 'Failed to fetch task types');
-      }
-    };
-
-    const fetchPriorities = async () => {
-      try {
-        const response = await axios.get(`${baseURL}:3001/resources/priority`);
-        if (Array.isArray(response.data)) {
-          setPriorities(response.data);
-        } else {
-          console.error('Priorities data is not an array:', response.data);
-          Alert.alert('Error', 'Unexpected data format for priorities');
-        }
-      } catch (error) {
-        console.error('Error fetching priorities:', error);
-        Alert.alert('Error', 'Failed to fetch priorities');
-      }
-    };
-    const fetchUserId = async () => {
-      try {
-        const uid = await AsyncStorage.getItem('uid');
-        if (uid !== null) {
-          setUserId(uid); // Set the user ID in the state
-          console.log('User ID:', uid);
-        } else {
-          console.log('No user ID found');
-        }
-      } catch (error) {
-        console.error('Error fetching user ID:', error);
-      }
-    };
-
+    fetchUserId();
     fetchTaskTypes();
     fetchPriorities();
-    fetchUserId();
-  }, [userId]);
+    }, [userId]);
+  
+  // Fetch task types from the backend
+  const fetchTaskTypes = async () => {
+    try {
+      const response = await axios.get(`${baseURL}:3001/resources/tasktypes`);
+      if (Array.isArray(response.data)) {
+        setTaskTypes(response.data);
+      } else {
+        console.error('Task types data is not an array:', response.data);
+        Alert.alert('Error', 'Unexpected data format for task types');
+      }
+    } catch (error) {
+      console.error('Error fetching task types:', error);
+      Alert.alert('Error', 'Failed to fetch task types');
+    }
+  };
+
+  const fetchPriorities = async () => {
+    try {
+      const response = await axios.get(`${baseURL}:3001/resources/priority`);
+      if (Array.isArray(response.data)) {
+        setPriorities(response.data);
+      } else {
+        console.error('Priorities data is not an array:', response.data);
+        Alert.alert('Error', 'Unexpected data format for priorities');
+      }
+    } catch (error) {
+      console.error('Error fetching priorities:', error);
+      Alert.alert('Error', 'Failed to fetch priorities');
+    }
+  };
+  const fetchUserId = async () => {
+    try {
+      const uid = await AsyncStorage.getItem('uid');
+      if (uid !== null) {
+        setUserId(uid); // Set the user ID in the state
+        console.log('User ID:', uid);
+      } else {
+        console.log('No user ID found');
+      }
+    } catch (error) {
+      console.error('Error fetching user ID:', error);
+    }
+  };
+
+
+  /* useFocusEffect(
+    useCallback(() => {
+      if (userId) {
+        fetchTaskTypes();
+        fetchPriorities();
+      }
+    }, [])
+  ); */
 
   const openDatePicker = () => { 
     setShowDatePicker(true); 
