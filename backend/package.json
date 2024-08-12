@@ -3,14 +3,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "jest"
   },
   "author": "rohan maheshwari",
   "license": "ISC",
   "dependencies": {
     "@tensorflow/tfjs": "^4.19.0",
+    "@tensorflow/tfjs-node": "^3.1.0",
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "chai": "^5.1.0",
     "chai-http": "^4.4.0",
@@ -20,9 +23,11 @@
     "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
-    "fs": "^0.0.1-security",
     "mocha": "^10.4.0",
     "moment": "^2.30.1",
+    "multer": "^1.4.5-lts.1",
+    "natural": "^7.0.6",
+    "node-tfidf": "^0.0.2",
     "sqlite3": "^5.1.7",
     "xlsx": "^0.18.5"
   },
@@ -36,6 +41,7 @@
   ],
   "description": "",
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^3.1.0"
   }
 }
