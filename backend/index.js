@@ -17,7 +17,7 @@ const predictTaskTimeframe = require('./Predicttimeframe');
 
 // Allow requests from the frontend (replace with your frontend's URL)
 const corsOptions = {
-  origin: ['http://192.168.1.11:8081','exp://192.168.1.11:8081', 'http://192.168.0.5:8081','exp://192.168.0.5:8081'],
+  origin: ['http://192.168.1.10:8081','exp://192.168.1.10:8081', 'http://192.168.0.5:8081','exp://192.168.0.5:8081'],
   optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 

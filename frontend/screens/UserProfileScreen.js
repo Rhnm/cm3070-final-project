@@ -35,12 +35,22 @@ const UserProfileScreen = () => {
     fetchUserId();
   }, [userId]);
   
-  useEffect(() => {
+  /* useEffect(() => {
     if (userId) {
       fetchUserDetails(userId);
       getImage(userId);
     }
-  }, [userId]);
+  }, [userId]); */
+
+   // Fetch user details and profile image when the screen gains focus
+   useFocusEffect(
+    useCallback(() => {
+      if (userId) {
+        fetchUserDetails(userId);
+        getImage(userId);
+      }
+    }, [userId,getImage])
+  );
 
   const fetchUserDetails = async (userId) => {
     try{
@@ -145,6 +155,7 @@ const UserProfileScreen = () => {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
+      alert("Updating User with id: "+userId);
       await fetchUserDetails(userId); // Fetch user details on refresh
       await getImage(userId);
     } catch (error) {
@@ -185,7 +196,7 @@ const UserProfileScreen = () => {
       <Text style={styles.email}>{email}</Text>
 
     
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EditProfile')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EditUserProfile')}>
         <Text style={styles.buttonText}>Edit Profile</Text>
       </TouchableOpacity>
   

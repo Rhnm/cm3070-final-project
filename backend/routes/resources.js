@@ -383,11 +383,18 @@ router.post('/updateUserProfile', (req, res, next) => {
 // Edit Task Route
 router.put("/updatetask/:id", (req, res, next) => {
   const taskId = req.params.id;
-  const { title, description, priority } = req.body;
+  const { title, description, priority, timeframe, type, dueDate } = req.body;
+  console.log("Title:"+title);
+  console.log("Description:"+description);
+  console.log("Priority:"+priority);
+  console.log("Timeframe:"+timeframe);
+  console.log("Type:"+type);
+  console.log("Duedate:"+dueDate);
+
 
   global.db.run(
-    `UPDATE Tasks SET title = ?, description = ?, priority = ? WHERE id = ?`,
-    [title, description, priority, taskId],
+    `UPDATE Tasks SET title = ?, description = ?, priority = ?, timeframe = ?, type = ?, due_date = ? WHERE id = ?`,
+    [title, description, priority, timeframe, type, dueDate, taskId],
     function (err) {
       if (err) {
         next(err); // Send the error to the error handler
