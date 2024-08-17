@@ -1,5 +1,5 @@
-import React, { useState } from 'react'; // Import the useState hook
-import { View, TextInput, Button, StyleSheet } from 'react-native'; // Import necessary components from react-native
+import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet } from 'react-native';
 
 const TaskType = ({ onAddTaskType }) => {
   const [taskTypeName, setTaskTypeName] = useState('');

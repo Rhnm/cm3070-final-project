@@ -113,7 +113,7 @@ const PeopleScreen = () => {
       );
       /* await Promise.all(
         selectedTask.map(taskId => 
-          axios.post(`${baseURL}:3001/resources/shareTask`, {
+          axios.post(${baseURL}:3001/resources/shareTask, {
             taskId,
             userIdFrom,
             userIdTo,

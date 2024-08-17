@@ -18,6 +18,7 @@ import PeopleScreen from './screens/PeopleScreen';
 import NewTaskScreen from './screens/NewTaskScreen';
 import SplashScreen from './screens/SplashScreen';
 import UserProfileScreen from './screens/UserProfileScreen';
+import EditUserProfileScreen from './screens/EditUserProfileScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LogoutScreen from './screens/LogoutScreen';
@@ -25,6 +26,16 @@ import LogoutScreen from './screens/LogoutScreen';
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const AuthStack = createStackNavigator();
+const UserProfileStack = createStackNavigator();
+
+// Stack Navigator for User Profile and Edit User Profile Screens
+const UserProfileStackScreen = () => (
+  <UserProfileStack.Navigator>
+    <UserProfileStack.Screen name="UserProfile" options={{ headerShown: false }}  component={UserProfileScreen} />
+    <UserProfileStack.Screen name="EditUserProfile" component={EditUserProfileScreen} />
+  </UserProfileStack.Navigator>
+);
+
 
 const MainTabs = () => {
   return (
@@ -78,7 +89,7 @@ const MainTabs = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={UserProfileScreen}
+        component={UserProfileStackScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="user-alt" size={size} color={color} />
@@ -94,12 +105,12 @@ const App = () => {
   const [userisLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Simulate loading time when the app starts with this logic
+    // Simulate loading time (you can replace this with actual loading logic)
     setTimeout(() => {
       setAppReady(false);
-    }, 2000); // Adjusts the timeout duration as needed for the app
+    }, 2000); // Adjust the timeout duration as needed
 
-    // Check login status from AsyncStorage when the app starts up
+    // Check login status from AsyncStorage when the app starts
     const checkLoginStatus = async () => {
       try {
         const value = await AsyncStorage.getItem('isLoggedIn');
@@ -107,10 +118,10 @@ const App = () => {
         if (value !== null) {
           setIsLoggedIn(value === 'true');
         }
-        //setAppReady(false); // Sets app ready state after checking login status
+        //setAppReady(false); // Set app ready state after checking login status
       } catch (error) {
         console.error('Error reading login status', error);
-        setAppReady(false); // Sets app ready state even if there's an error
+        setAppReady(false); // Set app ready state even if there's an error
       }
     };
     checkLoginStatus();
@@ -124,7 +135,7 @@ const App = () => {
       <Drawer.Navigator>
         {userisLoggedIn ? (
           <>
-          <Drawer.Screen name="HomeTabs" component={MainTabs} />
+          <Drawer.Screen name="HomeTabs"  options={{ headerTitle: "" }}  component={MainTabs} />
           <Drawer.Screen
               name="Logout"
               children={props => (
@@ -149,8 +160,8 @@ export default App;
 
 const styles = StyleSheet.create({
   tabIconBackground: {
-    width: 70, // Adjust value according to preference
-    height: 70, // Adjust value according to preference
+    width: 70, // Adjust according to your preference
+    height: 70, // Adjust according to your preference
     borderRadius: 50, // Make it a circle
     justifyContent: 'center',
     alignItems: 'center',
@@ -158,6 +169,6 @@ const styles = StyleSheet.create({
     color:'black',
   },
   iconStyle: {
-    marginBottom:30, // Adjusts the margin according to preference
+    marginBottom:30, // Adjust the margin according to your preference
   },
 });

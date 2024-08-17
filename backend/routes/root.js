@@ -8,7 +8,7 @@ const router = express.Router();
 const assert = require('assert');
 
 router.get("/", (req, res, next) => {
-    res.render("root.ejs")
+  res.render('index');
 })
 
 

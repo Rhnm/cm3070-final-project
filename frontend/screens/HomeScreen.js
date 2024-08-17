@@ -19,6 +19,7 @@ const HomeScreen = () => {
   const [selectedType, setSelectedType] = useState([]);
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [showOverdue, setShowOverdue] = useState(false);
+  const [dbDuedate, setdbDuedate] = useState(null);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -66,6 +67,7 @@ const HomeScreen = () => {
     console.log('Current Date:', new Date());
       
     filtered.forEach(task => {
+      setdbDuedate(new Date(task.due_date));
       console.log('Task Due Date:', new Date(task.due_date));
     });
 
@@ -82,9 +84,28 @@ const HomeScreen = () => {
 
     // Filter by date range
     if (selectedDateRange) {
+      console.log("selected date range:" + selectedDateRange);
       const now = new Date();
-      const startDate = getStartDateForRange(selectedDateRange, now);
-      filtered = filtered.filter(task => new Date(task.due_date) >= startDate);
+      console.log("Now: " + now);
+
+      // Get the start and end dates for the selected date range
+      const { startDate, endDate } = getStartDateForRange(selectedDateRange, now);
+
+      if (selectedDateRange === 'today') {
+        const nowStartOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+        
+        filtered = filtered.filter(task => {
+          const dbDueDate = new Date(task.due_date);
+          const dueDateStartOfDay = new Date(Date.UTC(dbDueDate.getUTCFullYear(), dbDueDate.getUTCMonth(), dbDueDate.getUTCDate()));
+          
+          return dueDateStartOfDay.getTime() === nowStartOfDay.getTime();
+        });
+      } else {
+        filtered = filtered.filter(task => {
+          const dbDueDate = new Date(task.due_date);
+          return dbDueDate >= startDate && dbDueDate <= endDate;
+        });
+      }
     }
 
     // Filter overdue tasks
@@ -102,25 +123,60 @@ const HomeScreen = () => {
   };
 
   const getStartDateForRange = (range, now) => {
+    const currentDate = new Date(now); // Use current date
+    let startDate;
+    let endDate;
+  
     switch (range) {
       case 'today':
-        return new Date(now.setHours(0, 0, 0, 0));
+        startDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()));
+        endDate = startDate; // Today is both start and end date
+        break;
+  
       case 'this_week':
-        const startOfWeek = now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1); // Adjust if today is Sunday
-        return new Date(now.setDate(startOfWeek));
+        const dayOfWeek = currentDate.getUTCDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
+        const startOfWeek = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1))); // Monday start
+        const endOfWeek = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), startOfWeek.getUTCDate() + 6)); // Sunday end
+        startDate = startOfWeek;
+        endDate = endOfWeek;
+        break;
+  
       case 'next_two_weeks':
-        return new Date(now.setDate(now.getDate() + 14));
+        const nextWeekStart = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate() + (7 - currentDate.getUTCDay()) + 1)); // Start of next week
+        const nextTwoWeeksEnd = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), nextWeekStart.getUTCDate() + 13)); // End of next two weeks
+        startDate = nextWeekStart;
+        endDate = nextTwoWeeksEnd;
+        break;
+  
       case 'this_month':
-        return new Date(now.getFullYear(), now.getMonth(), 1);
+        startDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), 1));
+        endDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth() + 1, 0)); // Last day of the current month
+        break;
+  
       case 'next_month':
-        return new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        startDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth() + 1, 1));
+        endDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth() + 2, 0)); // Last day of the next month
+        break;
+  
       case 'next_two_months':
-        return new Date(now.getFullYear(), now.getMonth() + 2, 1);
+        startDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth() + 2, 1));
+        endDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth() + 3, 0)); // Last day of the month two months later
+        break;
+  
       case 'more_than_two_months':
-        return new Date(now.setMonth(now.getMonth() + 2));
+        startDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth() + 2));
+        endDate = new Date(Date.UTC(currentDate.getUTCFullYear() + 1, currentDate.getUTCMonth() + 2, 0)); // End of the year + two months
+        break;
+  
       default:
-        return new Date(0); // Far past date
+        startDate = new Date(Date.UTC(0)); // Epoch start date
+        endDate = new Date(Date.UTC(0)); // Epoch end date
     }
+  
+    console.log("Start Date:", startDate);
+    console.log("End Date:", endDate);
+  
+    return { startDate, endDate };
   };
 
   const completeTask = async (taskId) => {
@@ -171,6 +227,8 @@ const HomeScreen = () => {
         {isShared && <MaterialIcons name="share" size={24} color="blue" />}
       </View>
       <Text style={styles.description}>{item.description}</Text>
+      <Text style={styles.dueDate}>Task Priority: {item.priority}</Text>
+      <Text style={styles.dueDate}>Task type: {item.type}</Text>
       <Text style={styles.dueDate}>TimeFrame: {item.timeframe} minutes</Text>
       <Text style={styles.dueDate}>Due Date: {formatDueDate(item.due_date)}</Text>
       <Text style={styles.completeButton} onPress={() => completeTask(item.id)}>Complete</Text>
