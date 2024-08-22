@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'; 
-import { View, TextInput, Button, StyleSheet, Text, Alert } from 'react-native'; 
+import { View, TextInput, Button, StyleSheet,Platform, Text, Alert, ScrollView, } from 'react-native'; 
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
@@ -165,78 +165,80 @@ const sanitizeData = async (data) => {
   };
 
   return ( 
-    <View style={styles.container}> 
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Task Type</Text>
-        <View style={styles.pickerContainer}>
-          <Picker 
-            selectedValue={taskType} 
-            style={styles.picker} 
-            onValueChange={(itemValue) => setTaskType(itemValue)}
-          >
-             {taskTypes.map((type) => (
-              <Picker.Item key={type.id} label={type.name} value={type.name} />
-            ))}
-          </Picker>
+    <ScrollView style={styles.scrollContainer}>
+      <View style={styles.container}> 
+        <View style={styles.labelContainer}>
+          <Text style={styles.label}>Task Type</Text>
+          <View style={styles.pickerContainer}>
+            <Picker 
+              selectedValue={taskType} 
+              style={styles.picker} 
+              onValueChange={(itemValue) => setTaskType(itemValue)}
+            >
+              {taskTypes.map((type) => (
+                <Picker.Item key={type.id} label={type.name} value={type.name} />
+              ))}
+            </Picker>
+          </View>
         </View>
-      </View>
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Task Priority</Text>
-        <View style={styles.pickerContainer}>
-          <Picker 
-            selectedValue={priority} 
-            style={styles.picker} 
-            onValueChange={(itemValue) => setPriority(itemValue)}
-          >
-            {priorities.map((priority) => (
-              <Picker.Item key={priority.id} label={priority.name} value={priority.name} />
-            ))}
-          </Picker>
+        <View style={styles.labelContainer}>
+          <Text style={styles.label}>Task Priority</Text>
+          <View style={styles.pickerContainer}>
+            <Picker 
+              selectedValue={priority} 
+              style={styles.picker} 
+              onValueChange={(itemValue) => setPriority(itemValue)}
+            >
+              {priorities.map((priority) => (
+                <Picker.Item key={priority.id} label={priority.name} value={priority.name} />
+              ))}
+            </Picker>
+          </View>
         </View>
-      </View>
-      
-      <TextInput 
-        style={styles.input} 
-        placeholder="Task Title" 
-        value={title} 
-        onChangeText={setTitle} 
-      />
-      <TextInput 
-        style={styles.input} 
-        placeholder="Task Description" 
-        value={description}
-        onChangeText={(text) => {
-          setDescription(text);
-          
-        }} 
-        onEndEditing={(event)=>{
-          predictTaskPriority(event.nativeEvent.text);
-          predictTaskTimeframe(event.nativeEvent.text);
-        }} 
-        multiline 
-      />
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Task Due Date</Text>
-        <Button title="Select Due Date" onPress={openDatePicker} /> 
-        {showDatePicker && (
-          <DateTimePicker
-            value={dueDate || new Date()}
-            mode="date"
-            onChange={handleDateChange}
-          />
-        )}
-        {dueDate && <Text>Selected Date: {dueDate.toDateString()}</Text>}
-      </View>
+        
+        <TextInput 
+          style={styles.input} 
+          placeholder="Task Title" 
+          value={title} 
+          onChangeText={setTitle} 
+        />
+        <TextInput 
+          style={styles.input} 
+          placeholder="Task Description" 
+          value={description}
+          onChangeText={(text) => {
+            setDescription(text);
+            
+          }} 
+          onEndEditing={(event)=>{
+            predictTaskPriority(event.nativeEvent.text);
+            predictTaskTimeframe(event.nativeEvent.text);
+          }} 
+          multiline 
+        />
+        <View style={styles.labelContainer}>
+          <Text style={styles.label}>Task Due Date</Text>
+          <Button title="Select Due Date" onPress={openDatePicker} /> 
+          {showDatePicker && (
+            <DateTimePicker
+              value={dueDate || new Date()}
+              mode="date"
+              onChange={handleDateChange}
+            />
+          )}
+          {dueDate && <Text>Selected Date: {dueDate.toDateString()}</Text>}
+        </View>
 
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Predicted Timeframe</Text>
-        <Text style={styles.timeframeText}>
-          {timeframe ? `${timeframe} minutes` : 'Not predicted yet'}
-        </Text>
+        <View style={styles.labelContainer}>
+          <Text style={styles.label}>Predicted Timeframe</Text>
+          <Text style={styles.timeframeText}>
+            {timeframe ? `${timeframe} minutes` : 'Not predicted yet'}
+          </Text>
+        </View>
+        
+        <Button title="Save Task" onPress={saveTask} />
       </View>
-      
-      <Button title="Save Task" onPress={saveTask} />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -246,6 +248,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center', 
     padding: 20, 
+  },
+  scrollContainer: {
+    flex: 1,
+    marginTop: 10,
   },
   input: { 
     borderWidth: 1, 
@@ -260,8 +266,12 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     width: '100%',
-    height: 200,
-    marginBottom: 10,
+    ...Platform.select({
+      ios: {
+        height: 200,
+        marginBottom: 10,
+      },
+    }),
   },
   picker: { 
     height: 50, 

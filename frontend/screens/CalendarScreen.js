@@ -301,66 +301,68 @@ const CalendarScreen = () => {
 
       {/* Edit Modal */}
       <Modal visible={editModalVisible} animationType="slide">
-        <View style={[styles.modalContainer,{ backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
-          <Text style={[styles.modalTitle,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}>Edit Task</Text>
-          <TextInput
-            style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
-            placeholder="Title"
-            value={title}
-            onChangeText={setTitle}
-          />
-          <TextInput
-            style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
-            placeholder="Description"
-            value={description}
-            onChangeText={setDescription}
-          />
-          <Picker
-            selectedValue={priority}
-            style={[styles.pickerContainer,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
-            onValueChange={(itemValue) => setPriority(itemValue)}
-          >
-            <Picker.Item label="Low" value="Low" />
-            <Picker.Item label="Medium" value="Medium" />
-            <Picker.Item label="High" value="High" />
-          </Picker>
-          <Picker
-            selectedValue={type}
-            style={[styles.pickerContainer,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
-            onValueChange={(itemValue) => setType(itemValue)}
-          >
-            <Picker.Item label="Professional" value="Professional" />
-            <Picker.Item label="Personal" value="Personal" />
-            <Picker.Item label="Other" value="Other" />
-          </Picker>
-          <TextInput
-            style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
-            placeholder="Timeframe (minutes)"
-            value={timeframe}
-            keyboardType="numeric"
-            onChangeText={setTimeframe}
-          />
-          <View>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-              <Text style={[styles.datePickerText,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}>Due Date: {dueDate.toDateString()}</Text>
-            </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={dueDate}
-                mode="date"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowDatePicker(false);
-                  if (selectedDate) setDueDate(selectedDate);
-                }}
-              />
-            )}
+        <ScrollView style={styles.scrollContainer}>
+          <View style={[styles.modalContainer,{ backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
+            <Text style={[styles.modalTitle,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}>Edit Task</Text>
+            <TextInput
+              style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
+              placeholder="Title"
+              value={title}
+              onChangeText={setTitle}
+            />
+            <TextInput
+              style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
+              placeholder="Description"
+              value={description}
+              onChangeText={setDescription}
+            />
+            <Picker
+              selectedValue={priority}
+              style={[styles.pickerContainer,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
+              onValueChange={(itemValue) => setPriority(itemValue)}
+            >
+              <Picker.Item label="Low" value="Low" />
+              <Picker.Item label="Medium" value="Medium" />
+              <Picker.Item label="High" value="High" />
+            </Picker>
+            <Picker
+              selectedValue={type}
+              style={[styles.pickerContainer,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
+              onValueChange={(itemValue) => setType(itemValue)}
+            >
+              <Picker.Item label="Professional" value="Professional" />
+              <Picker.Item label="Personal" value="Personal" />
+              <Picker.Item label="Other" value="Other" />
+            </Picker>
+            <TextInput
+              style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
+              placeholder="Timeframe (minutes)"
+              value={timeframe}
+              keyboardType="numeric"
+              onChangeText={setTimeframe}
+            />
+            <View>
+              <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                <Text style={[styles.datePickerText,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}>Due Date: {dueDate.toDateString()}</Text>
+              </TouchableOpacity>
+              {showDatePicker && (
+                <DateTimePicker
+                  value={dueDate}
+                  mode="date"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) setDueDate(selectedDate);
+                  }}
+                />
+              )}
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button title="Cancel" color="#ef9c66" onPress={() => setEditModalVisible(false)} />
+              <Button title="Save" color="#78aba8" onPress={handleEdit} />
+            </View>
           </View>
-          <View style={styles.buttonContainer}>
-            <Button title="Cancel" color="#ef9c66" onPress={() => setEditModalVisible(false)} />
-            <Button title="Save" color="#78aba8" onPress={handleEdit} />
-          </View>
-        </View>
+        </ScrollView>
       </Modal>
     </View>
   );
