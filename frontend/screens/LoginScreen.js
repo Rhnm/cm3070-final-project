@@ -24,7 +24,7 @@ const Login = ({ navigation,onLogin }) => {
         await AsyncStorage.setItem('isLoggedIn', JSON.stringify(response.data.Login));
         await AsyncStorage.setItem('uid',JSON.stringify(response.data.uid));
         onLogin(); // Notify App.js about the login
-        navigation.navigate('HomeTabs', {
+        navigation.navigate('HomePage', {
           screen: 'Home',
           params: {
             userId: response.data.uid, // You can pass any parameters you need here
