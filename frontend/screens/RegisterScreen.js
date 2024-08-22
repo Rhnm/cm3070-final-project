@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
 import { baseURL } from '../apiConfig';
+import { useTheme } from './ThemeContext';
 
 const Register = ({ navigation }) => {
+  const { theme } = useTheme();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -31,28 +33,32 @@ const Register = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,{ backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
       <TextInput
         style={styles.input}
         placeholder="Name"
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
         value={name}
         onChangeText={setName}
       />
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
         value={email}
         onChangeText={setEmail}
       />
       <TextInput
         style={styles.input}
         placeholder="Username"
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
         value={username}
         onChangeText={setUsername}
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
         secureTextEntry
         value={password}
         onChangeText={setPassword}

@@ -7,8 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig'; // Make sure this path is correct
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useTheme } from './ThemeContext';
 
 const CalendarScreen = () => {
+  const { theme } = useTheme();
   const [selectedDate, setSelectedDate] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [sharedTasks, setSharedTasks] = useState([]);
@@ -197,12 +199,26 @@ const CalendarScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
       <Calendar
         onDayPress={onDayPress}
         markedDates={markedDates}
         onRefresh={onRefresh}
         refreshing={refreshing}
+        theme={{
+          backgroundColor: theme === 'dark' ? '#333' : '#fff',
+          calendarBackground: theme === 'dark' ? '#333' : '#fff',
+          textSectionTitleColor: theme === 'dark' ? '#fff' : '#000',
+          dayTextColor: theme === 'dark' ? '#fff' : '#000',
+          todayTextColor: theme === 'dark' ? '#ff6347' : '#ff6347',
+          selectedDayBackgroundColor: theme === 'dark' ? '#555' : '#ddd',
+          selectedDayTextColor: theme === 'dark' ? '#fff' : '#000',
+          monthTextColor: theme === 'dark' ? '#fff' : '#000',
+          arrowColor: theme === 'dark' ? '#fff' : '#000',
+          textDisabledColor: theme === 'dark' ? '#555' : '#d9e1e8',
+          dotColor: theme === 'dark' ? '#fff' : '#000',
+          selectedDotColor: theme === 'dark' ? '#fff' : '#000',
+        }}
       />
       <ScrollView style={styles.scrollContainer}>
       {selectedDate.length > 0 && (
@@ -212,7 +228,7 @@ const CalendarScreen = () => {
           keyExtractor={(item) => uniqueKey(item)}
           renderItem={({ item }) => (
             
-            <View style={styles.taskCard}>
+            <View style={[styles.taskCard,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
               <View>
                 <Text style={styles.regularHeader}>REGULAR</Text>
               </View>
@@ -250,7 +266,7 @@ const CalendarScreen = () => {
             keyExtractor={(item) => uniqueKey(item)}
             renderItem={({ item }) => (
               
-              <View style={styles.taskCard}>
+              <View style={[styles.taskCard,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
                 <View>
                   <Text style={styles.sharedHeader}>SHARED</Text>
                 </View>
@@ -285,23 +301,23 @@ const CalendarScreen = () => {
 
       {/* Edit Modal */}
       <Modal visible={editModalVisible} animationType="slide">
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Edit Task</Text>
+        <View style={[styles.modalContainer,{ backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
+          <Text style={[styles.modalTitle,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}>Edit Task</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
             placeholder="Title"
             value={title}
             onChangeText={setTitle}
           />
           <TextInput
-            style={styles.input}
+            style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
             placeholder="Description"
             value={description}
             onChangeText={setDescription}
           />
           <Picker
             selectedValue={priority}
-            style={styles.pickerContainer}
+            style={[styles.pickerContainer,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
             onValueChange={(itemValue) => setPriority(itemValue)}
           >
             <Picker.Item label="Low" value="Low" />
@@ -310,7 +326,7 @@ const CalendarScreen = () => {
           </Picker>
           <Picker
             selectedValue={type}
-            style={styles.pickerContainer}
+            style={[styles.pickerContainer,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
             onValueChange={(itemValue) => setType(itemValue)}
           >
             <Picker.Item label="Professional" value="Professional" />
@@ -318,7 +334,7 @@ const CalendarScreen = () => {
             <Picker.Item label="Other" value="Other" />
           </Picker>
           <TextInput
-            style={styles.input}
+            style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
             placeholder="Timeframe (minutes)"
             value={timeframe}
             keyboardType="numeric"
@@ -326,7 +342,7 @@ const CalendarScreen = () => {
           />
           <View>
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-              <Text style={styles.datePickerText}>Due Date: {dueDate.toDateString()}</Text>
+              <Text style={[styles.datePickerText,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}>Due Date: {dueDate.toDateString()}</Text>
             </TouchableOpacity>
             {showDatePicker && (
               <DateTimePicker

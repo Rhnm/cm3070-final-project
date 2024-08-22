@@ -7,8 +7,12 @@ import { baseURL } from '../apiConfig';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useTheme } from './ThemeContext';
+
 
 const HomeScreen = () => {
+  const { theme } = useTheme();
+
   const [tasks, setTasks] = useState([]);
   const [sharedTasks, setSharedTasks] = useState([]);
   const [userId, setUserId] = useState(null);
@@ -221,7 +225,7 @@ const HomeScreen = () => {
   };
 
   const renderItem = ({ item, isShared }) => (
-    <TouchableOpacity style={styles.taskCard} onPress={() => openModal(item)}>
+    <TouchableOpacity style={[styles.taskCard, { backgroundColor: theme === 'dark' ? '#333' : '#fff' }]} onPress={() => openModal(item)}>
       <View style={styles.taskHeader}>
         <Text style={styles.title}>{item.title}</Text>
         {isShared && <MaterialIcons name="share" size={24} color="blue" />}
@@ -238,13 +242,13 @@ const HomeScreen = () => {
   const combinedTasks = [...tasks.map(task => ({ ...task, isShared: false })), ...sharedTasks.map(task => ({ ...task, isShared: true }))];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
       <TouchableOpacity onPress={openFilterModal} style={styles.filterIcon}>
         <MaterialIcons name="filter-list" size={30} color="black" />
       </TouchableOpacity>
       
       {combinedTasks.length === 0 ? (
-        <View style={styles.noTasksContainer}>
+        <View style={[styles.noTasksContainer, { backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
           <FontAwesome5 name="tasks" size={48} color="green" />
           <Text style={styles.noTasksText}>All tasks completed!</Text>
         </View>
@@ -284,9 +288,10 @@ const HomeScreen = () => {
         transparent={true}
         animationType="slide"
         onRequestClose={closeFilterModal}
+        style={{backgroundColor: theme === 'dark' ? '#333' : '#fff',}}
       >
         <View style={styles.filterModalContainer}>
-          <View style={styles.filterModalContent}>
+          <View style={[styles.filterModalContent,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
             <Text style={styles.filterModalTitle}>Filter Tasks</Text>
             
             <Text style={styles.filterModalSubtitle}>Priority</Text>
@@ -299,6 +304,7 @@ const HomeScreen = () => {
                       prev.includes(priority) ? prev.filter(p => p !== priority) : [...prev, priority]
                     );
                   }}
+                  
                 />
                 <Text style={styles.filterOptionText}>{priority}</Text>
               </View>
@@ -356,6 +362,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  completeButton: {
+    marginTop: 10,
+    color: '#1E90FF',
+    fontWeight: 'bold',
+  },
   filterIcon: {
     alignSelf: 'flex-end',
     marginBottom: 10,
@@ -363,9 +374,12 @@ const styles = StyleSheet.create({
   taskCard: {
     marginBottom: 20,
     padding: 15,
+    marginVertical: 8,
     borderWidth: 1,
     borderColor: '#ddd',
+    backgroundColor: '#f9f9f9',
     borderRadius: 5,
+    elevation: 2,
   },
   taskHeader: {
     flexDirection: 'row',
@@ -376,14 +390,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#333',
+    color: '#666',
   },
   description: {
     marginBottom: 10,
+    marginVertical: 8,
+    fontSize: 14,
     color: '#666',
   },
   dueDate: {
     marginBottom: 5,
+    fontSize: 14,
     color: '#888',
   },
   noTasksContainer: {

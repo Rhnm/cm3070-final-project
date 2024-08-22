@@ -2,8 +2,10 @@ import React from 'react';
 import { StyleSheet, View, Button, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from './ThemeContext';
 
 const LogoutScreen = ({ navigation,onLogout }) => {
+  const { theme } = useTheme();
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('isLoggedIn');
@@ -17,7 +19,7 @@ const LogoutScreen = ({ navigation,onLogout }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,{ backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
       <Button title="Logout" onPress={handleLogout} />
     </View>
   );

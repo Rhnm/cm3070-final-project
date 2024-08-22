@@ -3,8 +3,10 @@ import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'reac
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig';
+import { useTheme } from './ThemeContext';
 
 const Login = ({ navigation,onLogin }) => {
+  const { theme } = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -38,16 +40,18 @@ const Login = ({ navigation,onLogin }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,{ backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
       <TextInput
         style={styles.input}
         placeholder="Username"
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
         value={username}
         onChangeText={setUsername}
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
