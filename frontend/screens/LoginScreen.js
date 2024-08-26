@@ -9,6 +9,7 @@ const Login = ({ navigation,onLogin }) => {
   const { theme } = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = async () => {
     try {
@@ -18,12 +19,14 @@ const Login = ({ navigation,onLogin }) => {
       });
       // Ensure the response structure is as expected
       console.log('Login response:', response.data);
+
       if (response.data.Login) {
         // Navigate to the Home screen or another authenticated screen
         console.log('User ID:', response.data.uid);
         await AsyncStorage.setItem('isLoggedIn', JSON.stringify(response.data.Login));
         await AsyncStorage.setItem('uid',JSON.stringify(response.data.uid));
         onLogin(); // Notify App.js about the login
+        setError('');
         navigation.navigate('HomePage', {
           screen: 'Home',
           params: {
@@ -34,6 +37,7 @@ const Login = ({ navigation,onLogin }) => {
         Alert.alert('Login Failed', 'Incorrect username or password');
       }
     } catch (error) {
+      setError(error.response?.data?.message || 'Login failed');
       console.error('Login error:', error);
       Alert.alert('Error', 'Failed to login');
     }
@@ -59,6 +63,7 @@ const Login = ({ navigation,onLogin }) => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
   );
 };

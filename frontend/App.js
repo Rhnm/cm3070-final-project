@@ -24,6 +24,7 @@ import EditUserProfileScreen from './screens/EditUserProfileScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LogoutScreen from './screens/LogoutScreen';
+import SharedPersonScreen from './screens/SharedPersonScreen';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -239,6 +240,16 @@ const App = () => {
                 children={props => (
                   <LogoutScreen {...props} onLogout={() => setIsLoggedIn(false)} />
                 )}
+                options={{
+                  headerTitle: 'Logout',
+                }}
+              />
+              <Drawer.Screen 
+              name = "SharedTasks" 
+              component={SharedPersonScreen} 
+              options={{
+                headerTitle: 'Shared Tasks',
+              }}
               />
             </>
           ) : (

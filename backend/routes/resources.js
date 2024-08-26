@@ -89,13 +89,14 @@ router.get("/tasks/:id", (req, res, next) => {
 });
 
 router.get('/getUserIdByEmail/:email', (req, res, next) => {
-  const email = req.query.email;
-
+  const email = req.params.email;
+  console.log("Peoples get userIdto: ", email);
   global.db.get(`SELECT id FROM Users WHERE email = '${req.params.email}';`, (err, row) => {
     if (err) {
       next(err);
     } else if (row) {
-      res.json(row);
+      console.log("user to id: ",row.id);
+      res.json(row.id);
     } else {
       res.status(404).json({ message: 'User not found' });
     }
@@ -134,7 +135,15 @@ console.log("user id to find shared tasks: "+req.params.id);
 
 router.get("/getSharedUsers/:id", (req, res, next) => {
 
-  global.db.all( `SELECT DISTINCT u.email FROM SharedTasks st JOIN Users u ON st.user_id_to = u.id WHERE st.user_id_from == ${req.params.id};`, function (err, rows) {
+  global.db.all( `SELECT DISTINCT u.id,u.email, u.name, up.image
+                  FROM 
+                      SharedTasks st
+                  JOIN 
+                      Users u ON st.user_id_to = u.id
+                  JOIN 
+                      UsersProfile up ON u.id = up.user_id
+                  WHERE 
+                      st.user_id_from = ${req.params.id}`, function (err, rows) {
       
       if (err) {
       next(err); //send the error on to the error handler
@@ -178,15 +187,17 @@ router.get('/getUsers/:id', (req, res, next) => {
 
 router.get('/suggestions/:id', (req, res, next) => {
   const emailQuery = req.query.email;
+  const userId = req.params.id;
   global.db.all(
-    `SELECT email FROM Users WHERE id <> ${req.params.id} and email LIKE ?`,
-    [`%${emailQuery}%`],
+    `SELECT u.id,u.email,u.name,up.image FROM Users u JOIN UsersProfile up on up.user_id = u.id WHERE u.id <> ? and u.email LIKE ?`,
+    [userId,`%${emailQuery}%`],
     function (err, rows) {
       if (err) {
         next(err); // send the error on to the error handler
       } else {
         console.log("Suggestions Emails: "+rows.map(row=>row.email));
-        res.json(rows.map(row => row.email));
+        //res.json(rows.map(row => row.email));
+        res.json(rows);
       }
     }
   );
@@ -224,6 +235,46 @@ router.get('/getnotes/:userId', (req, res, next) => {
   );
 });
 
+
+router.get('/sharedpersonslist', (req, res) => {
+  try {
+      global.db.all(
+        `SELECT 
+                SharedTasks.task_id AS task_id,
+                Tasks.title AS task_title,
+                GROUP_CONCAT(SharedTasks.user_id_to) AS user_to_ids,
+                GROUP_CONCAT(DISTINCT UsersFrom.name) AS user_from_names,
+                GROUP_CONCAT(DISTINCT UsersTo.name) AS user_to_names,
+                GROUP_CONCAT(DISTINCT SharedTasks.shared_at) AS shared_ats
+            FROM 
+                SharedTasks
+            JOIN 
+                Tasks ON SharedTasks.task_id = Tasks.id
+            JOIN 
+                Users AS UsersFrom ON SharedTasks.user_id_from = UsersFrom.id
+            JOIN 
+                Users AS UsersTo ON SharedTasks.user_id_to = UsersTo.id
+            GROUP BY 
+                SharedTasks.task_id, Tasks.title
+            ORDER BY 
+                MIN(SharedTasks.shared_at) DESC`,
+      (err, rows) => {
+        if (err) {
+          return next(err);
+        }
+        //console.log(rows);
+        res.json(rows);
+      }
+    );
+      /* console.log(sharedTasks);
+      res.json(sharedTasks); */
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to fetch shared tasks' });
+  }
+});
+
+
 /////*****  POST ******//////////// */
 
 router.post("/savetask", (req, res, next) => {
@@ -250,7 +301,7 @@ router.post("/savetask", (req, res, next) => {
           next(err); //send the error on to the error handler
       } else {
         //res.status(201).json({ message: "Data inserted successfully!" }); // Sending success response
-          res.send(`New data inserted !`);
+          res.json({ message: "Data inserted successfully!", taskId: this.lastID });
           next();
       }
       }
@@ -293,38 +344,118 @@ router.post('/saveProfileImage', (req, res, next) => {
 router.post('/shareTask', async (req, res, next) => {
   const taskId = req.body.taskId;
   const userIdFrom = req.body.userIdFrom;
-  const userIdTo = req.body.userIdTo;
-  //const userId = req.user.id; // Assuming user is authenticated and userId is available
+  const selectedIds = req.body.selectedIds;
+
+  console.log("Task id:", taskId);
+  console.log("UserIdFrom:", userIdFrom);
+  console.log("userIdTo:", selectedIds);
+
+  // Validate input
+  if (!taskId || !userIdFrom || !selectedIds || !Array.isArray(selectedIds)) {
+    console.log("here in if statement");
+    return res.status(400).json({ message: "Invalid input" });
+  }
 
   try {
-    global.db.all(`SELECT Count(*) AS count FROM SharedTasks where task_id = ? and user_id_to = ?`,[taskId, userIdTo], (err, rows) => {
-      if (err) {
-        next(err);
-      }else{
-        const sharedTaskExists = rows[0].count > 0;
-        console.log("SharedTask:"+sharedTaskExists);
-        if (rows[0].count > 0) {
-          res.status(201).send('Task already shared!');
-        }else{
+    // Check for existing shares
+    global.db.all(
+      `SELECT user_id_to FROM SharedTasks
+       WHERE task_id = ? AND user_id_from = ? AND user_id_to IN (${selectedIds.map(() => '?').join(', ')})`,
+      [taskId, userIdFrom, ...selectedIds],
+      (err, rows) => {
+        if (err) {
+          return next(err); // Send the error to the error handler
+        }
+
+        const existingUserIds = rows.map(row => row.user_id_to);
+        const newShares = selectedIds.filter(userIdTo => !existingUserIds.includes(userIdTo));
+
+        if (newShares.length === 0) {
+          return res.json({ message: "Task already shared with all selected users." });
+        }
+
+        // Insert new shares directly
+        newShares.forEach(userIdTo => {
           global.db.run(
-            `INSERT INTO SharedTasks (task_id, user_id_from, user_id_to) VALUES (?, ?, ?)`,
-            [taskId, userIdFrom, userIdTo],
+            `INSERT INTO SharedTasks (task_id, user_id_from, user_id_to, shared_at)
+             VALUES (?, ?, ?, ?)`,
+            [taskId, userIdFrom, userIdTo, new Date().toISOString()],
             function (err) {
               if (err) {
-                return next(err);
-              }
-              else {
-                res.status(201).send('Task shared successfully!');
+                return next(err); // Send the error to the error handler
               }
             }
           );
-        }
+        });
+        console.log("Task shared successfully");
+        res.json({ message: "Task shared successfully!" });
       }
-    });
+    );
   } catch (error) {
     next(error);
   }
 });
+
+
+router.post('/shareTasks', async (req, res, next) => {
+  const taskId = req.body.taskId;
+  const userIdFrom = req.body.userIdFrom;
+  const selectedIds = req.body.getUserId;
+
+  console.log("Task id:", taskId);
+  console.log("UserIdFrom:", userIdFrom);
+  console.log("userIdTo:", selectedIds);
+
+  // Validate input
+  if (!taskId || !userIdFrom || !selectedIds) {
+    console.log("here in if statement");
+    return res.status(400).json({ message: "Invalid input" });
+  }
+
+  try {
+    // Check for existing shares
+    global.db.all(
+      `SELECT id FROM SharedTasks
+       WHERE task_id = ? AND user_id_from = ? AND user_id_to = ?`,
+      [taskId, userIdFrom, selectedIds],
+      (err, rows) => {
+        if (err) {
+          return next(err); // Send the error to the error handler
+        }
+
+        const existingUserIds = rows.map(row => row.id);
+        console.log("Exists :", existingUserIds);
+        console.log("Existing Array length: ",existingUserIds.length);
+        //const newShares = selectedIds.filter(userIdTo => !existingUserIds.includes(userIdTo));
+
+        if (existingUserIds.length >  0) {
+          return res.json({ message: "Task already shared with selected user." });
+        }
+
+        // Insert new share directly
+          global.db.run(
+            `INSERT INTO SharedTasks (task_id, user_id_from, user_id_to, shared_at)
+             VALUES (?, ?, ?, ?)`,
+            [taskId, userIdFrom, selectedIds, new Date().toISOString()],
+            function (err) {
+              if (err) {
+                return next(err); // Send the error to the error handler
+              }
+              else{
+                console.log("Task shared successfully");
+                res.json({ message: "Task shared successfully!" });
+              }
+            }
+          );
+        
+        
+      }
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 router.post('/notes', (req, res, next) => {
   const { user_id, note_text, attachment } = req.body;
@@ -488,5 +619,24 @@ router.delete('/deletenote/:id', (req, res, next) => {
     }
   );
 });
+
+router.delete('/sharedtasks/:taskId/:userIdTo', (req, res, next) => {
+  const { taskId, userIdTo } = req.params;
+
+  global.db.run(
+    `DELETE FROM SharedTasks WHERE task_id = ? AND user_id_to = ?`,
+    [taskId, userIdTo],
+    function (err) {
+      if (err) {
+        return next(err); // Pass the error to the next middleware
+      }
+      if (this.changes === 0) {
+        return res.status(404).send('Task or user not found');
+      }
+      res.status(200).send('User removed from task successfully');
+    }
+  );
+});
+
 
 module.exports = router;

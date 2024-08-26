@@ -226,6 +226,7 @@ const CalendarScreen = () => {
         style={styles.regularList}
           data={regular_Tasks}
           keyExtractor={(item) => uniqueKey(item)}
+          horizontal
           renderItem={({ item }) => (
             
             <View style={[styles.taskCard,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
@@ -264,6 +265,7 @@ const CalendarScreen = () => {
           style={styles.sharedList}
             data={shared_Tasks}
             keyExtractor={(item) => uniqueKey(item)}
+            horizontal
             renderItem={({ item }) => (
               
               <View style={[styles.taskCard,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
@@ -320,8 +322,13 @@ const CalendarScreen = () => {
               selectedValue={priority}
               style={[styles.pickerContainer,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
               onValueChange={(itemValue) => setPriority(itemValue)}
+              itemStyle = {{backgroundColor: theme === 'dark' ? '#ccc' : '#fff'}}
             >
-              <Picker.Item label="Low" value="Low" />
+              <Picker.Item 
+              label="Low" 
+              value="Low" 
+              itemStyle = {{backgroundColor: theme === 'dark' ? '#ccc' : '#fff'}}
+              />
               <Picker.Item label="Medium" value="Medium" />
               <Picker.Item label="High" value="High" />
             </Picker>
@@ -350,9 +357,13 @@ const CalendarScreen = () => {
                   value={dueDate}
                   mode="date"
                   display="default"
+                  textColor={theme === 'dark' ? '#fff' : '#ccc '}
                   onChange={(event, selectedDate) => {
                     setShowDatePicker(false);
                     if (selectedDate) setDueDate(selectedDate);
+                  }}
+                  style={{
+                    backgroundColor: theme === 'dark' ? '#333' : '#fff',
                   }}
                 />
               )}
@@ -417,9 +428,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   taskCard: {
-    backgroundColor: '#f9f9f9',
-    padding: 15,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: 16,
+    flexWrap:'wrap',
+    backgroundColor: '#ccc',
+    padding: 5,
     marginBottom: 10,
+    borderColor:'#CCC',
+    borderWidth: 2,
+    margin:3,
     borderRadius: 5,
   },
   title: {

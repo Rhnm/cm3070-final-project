@@ -47,7 +47,7 @@ const HomeScreen = () => {
       const response = await axios.get(`${baseURL}:3001/resources/getPendingTasks/${userId}`);
       const filteredTasks = filterTasks(response.data);
       setTasks(filteredTasks);
-      console.log("GetPendingTasks:" + filteredTasks);
+      //console.log("GetPendingTasks:" + filteredTasks);
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
@@ -58,7 +58,7 @@ const HomeScreen = () => {
       const response = await axios.get(`${baseURL}:3001/resources/getSharedUsersTasks/${userId}`);
       const filteredSharedTasks = filterTasks(response.data);
       setSharedTasks(filteredSharedTasks);
-      console.log("GetSharedTasks:" + filteredSharedTasks);
+      //console.log("GetSharedTasks:" + filteredSharedTasks);
     } catch (error) {
       console.error('Error fetching shared tasks:', error);
     }
@@ -68,11 +68,11 @@ const HomeScreen = () => {
     let filtered = tasks;
 
     // Example of logging dates to verify
-    console.log('Current Date:', new Date());
+    //console.log('Current Date:', new Date());
       
     filtered.forEach(task => {
       setdbDuedate(new Date(task.due_date));
-      console.log('Task Due Date:', new Date(task.due_date));
+      //console.log('Task Due Date:', new Date(task.due_date));
     });
 
 
