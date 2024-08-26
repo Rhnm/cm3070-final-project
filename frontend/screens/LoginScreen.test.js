@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent,getAllByText, waitFor } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { Provider as PaperProvider } from 'react-native-paper';
 import { useTheme } from './ThemeContext';
 import axios from 'axios'; // Import axios
 import LoginScreen from './LoginScreen';
@@ -25,9 +24,7 @@ describe('LoginScreen', () => {
   it('renders login form', () => {
     render(
       <NavigationContainer>
-        <PaperProvider>
           <LoginScreen />
-        </PaperProvider>
       </NavigationContainer>
     );
     expect(screen.getByPlaceholderText('Username')).toBeTruthy();
@@ -52,9 +49,9 @@ describe('LoginScreen', () => {
 
     render(
       <NavigationContainer>
-        <PaperProvider>
+        
           <LoginScreen />
-        </PaperProvider>
+        
       </NavigationContainer>
     );
 
