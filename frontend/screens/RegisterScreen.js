@@ -10,6 +10,7 @@ const Register = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [msg,setmsg] = useState('');
 
   const handleRegister = async () => {
     try {
@@ -22,11 +23,14 @@ const Register = ({ navigation }) => {
 
       if (response.status === 200) {
         Alert.alert('Success', 'User registered successfully');
+        setmsg('User registered successfully');
         navigation.navigate('Login');
       } else {
         Alert.alert('Error', 'Failed to register');
+        setmsg('User registration failed');
       }
     } catch (error) {
+      setmsg('User registration failed');
       console.error('Register error:', error);
       Alert.alert('Error', 'Failed to register');
     }
@@ -66,6 +70,7 @@ const Register = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
+      <Text style={styles.msgText}>{msg}</Text>
     </View>
   );
 };
