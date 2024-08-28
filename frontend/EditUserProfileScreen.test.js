@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import EditUserProfileScreen from './screens/EditUserProfileScreen';
+import EditUserProfileScreen from './EditUserProfileScreen';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { baseURL } from './apiConfig';
+import { baseURL } from '../apiConfig';
 
 
 jest.mock('axios');
