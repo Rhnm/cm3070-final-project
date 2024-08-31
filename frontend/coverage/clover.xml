@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1724988209134" clover="3.2.0">
-  <project timestamp="1724988209134" name="All files">
+<coverage generated="1725083876702" clover="3.2.0">
+  <project timestamp="1725083876703" name="All files">
     <metrics statements="994" coveredstatements="254" conditionals="318" coveredconditionals="54" methods="214" coveredmethods="37" elements="1526" coveredelements="345" complexity="0" loc="994" ncloc="994" packages="1" files="13" classes="13"/>
-    <file name="CalendarScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/CalendarScreen.js">
+    <file name="CalendarScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/CalendarScreen.js">
       <metrics statements="128" coveredstatements="0" conditionals="88" coveredconditionals="0" methods="34" coveredmethods="0"/>
       <line num="12" count="0" type="stmt"/>
       <line num="13" count="0" type="stmt"/>
@@ -133,7 +133,7 @@
       <line num="372" count="0" type="stmt"/>
       <line num="382" count="0" type="stmt"/>
     </file>
-    <file name="EditUserProfileScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/EditUserProfileScreen.js">
+    <file name="EditUserProfileScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/EditUserProfileScreen.js">
       <metrics statements="43" coveredstatements="27" conditionals="16" coveredconditionals="8" methods="5" coveredmethods="4"/>
       <line num="8" count="1" type="stmt"/>
       <line num="9" count="8" type="stmt"/>
@@ -179,7 +179,7 @@
       <line num="79" count="8" type="stmt"/>
       <line num="106" count="1" type="stmt"/>
     </file>
-    <file name="HomeScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/HomeScreen.js">
+    <file name="HomeScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/HomeScreen.js">
       <metrics statements="140" coveredstatements="0" conditionals="50" coveredconditionals="0" methods="39" coveredmethods="0"/>
       <line num="13" count="0" type="stmt"/>
       <line num="14" count="0" type="stmt"/>
@@ -322,7 +322,7 @@
       <line num="342" count="0" type="stmt"/>
       <line num="360" count="0" type="stmt"/>
     </file>
-    <file name="LoginScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/LoginScreen.js">
+    <file name="LoginScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/LoginScreen.js">
       <metrics statements="22" coveredstatements="13" conditionals="12" coveredconditionals="6" methods="2" coveredmethods="2"/>
       <line num="8" count="1" type="stmt"/>
       <line num="9" count="7" type="stmt"/>
@@ -347,7 +347,7 @@
       <line num="46" count="7" type="stmt"/>
       <line num="71" count="1" type="stmt"/>
     </file>
-    <file name="LogoutScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/LogoutScreen.js">
+    <file name="LogoutScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/LogoutScreen.js">
       <metrics statements="12" coveredstatements="12" conditionals="2" coveredconditionals="1" methods="2" coveredmethods="2"/>
       <line num="7" count="1" type="stmt"/>
       <line num="8" count="3" type="stmt"/>
@@ -362,7 +362,7 @@
       <line num="21" count="3" type="stmt"/>
       <line num="28" count="1" type="stmt"/>
     </file>
-    <file name="NewTaskScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/NewTaskScreen.js">
+    <file name="NewTaskScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/NewTaskScreen.js">
       <metrics statements="233" coveredstatements="85" conditionals="42" coveredconditionals="11" methods="42" coveredmethods="8"/>
       <line num="13" count="1" type="stmt"/>
       <line num="15" count="7" type="stmt"/>
@@ -598,7 +598,7 @@
       <line num="540" count="0" type="stmt"/>
       <line num="570" count="1" type="stmt"/>
     </file>
-    <file name="NotesScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/NotesScreen.js">
+    <file name="NotesScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/NotesScreen.js">
       <metrics statements="91" coveredstatements="44" conditionals="34" coveredconditionals="13" methods="20" coveredmethods="9"/>
       <line num="11" count="1" type="stmt"/>
       <line num="12" count="12" type="stmt"/>
@@ -692,7 +692,7 @@
       <line num="213" count="14" type="stmt"/>
       <line num="244" count="1" type="stmt"/>
     </file>
-    <file name="PeopleScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/PeopleScreen.js">
+    <file name="PeopleScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/PeopleScreen.js">
       <metrics statements="168" coveredstatements="0" conditionals="26" coveredconditionals="0" methods="38" coveredmethods="0"/>
       <line num="11" count="0" type="stmt"/>
       <line num="12" count="0" type="stmt"/>
@@ -863,7 +863,7 @@
       <line num="360" count="0" type="stmt"/>
       <line num="372" count="0" type="stmt"/>
     </file>
-    <file name="RegisterScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/RegisterScreen.js">
+    <file name="RegisterScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/RegisterScreen.js">
       <metrics statements="21" coveredstatements="19" conditionals="12" coveredconditionals="6" methods="2" coveredmethods="2"/>
       <line num="7" count="1" type="stmt"/>
       <line num="8" count="13" type="stmt"/>
@@ -887,7 +887,7 @@
       <line num="39" count="13" type="stmt"/>
       <line num="78" count="1" type="stmt"/>
     </file>
-    <file name="SharedPersonScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/SharedPersonScreen.js">
+    <file name="SharedPersonScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/SharedPersonScreen.js">
       <metrics statements="37" coveredstatements="0" conditionals="10" coveredconditionals="0" methods="14" coveredmethods="0"/>
       <line num="8" count="0" type="stmt"/>
       <line num="9" count="0" type="stmt"/>
@@ -927,7 +927,7 @@
       <line num="126" count="0" type="stmt"/>
       <line num="134" count="0" type="stmt"/>
     </file>
-    <file name="SplashScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/SplashScreen.js">
+    <file name="SplashScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/SplashScreen.js">
       <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <line num="5" count="1" type="stmt"/>
       <line num="6" count="2" type="stmt"/>
@@ -936,7 +936,7 @@
       <line num="17" count="1" type="stmt"/>
       <line num="32" count="1" type="stmt"/>
     </file>
-    <file name="ThemeContext.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/ThemeContext.js">
+    <file name="ThemeContext.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/ThemeContext.js">
       <metrics statements="7" coveredstatements="6" conditionals="4" coveredconditionals="1" methods="4" coveredmethods="2"/>
       <line num="4" count="1" type="stmt"/>
       <line num="6" count="1" type="stmt"/>
@@ -946,7 +946,7 @@
       <line num="13" count="1" type="stmt"/>
       <line num="20" count="1" type="stmt"/>
     </file>
-    <file name="UserProfileScreen.js" path="/Users/admin/Documents/Git/tma_revised/frontend/screens/UserProfileScreen.js">
+    <file name="UserProfileScreen.js" path="/Volumes/GitHub/Edu/taskPulse/frontend/screens/UserProfileScreen.js">
       <metrics statements="86" coveredstatements="42" conditionals="22" coveredconditionals="8" methods="10" coveredmethods="6"/>
       <line num="11" count="1" type="stmt"/>
       <line num="12" count="7" type="stmt"/>
