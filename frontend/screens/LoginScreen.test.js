@@ -24,7 +24,9 @@ describe('LoginScreen', () => {
   it('renders login form', () => {
     render(
       <NavigationContainer>
+        
           <LoginScreen />
+        
       </NavigationContainer>
     );
     expect(screen.getByPlaceholderText('Username')).toBeTruthy();

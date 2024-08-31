@@ -7,6 +7,7 @@ jest.mock('react-native-vector-icons/FontAwesome', () => 'Icon');
 jest.mock('expo-linear-gradient', () => 'LinearGradient');
 jest.mock('react-native-vector-icons/FontAwesome5', () => 'Icon');
 global.alert = jest.fn();
+global.setImmediate = (callback) => setTimeout(callback, 0);
 jest.mock('expo-linear-gradient', () => {
     const { View } = require('react-native');
     return {
@@ -27,3 +28,13 @@ NativeModules.ImagePicker = {
     launchImageLibraryAsync: jest.fn(),
     launchCameraAsync: jest.fn(),
   };
+
+// Mock the necessary NativeModules
+NativeModules.SettingsManager = NativeModules.SettingsManager || {
+  settings: {
+    AppleInterfaceStyle: 'light', // or 'dark' to simulate dark mode
+  },
+  getConstants: () => ({
+    AppleInterfaceStyle: 'light',
+  }),
+};

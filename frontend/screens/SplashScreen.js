@@ -1,6 +1,6 @@
 import React,{useEffect} from 'react';
 import { View, Text, StyleSheet, Animated,TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+
 
 const SplashScreen = () => {
   const fadeAnim = new Animated.Value(0);
@@ -21,7 +21,7 @@ const SplashScreen = () => {
         
           <TouchableOpacity  style={styles.button}>
             <Text style={styles.buttonText}>Let's Start</Text>
-            <MaterialIcons name="arrow-forward" size={24} color="white" />
+            
           </TouchableOpacity>
         
       </View>

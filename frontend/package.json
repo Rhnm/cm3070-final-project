@@ -5,6 +5,7 @@
   "scripts": {
     "start": "expo start",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web"
@@ -23,7 +24,19 @@
       "node_modules/expo-image-picker/build/index.js": "babel-jest",
       "node_modules/expo-notifications/build/index.js": "babel-jest",
       "^.+\\.js$": "babel-jest"
-    }
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "screens/**/*.{js,jsx,ts,tsx}",
+      "!**/__tests__/**"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover"
+    ]
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",

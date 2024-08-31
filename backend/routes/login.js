@@ -71,7 +71,7 @@ router.post('/register', async(req, res) => {
         console.error('Error inserting user data:', err);
         res.status(500).send('Error inserting user data');
       } else {
-        res.status(200).send('User registered sucessfully');
+        res.status(200).send('User registered successfully');
       }
     });
   });

@@ -10,6 +10,7 @@ const EditUserProfileScreen = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [userId, setUserId] = useState('');
+  const [error,setError] = useState('');
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -47,6 +48,7 @@ const EditUserProfileScreen = () => {
   const handleSave = async () => {
     if (!username || !email) {
       Alert.alert('Error', 'Please fill in all fields');
+      setError('Please fill in all fields');
       return;
     }
 
@@ -60,12 +62,17 @@ const EditUserProfileScreen = () => {
       if (response.data.success) {
         Alert.alert('Success', 'Profile updated successfully');
         navigation.goBack();
+        setError('');
       } else {
-        Alert.alert('Error', 'Failed to update profile');
+        //Alert.alert('Error', 'Failed to update profile');
+        Alert.alert('Error', response.data.message || 'Failed to update profile');
+        setError('User not found');
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      Alert.alert('Error', 'Failed to update profile');
+      setError('User not found');
+      //Alert.alert('Error', 'Failed to update profile');
+      Alert.alert('Error', error.response?.data?.message || 'Failed to update profile');
     }
   };
 
@@ -91,6 +98,7 @@ const EditUserProfileScreen = () => {
       <TouchableOpacity style={styles.button} onPress={handleSave}>
         <Text style={styles.buttonText}>Save Changes</Text>
       </TouchableOpacity>
+      {error ? <Text style={styles.errorText}>Error: {error}</Text> : null}
     </View>
   );
 };
