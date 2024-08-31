@@ -90,11 +90,11 @@ const SharedPersonScreen = () => {
                         {userToNames.map((name, index) => (
                             <View key={`to-${index}`} style={styles.userContainer}>
                                 <Text style={styles.userInfo}>
-                                {name}
+                                {name}</Text>
                                     <TouchableOpacity onPress={() => handleDelete(item.task_id,userToIds[index], name)}>
                                         <Ionicons name="remove-circle-outline" size={24} color="red" />
                                     </TouchableOpacity>
-                                </Text>
+                                
                             </View>
                         ))}
                     </>
@@ -114,7 +114,7 @@ const SharedPersonScreen = () => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="#0000ff" testID='loading-spinner'/>
             </View>
         );
     }

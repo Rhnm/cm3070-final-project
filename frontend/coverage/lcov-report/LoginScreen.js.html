@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.09% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>13/22</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/12</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.09% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>13/22</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -168,15 +168,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -200,17 +200,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -231,7 +227,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -266,15 +266,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig';
 import { useTheme } from './ThemeContext';
 &nbsp;
-const Login = ({ navigation,onLogin }) =&gt; {
-  const { theme } = useTheme();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+const Login = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> navigation,onLogin }) =&gt; {</span>
+  const { theme } = <span class="cstat-no" title="statement not covered" >useTheme();</span>
+  const [username, setUsername] = <span class="cstat-no" title="statement not covered" >useState('');</span>
+  const [password, setPassword] = <span class="cstat-no" title="statement not covered" >useState('');</span>
+  const [error, setError] = <span class="cstat-no" title="statement not covered" >useState('');</span>
 &nbsp;
-  const handleLogin = async () =&gt; {
-    try {
-      const response = await axios.post(`${baseURL}:3001/main/login`, {
+  const handleLogin = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const response = <span class="cstat-no" title="statement not covered" >await axios.post(`${baseURL}:3001/main/login`, {</span>
         username,
         password,
       });
@@ -298,25 +298,25 @@ const Login = ({ navigation,onLogin }) =&gt; {
 <span class="cstat-no" title="statement not covered" >        Alert.alert('Login Failed', 'Incorrect username or password');</span>
       }
     } catch (error) {
-      setError(error.response?.data?.message || <span class="branch-1 cbranch-no" title="branch not covered" >'Login failed')</span>;
-      console.error('Login error:', error);
-      Alert.alert('Error', 'Failed to login');
+<span class="cstat-no" title="statement not covered" >      setError(error.response?.data?.message || 'Login failed');</span>
+<span class="cstat-no" title="statement not covered" >      console.error('Login error:', error);</span>
+<span class="cstat-no" title="statement not covered" >      Alert.alert('Error', 'Failed to login');</span>
     }
   };
 &nbsp;
-  return (
-    &lt;View style={[styles.container,{ backgroundColor: theme === 'dark' ? <span class="branch-0 cbranch-no" title="branch not covered" >'#333' </span>: '#fff' }]}&gt;
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;View style={[styles.container,{ backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}&gt;
       &lt;TextInput
         style={styles.input}
         placeholder="Username"
-        placeholderTextColor={theme === 'dark' ? <span class="branch-0 cbranch-no" title="branch not covered" >'#fff' </span>: '#ccc'}
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
         value={username}
         onChangeText={setUsername}
       /&gt;
       &lt;TextInput
         style={styles.input}
         placeholder="Password"
-        placeholderTextColor={theme === 'dark' ? <span class="branch-0 cbranch-no" title="branch not covered" >'#fff' </span>: '#ccc'}
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -329,7 +329,7 @@ const Login = ({ navigation,onLogin }) =&gt; {
   );
 };
 &nbsp;
-const styles = StyleSheet.create({
+const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.create({</span>
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -364,7 +364,7 @@ export default Login;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-08-31T05:57:56.605Z
+                at 2024-08-31T14:40:10.381Z
             </div>
         <script src="prettify.js"></script>
         <script>

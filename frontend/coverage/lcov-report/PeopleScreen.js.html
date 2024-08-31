@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/178</span>
+                <span class='fraction'>0/179</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/168</span>
+                <span class='fraction'>0/169</span>
             </div>
         
             
@@ -578,7 +578,11 @@
 <a name='L513'></a><a href='#L513'>513</a>
 <a name='L514'></a><a href='#L514'>514</a>
 <a name='L515'></a><a href='#L515'>515</a>
-<a name='L516'></a><a href='#L516'>516</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L516'></a><a href='#L516'>516</a>
+<a name='L517'></a><a href='#L517'>517</a>
+<a name='L518'></a><a href='#L518'>518</a>
+<a name='L519'></a><a href='#L519'>519</a>
+<a name='L520'></a><a href='#L520'>520</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -669,6 +673,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -865,6 +870,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -931,7 +937,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1180,6 +1188,7 @@ const PeopleScreen = <span class="cstat-no" title="statement not covered" ><span
   const fetchSharedUsers = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try{</span>
       const response = <span class="cstat-no" title="statement not covered" >await axios.get(`${baseURL}:3001/resources/getSharedUsers/${userIdFrom}`);</span>
+<span class="cstat-no" title="statement not covered" >      console.log("Data from people test: ",response.data);</span>
       const ids = <span class="cstat-no" title="statement not covered" >response.data.map(<span class="fstat-no" title="function not covered" >it</span>em =&gt; <span class="cstat-no" title="statement not covered" >item.id)</span>;</span>
       const emails = <span class="cstat-no" title="statement not covered" >response.data.map(<span class="fstat-no" title="function not covered" >it</span>em =&gt; <span class="cstat-no" title="statement not covered" >item.email)</span>;</span>
       const names = <span class="cstat-no" title="statement not covered" >response.data.map(<span class="fstat-no" title="function not covered" >it</span>em =&gt; <span class="cstat-no" title="statement not covered" >item.name)</span>;</span>
@@ -1366,7 +1375,7 @@ const PeopleScreen = <span class="cstat-no" title="statement not covered" ><span
 <span class="cstat-no" title="statement not covered" >  if (loading) {</span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
       &lt;View style={styles.container}&gt;
-        &lt;ActivityIndicator size="large" color="#0000ff" /&gt;
+        &lt;ActivityIndicator size="large" color="#0000ff" testID="loadingIndicator"/&gt;
       &lt;/View&gt;
     );
   }
@@ -1387,6 +1396,7 @@ const PeopleScreen = <span class="cstat-no" title="statement not covered" ><span
         value={emailInput}
         onChangeText={handleEmailInput}
         placeholder="Enter email to share task"
+        testID='getTestEmail'
       /&gt;
       {emailSuggestions.length &gt; 0 &amp;&amp; (
         &lt;View style={styles.suggestionsContainer}&gt;
@@ -1424,9 +1434,9 @@ const PeopleScreen = <span class="cstat-no" title="statement not covered" ><span
 <span class="cstat-no" title="statement not covered" >          &lt;View key={indexx} style={styles.selectedContainer}&gt;</span>
           
             &lt;Image source={{ uri: sharedImages[indexx] }} style={styles.selectedImage} /&gt;
-            &lt;Text style={styles.selectedName}&gt;{sharedNames[indexx]}&lt;/Text&gt;
+            &lt;Text style={styles.selectedName} testID='getSharedTestEmail'&gt;{sharedNames[indexx]}&lt;/Text&gt;
          
-          &lt;TouchableOpacity style={styles.emailContainer} key={indexx} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >handlePress(email)}</span>&gt;
+          &lt;TouchableOpacity testID='testing-assign' style={styles.emailContainer} key={indexx} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >handlePress(email)}</span>&gt;
             &lt;Text style={styles.selectedEmail}&gt;Assign&lt;/Text&gt;
           &lt;/TouchableOpacity&gt;
         &lt;/View&gt;
@@ -1439,20 +1449,22 @@ const PeopleScreen = <span class="cstat-no" title="statement not covered" ><span
           transparent={true}
           visible={modalVisible}
           onRequestClose={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setModalVisible(false)}</span>
+          testID="test-modal"
         &gt;
-          &lt;ScrollView&gt;
-          &lt;View style={styles.modalContainer}&gt;
+          &lt;ScrollView testID="modal-scroll"&gt;
+          &lt;View style={styles.modalContainer} testID="modal-container"&gt;
             &lt;View style={styles.modalContent}&gt;
-              &lt;Text style={styles.selectedContactName}&gt;{selectedContact.name}&lt;/Text&gt;
+              &lt;Text style={styles.selectedContactName} testID="modal-contact-name"&gt;{selectedContact.name}&lt;/Text&gt;
               &lt;FlatList
                 data={tasks}
                 keyExtractor={<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item.id.toString()}</span>
                 renderItem={renderTaskItem}
                 contentContainerStyle={styles.taskListContainer}
+                testID="modal-task-list"
               /&gt;
-              &lt;View style={styles.buttonContainer}&gt;
-                &lt;Button title="Share Task" color="#ef9c66" onPress={handleShare} /&gt;
-                &lt;Button title="Close" color="#78aba8" onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setModalVisible(false)}</span> /&gt;
+              &lt;View style={styles.buttonContainer} testID="modal-buttons"&gt;
+                &lt;Button title="Share Task" color="#ef9c66" onPress={handleShare} testID="share-button" /&gt;
+                &lt;Button title="Close" color="#78aba8" onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setModalVisible(false)}</span> testID="close-button" /&gt;
               &lt;/View&gt;
             &lt;/View&gt;
           &lt;/View&gt;
@@ -1615,7 +1627,7 @@ export default PeopleScreen;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-08-31T05:57:56.605Z
+                at 2024-08-31T14:40:10.381Z
             </div>
         <script src="prettify.js"></script>
         <script>

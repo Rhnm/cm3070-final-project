@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/147</span>
+                <span class='fraction'>0/146</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/39</span>
+                <span class='fraction'>0/38</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/140</span>
+                <span class='fraction'>0/139</span>
             </div>
         
             
@@ -564,7 +564,13 @@
 <a name='L499'></a><a href='#L499'>499</a>
 <a name='L500'></a><a href='#L500'>500</a>
 <a name='L501'></a><a href='#L501'>501</a>
-<a name='L502'></a><a href='#L502'>502</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L502'></a><a href='#L502'>502</a>
+<a name='L503'></a><a href='#L503'>503</a>
+<a name='L504'></a><a href='#L504'>504</a>
+<a name='L505'></a><a href='#L505'>505</a>
+<a name='L506'></a><a href='#L506'>506</a>
+<a name='L507'></a><a href='#L507'>507</a>
+<a name='L508'></a><a href='#L508'>508</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -595,16 +601,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -623,10 +623,22 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1092,23 +1104,6 @@ const HomeScreen = <span class="cstat-no" title="statement not covered" ><span c
   const [showOverdue, setShowOverdue] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
   const [dbDuedate, setdbDuedate] = <span class="cstat-no" title="statement not covered" >useState(null);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-    const fetchUserId = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
-      const uid = <span class="cstat-no" title="statement not covered" >await AsyncStorage.getItem('uid');</span>
-<span class="cstat-no" title="statement not covered" >      setUserId(uid);</span>
-    };
-<span class="cstat-no" title="statement not covered" >    fetchUserId();</span>
-  }, []);
-&nbsp;
-<span class="cstat-no" title="statement not covered" >  useFocusEffect(</span>
-    useCallback(<span class="fstat-no" title="function not covered" >()</span> =&gt; {
-<span class="cstat-no" title="statement not covered" >      if (userId) {</span>
-<span class="cstat-no" title="statement not covered" >        fetchTasks();</span>
-<span class="cstat-no" title="statement not covered" >        fetchSharedTasks();</span>
-      }
-    }, [userId, selectedPriority, selectedType, selectedDateRange, showOverdue])
-  );
-&nbsp;
   const fetchTasks = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const response = <span class="cstat-no" title="statement not covered" >await axios.get(`${baseURL}:3001/resources/getPendingTasks/${userId}`);</span>
@@ -1130,6 +1125,29 @@ const HomeScreen = <span class="cstat-no" title="statement not covered" ><span c
 <span class="cstat-no" title="statement not covered" >      console.error('Error fetching shared tasks:', error);</span>
     }
   };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+    const fetchUserId = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
+      const uid = <span class="cstat-no" title="statement not covered" >await AsyncStorage.getItem('uid');</span>
+<span class="cstat-no" title="statement not covered" >      setUserId(uid);</span>
+    };
+<span class="cstat-no" title="statement not covered" >    fetchUserId();</span>
+<span class="cstat-no" title="statement not covered" >    if (userId) {</span>
+<span class="cstat-no" title="statement not covered" >      fetchTasks();</span>
+<span class="cstat-no" title="statement not covered" >      fetchSharedTasks();</span>
+    }
+  }, [userId, selectedPriority, selectedType, selectedDateRange, showOverdue]);
+&nbsp;
+  /* useFocusEffect(
+    useCallback(() =&gt; {
+      if (userId) {
+        fetchTasks();
+        fetchSharedTasks();
+      }
+    }, [userId, selectedPriority, selectedType, selectedDateRange, showOverdue])
+  ); */
+&nbsp;
+  
 &nbsp;
   const filterTasks = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>asks) =&gt; {</span>
     let filtered = <span class="cstat-no" title="statement not covered" >tasks;</span>
@@ -1310,7 +1328,7 @@ const HomeScreen = <span class="cstat-no" title="statement not covered" ><span c
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;View style={[styles.container, { backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}&gt;
-      &lt;TouchableOpacity onPress={openFilterModal} style={styles.filterIcon}&gt;
+      &lt;TouchableOpacity onPress={openFilterModal} accessibilityLabel="filter-list" style={styles.filterIcon}&gt;
         &lt;MaterialIcons name="filter-list" size={30} color="black" /&gt;
       &lt;/TouchableOpacity&gt;
       
@@ -1339,11 +1357,11 @@ const HomeScreen = <span class="cstat-no" title="statement not covered" ><span c
       &gt;
         &lt;View style={styles.modalContainer}&gt;
           {selectedTask &amp;&amp; (
-            &lt;View style={styles.modalContent}&gt;
+            &lt;View style={styles.modalContent} testID="task-detail-modal"&gt;
               &lt;Text style={styles.modalTitle}&gt;{selectedTask.title}&lt;/Text&gt;
-              &lt;Text style={styles.modalDescription}&gt;{selectedTask.description}&lt;/Text&gt;
+              &lt;Text style={styles.modalDescription} testID="task-description"&gt;{selectedTask.description}&lt;/Text&gt;
               &lt;Text style={styles.modalDueDate}&gt;Due Date: {formatDueDate(selectedTask.due_date)}&lt;/Text&gt;
-              &lt;Text style={styles.closeButton} onPress={closeModal}&gt;Close&lt;/Text&gt;
+              &lt;Text style={styles.closeButton} onPress={closeModal} testID="modal-close-button"&gt;Close&lt;/Text&gt;
             &lt;/View&gt;
           )}
         &lt;/View&gt;
@@ -1573,7 +1591,7 @@ export default HomeScreen;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-08-31T05:57:56.605Z
+                at 2024-08-31T14:40:10.381Z
             </div>
         <script src="prettify.js"></script>
         <script>

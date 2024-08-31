@@ -400,7 +400,7 @@ const sanitizeData = async (data) => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#0000ff" testID="loadingIndicator" />
       </View>
     );
   }
@@ -499,6 +499,7 @@ const sanitizeData = async (data) => {
               selectedValue={taskType} 
               style={styles.picker} 
               onValueChange={(itemValue) => setTaskType(itemValue)}
+              testID='taskTypePicker'
             >
               {taskTypes.map((type) => (
                 <Picker.Item key={type.id} label={type.name} value={type.name} />

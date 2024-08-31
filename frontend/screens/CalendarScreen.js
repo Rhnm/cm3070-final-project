@@ -167,7 +167,7 @@ const CalendarScreen = () => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#0000ff" testID="loadingIndicator"/>
       </View>
     );
   }
@@ -178,7 +178,7 @@ const CalendarScreen = () => {
         <Text style={styles.message}>You need to be logged in to view your tasks.</Text>
       </View>
     );
-  }
+  } 
 
   const sortedSelectedDate = selectedDate.sort((a, b) => {
     if (a.isShared && !b.isShared) {
@@ -199,7 +199,7 @@ const CalendarScreen = () => {
   };
 
   return (
-    <View style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
+    <View style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]} testID="loaded-calendar">
       <Calendar
         onDayPress={onDayPress}
         markedDates={markedDates}

@@ -14,9 +14,11 @@
     "preset": "react-native",
     "testEnvironment": "jsdom",
     "setupFilesAfterEnv": [
-      "<rootDir>/jest.setup.js"
+      "<rootDir>/jest.setup.js",
+      "@testing-library/jest-native/extend-expect"
     ],
     "transformIgnorePatterns": [
+      "node_modules/(?!(react-native|my-project|expo-checkbox|@react-native|react-native-vector-icons)/)",
       "node_modules/(?!((jest-)?react-native(-.*)?|@react-native(-community)?)/|expo-notifications|@react-navigation|@react-native-async-storage|react-native-gesture-handler)"
     ],
     "transform": {

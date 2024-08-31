@@ -24,23 +24,11 @@ const HomeScreen = () => {
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [showOverdue, setShowOverdue] = useState(false);
   const [dbDuedate, setdbDuedate] = useState(null);
-
-  useEffect(() => {
-    const fetchUserId = async () => {
-      const uid = await AsyncStorage.getItem('uid');
-      setUserId(uid);
-    };
-    fetchUserId();
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (userId) {
-        fetchTasks();
-        fetchSharedTasks();
-      }
-    }, [userId, selectedPriority, selectedType, selectedDateRange, showOverdue])
-  );
+  
+  const [pomodoroTask, setPomodoroTask] = useState('');
+  const [pomodoroTime, setPomodoroTime] = useState(25*60); // timeframe minutes in seconds
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [intervalId, setIntervalId] = useState(null);
 
   const fetchTasks = async () => {
     try {
@@ -63,6 +51,32 @@ const HomeScreen = () => {
       console.error('Error fetching shared tasks:', error);
     }
   };
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const uid = await AsyncStorage.getItem('uid');
+      setUserId(uid);
+    };
+    fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    if (userId) {
+      fetchTasks();
+      fetchSharedTasks();
+    }
+  }, [userId, selectedPriority, selectedType, selectedDateRange, showOverdue]);
+
+  /* useFocusEffect(
+    useCallback(() => {
+      if (userId) {
+        fetchTasks();
+        fetchSharedTasks();
+      }
+    }, [userId, selectedPriority, selectedType, selectedDateRange, showOverdue])
+  ); */
+
+  
 
   const filterTasks = (tasks) => {
     let filtered = tasks;
@@ -197,12 +211,15 @@ const HomeScreen = () => {
 
   const openModal = (task) => {
     setSelectedTask(task);
+    setPomodoroTask(task);
     setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
     setSelectedTask(null);
+    setPomodoroTask('');
+    resetTimer();
   };
 
   const openFilterModal = () => {
@@ -241,9 +258,105 @@ const HomeScreen = () => {
 
   const combinedTasks = [...tasks.map(task => ({ ...task, isShared: false })), ...sharedTasks.map(task => ({ ...task, isShared: true }))];
 
+  const startTimer = () => {
+    if (timerRunning) return;
+    setTimerRunning(true);
+    const id = setInterval(() => {
+      setPomodoroTime(prev => {
+        if (prev <= 1) {
+          clearInterval(id);
+          setTimerRunning(false);
+          Alert.alert('Pomodoro Finished!', 'Great job!');
+          return pomodoroTask.timeframe * 60;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    setIntervalId(id);
+  };
+  
+  const pauseTimer = () => {
+    if (!timerRunning) return;
+    clearInterval(intervalId);
+    setTimerRunning(false);
+  };
+  
+  const resetTimer = () => {
+   
+    setTimerRunning(false);
+    setPomodoroTime(pomodoroTask.timeframe * 60); // Reset to 25 minutes
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    }
+  };
+  
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
+  const handleStartTimer = () => {
+    startTimer();
+  };
+
+  useEffect(() => {
+    if (pomodoroTask) {
+      handleStartTimer();
+    }
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [pomodoroTask]);
+
+
+  const PomodoroTimer = () => (
+    <View style={styles.timerContainer}>
+      <Text style={styles.timerText}>Pomodoro Timer</Text>
+      <Text style={styles.timerDisplay}>{formatTime(pomodoroTime)}</Text>
+      <View style={styles.timerButtons}>
+        <TouchableOpacity onPress={startTimer} style={styles.timerButton}>
+          <Text style={styles.timerButtonText}>{timerRunning ? 'Running' : 'Start'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={pauseTimer} style={styles.timerButton}>
+          <Text style={styles.timerButtonText}>Pause</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={resetTimer} style={styles.timerButton}>
+          <Text style={styles.timerButtonText}>Reset</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+
+  const renderItemPomodoro = ({ item, isShared }) => (
+    <TouchableOpacity style={[styles.taskCard, { backgroundColor: theme === 'dark' ? '#333' : '#fff' }]} onPress={() => openModal(item)}>
+      <View style={styles.taskHeader}>
+        <Text style={styles.title}>{item.title}</Text>
+        {isShared && <MaterialIcons name="share" size={24} color="blue" />}
+      </View>
+      <Text style={styles.description}>{item.description}</Text>
+      <Text style={styles.dueDate}>Task Priority: {item.priority}</Text>
+      <Text style={styles.dueDate}>Task type: {item.type}</Text>
+      <Text style={styles.dueDate}>TimeFrame: {item.timeframe} minutes</Text>
+      <Text style={styles.dueDate}>Due Date: {formatDueDate(item.due_date)}</Text>
+      <Text style={styles.completeButton} onPress={() => completeTask(item.id)}>Complete</Text>
+      <TouchableOpacity onPress={() => {
+        setPomodoroTask();
+        startTimer();
+        resetTimer();
+      }} style={styles.pomodoroButton}>
+        <Text style={styles.pomodoroButtonText}>Start Pomodoro</Text>
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={[styles.container, { backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
-      <TouchableOpacity onPress={openFilterModal} style={styles.filterIcon}>
+      <TouchableOpacity onPress={openFilterModal} accessibilityLabel="filter-list" style={styles.filterIcon}>
         <MaterialIcons name="filter-list" size={30} color="black" />
       </TouchableOpacity>
       
@@ -256,8 +369,9 @@ const HomeScreen = () => {
         <FlatList
           data={combinedTasks}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => renderItem({ item, isShared: item.isShared })}
+          renderItem={({ item }) => renderItemPomodoro({ item, isShared: item.isShared })}
         />
+        
       )}
       {combinedTasks.length === 0 && (
         <FontAwesome5 name="tasks" size={30} color="gray" style={styles.zeroTasksIcon} />
@@ -270,13 +384,15 @@ const HomeScreen = () => {
         animationType="slide"
         onRequestClose={closeModal}
       >
+       
         <View style={styles.modalContainer}>
+        {pomodoroTask && <PomodoroTimer />}
           {selectedTask && (
-            <View style={styles.modalContent}>
+            <View style={styles.modalContent} testID="task-detail-modal">
               <Text style={styles.modalTitle}>{selectedTask.title}</Text>
-              <Text style={styles.modalDescription}>{selectedTask.description}</Text>
+              <Text style={styles.modalDescription} testID="task-description">{selectedTask.description}</Text>
               <Text style={styles.modalDueDate}>Due Date: {formatDueDate(selectedTask.due_date)}</Text>
-              <Text style={styles.closeButton} onPress={closeModal}>Close</Text>
+              <Text style={styles.closeButton} onPress={closeModal} testID="modal-close-button">Close</Text>
             </View>
           )}
         </View>
@@ -495,6 +611,47 @@ const styles = StyleSheet.create({
   applyFiltersButtonText: {
     color: 'white',
     fontSize: 16,
+  },
+  timerContainer: {
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  timerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  timerDisplay: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    marginVertical: 10,
+  },
+  timerButtons: {
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  timerButton: {
+    marginHorizontal: 5,
+    padding: 10,
+    backgroundColor: '#4CAF50',
+    borderRadius: 5,
+  },
+  timerButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  pomodoroButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#FF6347',
+    borderRadius: 5,
+  },
+  pomodoroButtonText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 

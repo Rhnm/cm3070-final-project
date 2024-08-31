@@ -85,6 +85,7 @@ const PeopleScreen = () => {
   const fetchSharedUsers = async () => {
     try{
       const response = await axios.get(`${baseURL}:3001/resources/getSharedUsers/${userIdFrom}`);
+      console.log("Data from people test: ",response.data);
       const ids = response.data.map(item => item.id);
       const emails = response.data.map(item => item.email);
       const names = response.data.map(item => item.name);
@@ -271,7 +272,7 @@ const PeopleScreen = () => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#0000ff" testID="loadingIndicator"/>
       </View>
     );
   }
@@ -292,6 +293,7 @@ const PeopleScreen = () => {
         value={emailInput}
         onChangeText={handleEmailInput}
         placeholder="Enter email to share task"
+        testID='getTestEmail'
       />
       {emailSuggestions.length > 0 && (
         <View style={styles.suggestionsContainer}>
@@ -329,9 +331,9 @@ const PeopleScreen = () => {
           <View key={indexx} style={styles.selectedContainer}>
           
             <Image source={{ uri: sharedImages[indexx] }} style={styles.selectedImage} />
-            <Text style={styles.selectedName}>{sharedNames[indexx]}</Text>
+            <Text style={styles.selectedName} testID='getSharedTestEmail'>{sharedNames[indexx]}</Text>
          
-          <TouchableOpacity style={styles.emailContainer} key={indexx} onPress={() => handlePress(email)}>
+          <TouchableOpacity testID='testing-assign' style={styles.emailContainer} key={indexx} onPress={() => handlePress(email)}>
             <Text style={styles.selectedEmail}>Assign</Text>
           </TouchableOpacity>
         </View>
@@ -344,20 +346,22 @@ const PeopleScreen = () => {
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => setModalVisible(false)}
+          testID="test-modal"
         >
-          <ScrollView>
-          <View style={styles.modalContainer}>
+          <ScrollView testID="modal-scroll">
+          <View style={styles.modalContainer} testID="modal-container">
             <View style={styles.modalContent}>
-              <Text style={styles.selectedContactName}>{selectedContact.name}</Text>
+              <Text style={styles.selectedContactName} testID="modal-contact-name">{selectedContact.name}</Text>
               <FlatList
                 data={tasks}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderTaskItem}
                 contentContainerStyle={styles.taskListContainer}
+                testID="modal-task-list"
               />
-              <View style={styles.buttonContainer}>
-                <Button title="Share Task" color="#ef9c66" onPress={handleShare} />
-                <Button title="Close" color="#78aba8" onPress={() => setModalVisible(false)} />
+              <View style={styles.buttonContainer} testID="modal-buttons">
+                <Button title="Share Task" color="#ef9c66" onPress={handleShare} testID="share-button" />
+                <Button title="Close" color="#78aba8" onPress={() => setModalVisible(false)} testID="close-button" />
               </View>
             </View>
           </View>
