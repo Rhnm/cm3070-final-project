@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert, FlatList, Image, Modal, Pressable } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { useNavigation,useFocusEffect } from '@react-navigation/native'; 
 import { baseURL } from '../apiConfig';
@@ -12,17 +13,20 @@ const NotesScreen = () => {
   const [note, setNote] = useState('');
   const [notesList, setNotesList] = useState([]);
   const [userId, setUserId] = useState(null);
+  const [tasks, setTasks] = useState([]);
   const [attachment, setAttachment] = useState(null);
   const [editingNote, setEditingNote] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
 
   useEffect(() => {
     const fetchUserId = async () => {
       const uid = await AsyncStorage.getItem('uid');
       setUserId(uid);
       fetchNotes(uid);
+      fetchTasks(uid);
     };
     fetchUserId();
   }, [userId]);
@@ -31,8 +35,9 @@ const NotesScreen = () => {
     useCallback(() => {
       if (userId) {
         fetchNotes(userId);
+        fetchTasks(userId);
       }
-    }, [fetchNotes,userId])
+    }, [fetchNotes,fetchTasks,userId])
   );
 
   const fetchNotes = async (userId) => {
@@ -53,6 +58,19 @@ const NotesScreen = () => {
       console.error('Error fetching notes:', error);
     }
   };
+
+  const fetchTasks = useCallback(async (userId) => {
+    
+    try {
+      if (userId != null) {
+        const response = await axios.get(`${baseURL}:3001/resources/gettasks/${userId}`);
+        setTasks(response.data);
+        console.log("in peoples tasks: " + response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    } 
+  }, [userId]);
 
   const addNote = async () => {
     if (note.trim() === '') {
@@ -82,10 +100,11 @@ const NotesScreen = () => {
         await axios.put(`${baseURL}:3001/resources/editnote/${editingNote.id}`, {
           note_text: note,
           attachment: attachmentName,
+          task_id: selectedTaskId,
         });
         setNotesList(notesList.map((n) =>
           n.id === editingNote.id
-            ? { ...n, note_text: note, attachment: attachmentName }
+            ? { ...n, note_text: note, attachment: attachmentName, task_id: selectedTaskId }
             : n
         ));
         setEditingNote(null);
@@ -96,12 +115,14 @@ const NotesScreen = () => {
           user_id: userId,
           note_text: note,
           attachment: attachmentName,
+          task_id: selectedTaskId,
         });
         setNotesList([response.data, ...notesList]);
       }
 
       setNote('');
       setAttachment(null);
+      setSelectedTaskId(null);
     } catch (error) {
       console.error('Error adding note:', error);
     }
@@ -141,6 +162,7 @@ const NotesScreen = () => {
     setAttachment(note.attachment ? FileSystem.documentDirectory + note.attachment : null);
     setEditingNote(note);
     setIsEditing(true); // Set edit mode
+    setSelectedTaskId(note.task_id || null);
   };
 
   const cancelEdit = () => {
@@ -148,6 +170,7 @@ const NotesScreen = () => {
     setNote('');
     setAttachment(null);
     setIsEditing(false);
+    setSelectedTaskId(null);
   };
 
   const renderNoteItem = ({ item }) => (
@@ -191,6 +214,17 @@ const NotesScreen = () => {
       {attachment && (
           <Image source={{ uri: attachment }} style={styles.attachmentPreview} />
       )}
+      {/* Picker for selecting task */}
+      <Picker
+        selectedValue={selectedTaskId}
+        style={styles.picker}
+        onValueChange={(itemValue) => setSelectedTaskId(itemValue)}
+      >
+        <Picker.Item label="Select a task" value={null} />
+        {tasks.map((task) => (
+          <Picker.Item key={task.id} label={task.title} value={task.id} />
+        ))}
+      </Picker>
       <View style={styles.buttonContainer}>
         <Button title="Add Attachment" color="#bec6a0" onPress={handleAttachment} />  
         {isEditing ? (
@@ -343,6 +377,15 @@ const styles = StyleSheet.create({
   },
   modalCloseText: {
     color: '#333',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    marginBottom: 10,
+    backgroundColor: '#fff',
+    borderColor: '#9ca986',
+    borderWidth: 1,
+    borderRadius: 5,
   },
 });
 

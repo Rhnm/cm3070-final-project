@@ -72,5 +72,7 @@ CREATE TABLE IF NOT EXISTS Notes (
     note_text TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     attachment TEXT,
-    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
+    task_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (task_id) REFERENCES Tasks(id) ON DELETE CASCADE
 );

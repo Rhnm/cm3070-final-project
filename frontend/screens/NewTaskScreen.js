@@ -231,26 +231,48 @@ const sanitizeData = async (data) => {
   };
 };
 
+const validateInput = () => {
+  if (title.trim() === '') {
+    Alert.alert('Validation Error', 'Task Title is required.');
+    return false;
+  }
+  if (description.trim() === '') {
+    Alert.alert('Validation Error', 'Task Description is required.');
+    return false;
+  }
+  if (dueDate === null) {
+    Alert.alert('Validation Error', 'Task Due Date is required.');
+    return false;
+  }
+  if (taskType.trim() === '') {
+    Alert.alert('Validation Error', 'Task Type is required.');
+    return false;
+  }
+  return true;
+};
+
   const saveTask = async () => { 
     console.log('Task saved:', sanitizeData({title, description, dueDate, priority, taskType })); 
     const sanitizedData = sanitizeData({title, description, dueDate, priority, taskType, timeframe });
     try {
-      const response = await axios.post(`${baseURL}:3001/resources/savetask`, sanitizedData);
-      console.log('Task saved Success:', response.data);
-      if(response.data.message === "Data inserted successfully!"){
-        Alert.alert("Task Id Last inserted: "+response.data.taskId);
-        setTaskId(response.data.taskId);
-        if(selectedIds){
-          await handleShare(response.data.taskId);
+      if (validateInput()) {
+        const response = await axios.post(`${baseURL}:3001/resources/savetask`, sanitizedData);
+        console.log('Task saved Success:', response.data);
+        if(response.data.message === "Data inserted successfully!"){
+          Alert.alert("Task Id Last inserted: "+response.data.taskId);
+          setTaskId(response.data.taskId);
+          if(selectedIds){
+            await handleShare(response.data.taskId);
+          }
+          Alert.alert('Success', 'Task saved successfully');
+          setTitle('');
+          setDescription('');
+          setDueDate(null);
+          setPriority('Low');
+          setTaskType('Personal');
+          setShowDatePicker(false);
+          setUserId('');
         }
-        Alert.alert('Success', 'Task saved successfully');
-        setTitle('');
-        setDescription('');
-        setDueDate(null);
-        setPriority('Low');
-        setTaskType('Personal');
-        setShowDatePicker(false);
-        setUserId('');
       }
     } catch (error) {
       console.error('Error saving task:', error);

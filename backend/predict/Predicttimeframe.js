@@ -14,7 +14,7 @@ function preprocessText(text, tfidf, terms) {
 
 async function predictTaskTimeframe(description) {
     const model = await tf.loadLayersModel('file://./model_timeframe/model.json');
-    const terms = JSON.parse(fs.readFileSync('./tfidf_terms_timeframe.json'));
+    const terms = JSON.parse(fs.readFileSync('./tfidfTerms/tfidf_terms_timeframe.json'));
     const tfidf = new TfIdf();
     tfidf.addDocument(description);
     const inputVector = preprocessText(description, tfidf, terms);

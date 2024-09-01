@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View, Text,Image, StyleSheet, FlatList, TouchableOpacity, Modal, Alert } from 'react-native';
 import axios from 'axios';
+import { Audio } from 'expo-av';
 import CheckBox from 'expo-checkbox';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
+import * as FileSystem from 'expo-file-system';
 import { useFocusEffect } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useTheme } from './ThemeContext';
@@ -12,7 +14,7 @@ import { useTheme } from './ThemeContext';
 
 const HomeScreen = () => {
   const { theme } = useTheme();
-
+  const [sound, setSound] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [sharedTasks, setSharedTasks] = useState([]);
   const [userId, setUserId] = useState(null);
@@ -24,6 +26,10 @@ const HomeScreen = () => {
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [showOverdue, setShowOverdue] = useState(false);
   const [dbDuedate, setdbDuedate] = useState(null);
+
+  const [notesModalVisible, setNotesModalVisible] = useState(false);
+  const [notes, setNotes] = useState('');
+  const [notesAttachment, setNotesAttachment] = useState('');
   
   const [pomodoroTask, setPomodoroTask] = useState('');
   const [pomodoroTime, setPomodoroTime] = useState(25*60); // timeframe minutes in seconds
@@ -52,10 +58,24 @@ const HomeScreen = () => {
     }
   };
 
+  const fetchTaskNotes = async (taskId) => {
+    try {
+      const response = await axios.get(`${baseURL}:3001/resources/getNotesByTask/${taskId}`);
+      if (response.status === 200) {
+        console.log(response.data.note_text);
+        return response.data;
+      }
+    } catch (error) {
+      console.error('Error fetching task notes:', error);
+    }
+    return '';
+  };
+
   useEffect(() => {
     const fetchUserId = async () => {
       const uid = await AsyncStorage.getItem('uid');
       setUserId(uid);
+      setPomodoroTask(null); // Resetting pomodoroTask on load
     };
     fetchUserId();
   }, []);
@@ -67,14 +87,24 @@ const HomeScreen = () => {
     }
   }, [userId, selectedPriority, selectedType, selectedDateRange, showOverdue]);
 
-  /* useFocusEffect(
-    useCallback(() => {
-      if (userId) {
-        fetchTasks();
-        fetchSharedTasks();
+  useEffect(() => {
+    if (pomodoroTask) {
+      handleStartTimer();
+    }
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
       }
-    }, [userId, selectedPriority, selectedType, selectedDateRange, showOverdue])
-  ); */
+    };
+  }, [pomodoroTask]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (pomodoroTask) {
+        handleStartTimer();
+      }
+    }, [setPomodoroTask])
+  );
 
   
 
@@ -209,16 +239,38 @@ const HomeScreen = () => {
     }
   };
 
+  const playSound = async () => {
+    try {
+      const { sound: soundObject } = await Audio.Sound.createAsync(
+        require('../assets/sound/pomodoro_end.mp3') // Ensure you have a sound file in this path
+      );
+      setSound(soundObject);
+      await soundObject.playAsync();
+    } catch (error) {
+      console.error('Error playing sound:', error);
+    }
+  };
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
   const openModal = (task) => {
     setSelectedTask(task);
     setPomodoroTask(task);
+    setPomodoroTime(task.timeframe * 60);
     setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
     setSelectedTask(null);
-    setPomodoroTask('');
+    setPomodoroTask(null);
+    setPomodoroTime(null);
     resetTimer();
   };
 
@@ -266,8 +318,9 @@ const HomeScreen = () => {
         if (prev <= 1) {
           clearInterval(id);
           setTimerRunning(false);
+          playSound(); // Play sound
           Alert.alert('Pomodoro Finished!', 'Great job!');
-          return pomodoroTask.timeframe * 60;
+          return pomodoroTask ? pomodoroTask.timeframe * 60 : 25 * 60; // Default to 25 minutes if pomodoroTask is not set
         }
         return prev - 1;
       });
@@ -284,7 +337,10 @@ const HomeScreen = () => {
   const resetTimer = () => {
    
     setTimerRunning(false);
-    setPomodoroTime(pomodoroTask.timeframe * 60); // Reset to 25 minutes
+    if (pomodoroTask) {
+      setPomodoroTime(pomodoroTask.timeframe * 60);
+    }
+    
     if (intervalId) {
       clearInterval(intervalId);
       setIntervalId(null);
@@ -301,16 +357,7 @@ const HomeScreen = () => {
     startTimer();
   };
 
-  useEffect(() => {
-    if (pomodoroTask) {
-      handleStartTimer();
-    }
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [pomodoroTask]);
+  
 
 
   const PomodoroTimer = () => (
@@ -344,15 +391,32 @@ const HomeScreen = () => {
       <Text style={styles.dueDate}>TimeFrame: {item.timeframe} minutes</Text>
       <Text style={styles.dueDate}>Due Date: {formatDueDate(item.due_date)}</Text>
       <Text style={styles.completeButton} onPress={() => completeTask(item.id)}>Complete</Text>
-      <TouchableOpacity onPress={() => {
-        setPomodoroTask();
-        startTimer();
-        resetTimer();
-      }} style={styles.pomodoroButton}>
-        <Text style={styles.pomodoroButtonText}>Start Pomodoro</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={() => openNotesModal(item)}>
+          <Text style={styles.notesButton}>Notes</Text>
+        </TouchableOpacity>
     </TouchableOpacity>
   );
+
+  const openNotesModal = async(item) => {
+    // Fetch task notes and update state
+    const notes = await fetchTaskNotes(item.id);
+    const notesArray = notes;
+      if (Array.isArray(notesArray) && notesArray.length > 0) {
+        // Combine all note_text entries into a single string
+        const notesText = notesArray.map(note => note.note_text).join('\n\n');
+        const notesAttachment = notesArray.map(note => note.attachment);
+       if(notesText != null){
+          setNotes(notesText);
+          setNotesAttachment(notesAttachment);
+          setNotesModalVisible(true);
+        }
+      }
+  };
+  
+  const closeNotesModal = () => {
+    setNotesModalVisible(false);
+    setNotes('');
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
@@ -377,6 +441,28 @@ const HomeScreen = () => {
         <FontAwesome5 name="tasks" size={30} color="gray" style={styles.zeroTasksIcon} />
       )}
 
+
+      {/* Modal for Notes Details */}
+      <Modal
+        visible={notesModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={closeNotesModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Task Notes</Text>
+            <Text style={styles.modalDescription}>{notes}</Text>
+            {notesAttachment && (
+              <Image source={{ uri: FileSystem.documentDirectory + notesAttachment }} style={styles.attachmentImage} />
+            )}
+            <TouchableOpacity onPress={closeNotesModal} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Modal for Task Details */}
       <Modal
         visible={modalVisible}
@@ -391,6 +477,9 @@ const HomeScreen = () => {
             <View style={styles.modalContent} testID="task-detail-modal">
               <Text style={styles.modalTitle}>{selectedTask.title}</Text>
               <Text style={styles.modalDescription} testID="task-description">{selectedTask.description}</Text>
+              <Text style={styles.dueDate}>Task Priority: {selectedTask.priority}</Text>
+              <Text style={styles.dueDate}>Task type: {selectedTask.type}</Text>
+              <Text style={styles.dueDate}>TimeFrame: {selectedTask.timeframe} minutes</Text>
               <Text style={styles.modalDueDate}>Due Date: {formatDueDate(selectedTask.due_date)}</Text>
               <Text style={styles.closeButton} onPress={closeModal} testID="modal-close-button">Close</Text>
             </View>
@@ -460,10 +549,10 @@ const HomeScreen = () => {
               <Text style={styles.filterOptionText}>Overdue</Text>
             </View>
 
-            <TouchableOpacity onPress={applyFilters} style={styles.applyFiltersButton}>
+            <TouchableOpacity onPress={applyFilters} style={styles.applyFiltersButton} accessibilityLabel="Apply filters" accessible={true}>
               <Text style={styles.applyFiltersButtonText}>Apply Filters</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={closeFilterModal} style={styles.closeButton}>
+            <TouchableOpacity onPress={closeFilterModal} style={styles.closeButton} accessibilityLabel="Close Button" accessible={true}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -652,6 +741,19 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     textAlign: 'center',
+  },
+  notesButton: {
+    marginTop: 10,
+    color: '#1E90FF',
+    fontWeight: 'bold',
+    padding: 10,
+    backgroundColor:'#CEDF9F'
+  },
+  attachmentImage: {
+    width: 150,
+    height: 150,
+    marginTop: 10,
+    borderRadius: 5,
   },
 });
 

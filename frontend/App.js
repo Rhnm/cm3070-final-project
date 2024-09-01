@@ -25,6 +25,7 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LogoutScreen from './screens/LogoutScreen';
 import SharedPersonScreen from './screens/SharedPersonScreen';
+import CompletedTaskScreen from './screens/CompletedTaskScreen';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -130,19 +131,7 @@ const MainTabs = ({ onTabChange }) => {
           focus: () => handleTabFocus('People'),
         }}
       />
-      <Tab.Screen
-        name="Profile"
-        component={UserProfileStackScreen}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="user-alt" size={size} color={color} />
-          ),
-        }}
-        listeners={{
-          focus: () => handleTabFocus('Profile'),
-        }}
-      />
+      
     </Tab.Navigator>
   );
 };
@@ -232,10 +221,32 @@ const App = () => {
         >
           {userisLoggedIn ? (
             <>
-            <Drawer.Screen name="HomePage" options={{headerTitle:activeTab}} >
+            <Drawer.Screen name="Home Page" options={{headerTitle:activeTab}} >
               {props => <MainTabs {...props} onTabChange={setActiveTab} />}
             </Drawer.Screen>
-            <Drawer.Screen
+            
+              <Drawer.Screen 
+              name = "Shared Tasks" 
+              component={SharedPersonScreen} 
+              options={{
+                headerTitle: 'Shared Tasks',
+              }}
+              />
+              <Drawer.Screen 
+              name = "Completed Tasks" 
+              component={CompletedTaskScreen} 
+              options={{
+                headerTitle: 'Completed Tasks',
+              }}
+              />
+              <Drawer.Screen 
+              name = "Profile" 
+              component={UserProfileStackScreen} 
+              options={{
+                headerTitle: 'Profile',
+              }}
+              />
+              <Drawer.Screen
                 name="Logout"
                 children={props => (
                   <LogoutScreen {...props} onLogout={() => setIsLoggedIn(false)} />
@@ -243,13 +254,6 @@ const App = () => {
                 options={{
                   headerTitle: 'Logout',
                 }}
-              />
-              <Drawer.Screen 
-              name = "SharedTasks" 
-              component={SharedPersonScreen} 
-              options={{
-                headerTitle: 'Shared Tasks',
-              }}
               />
             </>
           ) : (

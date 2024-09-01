@@ -34,7 +34,7 @@ function convertTimeframeToMinutes(timeframe, timeunit) {
 
 async function trainTimeframeModel() {
     // Read Excel data
-    const workbook = xlsx.readFile('./tf_tma_td.xlsx');
+    const workbook = xlsx.readFile('./excel_data/tf_tma_td.xlsx');
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     const data = xlsx.utils.sheet_to_json(worksheet);
@@ -53,7 +53,7 @@ async function trainTimeframeModel() {
     // Remove duplicate terms
     const uniqueTerms = [...new Set(terms)];
     console.log("Terms length: ", uniqueTerms.length);
-    fs.writeFileSync('./tfidf_terms_timeframe.json', JSON.stringify(uniqueTerms));
+    fs.writeFileSync('./tfidfTerms/tfidf_terms_timeframe.json', JSON.stringify(uniqueTerms));
 
     // Define the TensorFlow.js model
     const model = tfs.sequential();

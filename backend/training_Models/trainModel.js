@@ -24,7 +24,7 @@ function preprocessText(text, tfidf, terms) {
 
 async function trainModel() {
     // Read Excel data
-    const workbook = xlsx.readFile('./tma_td.xlsx'); // Load the workbook
+    const workbook = xlsx.readFile('./excel_data/tma_td.xlsx'); // Load the workbook
     const sheetName = workbook.SheetNames[0]; // Get the first sheet name
     const worksheet = workbook.Sheets[sheetName]; // Get the worksheet
     const data = xlsx.utils.sheet_to_json(worksheet); // Convert the worksheet to JSON
@@ -44,7 +44,7 @@ async function trainModel() {
     console.log("terms length: ", terms.length);
 
     // Save terms to a JSON file for future use
-    fs.writeFileSync('./tfidf_terms.json', JSON.stringify(terms));
+    fs.writeFileSync('./tfidfTerms/tfidf_terms.json', JSON.stringify(terms));
 
     // Define the TensorFlow.js model
     const model = tfs.sequential();

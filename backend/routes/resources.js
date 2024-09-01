@@ -117,6 +117,22 @@ router.get("/gettasks/:id", (req, res, next) => {
 
 });
 
+router.get("/getNotesByTask/:id", (req, res, next) => {
+console.log("Task id sent:",req.params.id);
+  global.db.all( `SELECT * FROM Notes WHERE task_id == ${req.params.id};`, function (err, rows) {
+      
+      if (err) {
+      next(err); //send the error on to the error handler
+      
+      } else {
+        console.log(rows);
+      res.json(rows);
+      }
+  });
+
+});
+
+
 router.get("/getsharedtasks/:id", (req, res, next) => {
 console.log("user id to find shared tasks: "+req.params.id);
   global.db.all( `SELECT t.* FROM Tasks t JOIN SharedTasks st ON st.task_id = t.id WHERE st.user_id_to == ${req.params.id};`, function (err, rows) {
@@ -209,6 +225,24 @@ router.get('/getPendingTasks/:userId', (req, res, next) => {
   console.log("user id in getpendingtasks is: "+userId);
   global.db.all(
     `SELECT * FROM Tasks WHERE status = 'Pending' AND user_id = ?`,
+    [req.params.userId],
+    (err, rows) => {
+      if (err) {
+        return next(err);
+      }else{
+        console.log("Tasks rows:"+rows);
+        res.json(rows);
+      }
+    }
+  );
+});
+
+// Get all pending tasks
+router.get('/getCompletedTasks/:userId', (req, res, next) => {
+  const { userId } = req.params;
+  console.log("user id in getCompletedTasks is: "+userId);
+  global.db.all(
+    `SELECT * FROM Tasks WHERE status = 'Completed' AND user_id = ?`,
     [req.params.userId],
     (err, rows) => {
       if (err) {
@@ -458,14 +492,14 @@ router.post('/shareTasks', async (req, res, next) => {
 
 
 router.post('/notes', (req, res, next) => {
-  const { user_id, note_text, attachment } = req.body;
+  const { user_id, note_text, attachment,task_id } = req.body;
   console.log("Attachment: "+attachment);
   if (!user_id || !note_text) {
     return res.status(400).send('Missing user_id or note_text');
   }
   global.db.run(
-    `INSERT INTO Notes (user_id, note_text, attachment) VALUES (?, ?, ?)`,
-    [user_id, note_text, attachment],
+    `INSERT INTO Notes (user_id, note_text, attachment, task_id) VALUES (?, ?, ?, ?)`,
+    [user_id, note_text, attachment, task_id],
     function (err) {
       if (err) {
         return next(err);
@@ -553,11 +587,12 @@ router.put('/completeTask/:taskId', (req, res, next) => {
 
 router.put('/editnote/:id', (req, res, next) => {
   const { id } = req.params;
-  const { note_text, attachment } = req.body;
+  const { note_text, attachment, task_id } = req.body;
   console.log("Note id to edit: "+id);
+  console.log("Task id: ",task_id)
   global.db.run(
-    `UPDATE notes SET note_text = ?, attachment = ? WHERE id = ?`,
-    [note_text, attachment, id],
+    `UPDATE notes SET note_text = ?, attachment = ?, task_id = ? WHERE id = ?`,
+    [note_text, attachment, task_id, id],
     function (err) {
       if (err) {
         return next(err);

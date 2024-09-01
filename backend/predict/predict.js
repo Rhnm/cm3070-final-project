@@ -27,7 +27,7 @@ async function predictTaskPriority(description) {
     // Print out the model's input shape for debugging
     console.log("Model Input Shape:", model.inputs[0].shape);
 
-    const terms = JSON.parse(fs.readFileSync('./tfidf_terms.json')); // Read the terms from a JSON file
+    const terms = JSON.parse(fs.readFileSync('./tfidfTerms/tfidf_terms.json')); // Read the terms from a JSON file
     const tfidf = new TfIdf(); // Initialize the TF-IDF object
     tfidf.addDocument(description); // Add the document to the TF-IDF object
     const inputVector = preprocessText(description, tfidf, terms); // Preprocess the text to get the input vector

@@ -69,25 +69,41 @@ const UserProfileScreen = () => {
   const getImage = async(userId) => {
     try{
       const response = await axios.get(`${baseURL}:3001/resources/getProfileImage/${userId}`);
-      if (response.data.length > 0) {
-        const imageName = response.data[0].image;
-        const imageUri = FileSystem.documentDirectory + imageName;
-        // Check if the image exists at the path
-        const fileInfo = await FileSystem.getInfoAsync(imageUri);
-        if (fileInfo.exists) {
-          setProfileImage(imageName);
-          setImageUri(imageUri);
+      if (response.status === 200) {
+        if (response.data.length > 0) {
+          const imageName = response.data[0].image;
+          const imageUri = FileSystem.documentDirectory + imageName;
+          // Check if the image exists at the path
+          const fileInfo = await FileSystem.getInfoAsync(imageUri);
+          if (fileInfo.exists) {
+            setProfileImage(imageName);
+            setImageUri(imageUri);
+            console.log("Image Name: " + profileImage);
+            console.log('Image URI: ' + getImageUri);
+          }else{
+            // Handle case where file does not exist
+            setImageUri('');
+            Alert.alert('Image Error', 'Image file does not exist.');
+          }
+        } else {
+          setImageUri('');
+          Alert.alert('No Image Found', 'No image found for the user.');
+          console.log('No image found for the user');
         }
-        console.log("Image Name: " + profileImage);
-        console.log('Image URI: ' + getImageUri);
+      }else{
+        Alert.alert('Error', 'Unexpected response from server.');
+      }
+    }
+    catch (error) {
+      if (error.response && error.response.status === 404) {
+        // Handle 404 error from the server
+        //Alert.alert('Not Found', 'No image found for the user.');
       } else {
-        console.log('No image found for the user');
+          console.error('Error fetching profile image:', error);
+          Alert.alert('Error', 'Failed to fetch profile image.');
       }
     } 
-    catch (error) {
-      console.error('Error fetching profile image:', error);
-    } 
-  }
+  };
 
   // Image Picker Handling (Add permissions handling)
   const handleImageUpload = async () => {
@@ -155,15 +171,16 @@ const UserProfileScreen = () => {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      alert("Updating User with id: "+userId);
-      await fetchUserDetails(userId); // Fetch user details on refresh
-      await getImage(userId);
+      if (userId) {
+        await fetchUserDetails(userId); // Fetch user details on refresh
+        await getImage(userId);
+      }
     } catch (error) {
       Alert.alert('Error', 'Failed to refresh data');
     } finally {
       setRefreshing(false);
     }
-  }, []);
+  }, [userId]);
   return (
     <ScrollView 
       style={styles.container} 
