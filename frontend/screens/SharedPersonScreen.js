@@ -4,8 +4,10 @@ import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { baseURL } from '../apiConfig';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from './ThemeContext';
 
 const SharedPersonScreen = () => {
+    const { theme } = useTheme();
     const [sharedTasks, setSharedTasks] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -76,20 +78,20 @@ const SharedPersonScreen = () => {
         const userToIds = item.user_to_ids.split(',').filter(id => id.trim() !== '');
 
         return (
-            <View style={styles.taskContainer}>
-                <Text style={styles.taskTitle}>{item.task_title}</Text>
+            <View style={[styles.taskContainer,{backgroundColor: theme === 'dark' ? '#333' : '#fff'}]}>
+                <Text style={[styles.taskTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}>{item.task_title}</Text>
                 
                 {/* Display the user who created the task */}
-                <Text style={styles.sectionTitle}>Assigned By:</Text>
-                <Text style={styles.userInfo}>{item.user_from_names}</Text>
+                <Text style={[styles.sectionTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}>Assigned By:</Text>
+                <Text style={[styles.userInfo,{color: theme === 'dark' ? '#fff' : '#000'}]}>{item.user_from_names}</Text>
                 
                 {/* Display users the task is assigned to */}
                 {userToNames.length > 0 && (
                     <>
-                        <Text style={styles.sectionTitle}>Assigned To:</Text>
+                        <Text style={[styles.sectionTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}>Assigned To:</Text>
                         {userToNames.map((name, index) => (
-                            <View key={`to-${index}`} style={styles.userContainer}>
-                                <Text style={styles.userInfo}>
+                            <View key={`to-${index}`} style={[styles.userContainer,{color: theme === 'dark' ? '#fff' : '#000'}]}>
+                                <Text style={[styles.userInfo,{color: theme === 'dark' ? '#fff' : '#000'}]}>
                                 {name}</Text>
                                     <TouchableOpacity onPress={() => handleDelete(item.task_id,userToIds[index], name)}>
                                         <Ionicons name="remove-circle-outline" size={24} color="red" />
@@ -103,8 +105,8 @@ const SharedPersonScreen = () => {
                 {/* Display shared date */}
                 {item.shared_ats && (
                     <>
-                        <Text style={styles.sectionTitle}>Shared At:</Text>
-                        <Text style={styles.sharedAt}>{new Date(item.shared_ats).toLocaleString()}</Text>
+                        <Text style={[styles.sectionTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}>Shared At:</Text>
+                        <Text style={[styles.sharedAt,{color: theme === 'dark' ? '#fff' : '#000'}]}>{new Date(item.shared_ats).toLocaleString()}</Text>
                     </>
                 )}
             </View>
@@ -120,7 +122,7 @@ const SharedPersonScreen = () => {
     }
 
     return (
-        <ScrollView style={styles.container} horizontal>
+        <ScrollView style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff'}]} horizontal>
             <FlatList
                 data={sharedTasks}
                 keyExtractor={(item) => item.task_id.toString()}

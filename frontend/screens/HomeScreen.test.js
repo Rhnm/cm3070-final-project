@@ -1,171 +1,128 @@
+// HomeScreen.test.js
 import React from 'react';
-import { screen,render, fireEvent, waitFor, act } from '@testing-library/react-native';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
+import HomeScreen from './HomeScreen'; // Adjust the import according to your file structure
+import { NavigationContainer } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import HomeScreen from './HomeScreen';
-import { ThemeProvider } from './ThemeContext';
-import { NavigationContainer } from '@react-navigation/native';
 
-// Mocking modules
+// Mock implementations
 jest.mock('axios');
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
+jest.mock('@react-native-async-storage/async-storage');
+jest.mock('expo-checkbox', () => 'CheckBox');
+// Mock implementation of useTheme
+jest.mock('./ThemeContext', () => ({
+  useTheme: () => ({
+    theme: {
+      colors: {
+        background: '#fff',
+        text: '#000',
+        primary: '#6200ee',
+        accent: '#03dac4',
+      },
+    },
+  }),
 }));
+// Mock @expo/vector-icons
+jest.mock('@expo/vector-icons', () => {
+  const mockComponent = ({ name, ...rest }) => {
+    return <div {...rest}>Icon: {name}</div>;
+  };
 
-jest.mock('@react-navigation/native', () => {
-  const actualNav = jest.requireActual('@react-navigation/native');
   return {
-    ...actualNav,
-    useFocusEffect: jest.fn().mockImplementation(callback => callback()),
+    Ionicons: mockComponent,
+    // Add other icons if needed
+    MaterialIcons: mockComponent,
+    FontAwesome: mockComponent,
+    FontAwesome5: mockComponent,
+    // Add any other icons or components used in your tests
   };
 });
-
-jest.mock('expo-checkbox', () => ({
-  __esModule: true,
-  default: ({ value, onValueChange }) => (
-    <input
-      type="checkbox"
-      checked={value}
-      onChange={(e) => onValueChange(e.target.checked)}
-    />
-  ),
+// Mock expo-file-system
+jest.mock('expo-file-system', () => ({
+  readAsStringAsync: jest.fn(() => Promise.resolve('mock file content')),
+  writeAsStringAsync: jest.fn(() => Promise.resolve()),
+  deleteAsync: jest.fn(() => Promise.resolve()),
+  getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, isDirectory: false, size: 1234 })),
+  makeDirectoryAsync: jest.fn(() => Promise.resolve()),
+  copyAsync: jest.fn(() => Promise.resolve()),
+  moveAsync: jest.fn(() => Promise.resolve()),
+  documentDirectory: '/mock/document/directory/',
+  cacheDirectory: '/mock/cache/directory/',
 }));
 
-jest.mock('@expo/vector-icons', () => ({
-  FontAwesome5: 'FontAwesome5',
-  MaterialIcons: 'MaterialIcons',
-}));
-
+// Mock react-native-community datetimepicker DatetimePicker component
 jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
 
 describe('HomeScreen', () => {
-  const mockTasks = [
-    { id: 1, title: 'Task 1', description: 'Description 1', due_date: '2024-09-01', priority: 'High', type: 'Professional', status: 'Pending' },
-    { id: 2, title: 'Task 2', description: 'Description 2', due_date: '2024-09-05', priority: 'Medium', type: 'Personal', status: 'Pending' },
-  ];
+  test('renders correctly and fetches tasks', async () => {
 
-  const mockSharedTasks = [
-    { id: 3, title: 'Task 3', description: 'Description 3', due_date: '2024-09-07', priority: 'Low', type: 'Other', status: 'Pending' },
-  ];
-
-  beforeEach(() => {
-    AsyncStorage.getItem.mockResolvedValue('1'); // Mocking user ID
-    axios.get.mockImplementation((url) => {
-      if (url.includes('getPendingTasks')) {
-        return Promise.resolve({ data: mockTasks });
-      }
-      if (url.includes('getSharedUsersTasks')) {
-        return Promise.resolve({ data: mockSharedTasks });
-      }
-    });
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  const renderComponent = () =>
+    // Render the component
     render(
       <NavigationContainer>
-        <ThemeProvider>
-          <HomeScreen />
-        </ThemeProvider>
+    <HomeScreen />
+    </NavigationContainer>
+  );
+
+    // Check for elements, e.g., buttons or text
+    expect(screen.getByText('All tasks completed!')).toBeTruthy();
+
+    // Example interaction test
+    fireEvent.press(screen.getByTestId('weatherInfo'));
+    expect(screen.getByText('Close')).toBeTruthy(); // Ensure modal opens
+  });
+  test('renders correctly and fetches tasks', async () => {
+    // Mock the API response for tasks
+    const mockTasks = [
+      { id: '1', title: 'Task 1', completed: false },
+      { id: '2', title: 'Task 2', completed: true },
+    ];
+
+    axios.get.mockResolvedValueOnce({ data: mockTasks });
+
+    // Render the component
+    render(
+      <NavigationContainer>
+        <HomeScreen />
       </NavigationContainer>
     );
 
-  /* it('fetches and displays tasks on load', async () => {
-    const { getByText } = renderComponent();
+    // Wait for the tasks to be fetched and rendered
+    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
 
-    await waitFor(() => {
-      expect(getByText('Task 1')).toBeTruthy();
-      expect(getByText('Task 2')).toBeTruthy();
-      expect(getByText('Task 3')).toBeTruthy();
-    });
-  }); */
-
-  /* it('filters tasks by priority', async () => {
-    const { getByText, queryByText, getByLabelText } = renderComponent();
-
-    await waitFor(() => getByText('Task 1'));
-
-    // Open filter modal
-    const filterIcon = getByLabelText('filter-list');
-    fireEvent.press(filterIcon);
-
-    // Select high priority
-    const highPriorityCheckbox = getByLabelText('High');
-    fireEvent.click(highPriorityCheckbox);
-
-    // Apply filters
-    const applyFiltersButton = getByText('Apply Filters');
-    fireEvent.press(applyFiltersButton);
-
-    await waitFor(() => {
-      expect(getByText('Task 1')).toBeTruthy();
-      expect(queryByText('Task 2')).toBeNull();
-      expect(queryByText('Task 3')).toBeNull();
-    });
-  }); */
-
-  /* it('completes a task', async () => {
-    axios.put.mockResolvedValue({});
-    const { getByText } = renderComponent();
-
-    await waitFor(() => getByText('Task 1'));
-
-    const completeButton = getByText('Complete');
-    fireEvent.press(completeButton);
-
-    await waitFor(() => {
-      expect(axios.put).toHaveBeenCalledWith(expect.stringContaining('completeTask/1'));
-      expect(getByText('Success')).toBeTruthy();
-    });
-  }); */
-
-  it('opens and closes the task detail modal', async () => {
-    const { getByText, queryByText, getByTestId } = renderComponent();
-  
-    await waitFor(() => getByText('Task 1'));
-  
-    const task1 = getByText('Task 1');
-    fireEvent.press(task1);
-  
-    await waitFor(() => {
-      expect(getByTestId('task-description')).toBeTruthy();
-    });
-  
-    /* const closeButton = getByTestId('modal-close-button');
-    fireEvent.press(closeButton);
-  
-    await waitFor(() => {
-      expect(getByTestId('task-detail-modal')).toBeFalsey();
-    }); */
+    // Check if the tasks are displayed
+    expect(screen.getByText('Task 1')).toBeTruthy();
+    expect(screen.getByText('Task 2')).toBeTruthy();
   });
 
-  it('shows no tasks message when there are no tasks', async() => {
+  test('displays and closes the notes modal correctly', async () => {
+    // Mock the API response for tasks with notes
+    const mockTasks = [
+      { id: '1', title: 'Task 1', description: 'Task 1 description', task_status: 'Pending', notes: 'This is a note for Task 1' },
+    ];
 
-    const { getByText, getByLabelText } = renderComponent();
+    axios.get.mockResolvedValueOnce({ data: mockTasks });
 
-    const filterIcon = getByLabelText('filter-list');
-    fireEvent.press(filterIcon);
+    // Render the component
+    render(
+      <NavigationContainer>
+        <HomeScreen />
+      </NavigationContainer>
+    );
 
-    const applyFiltersButton = getByText('Apply Filters');
-    fireEvent.press(applyFiltersButton);
+    // Wait for the tasks to be fetched and rendered
+    //await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
 
-    // This is a placeholder assertion to check if the theme affects the component's style
-    // Adjust the styles and expectations based on your actual implementation
-    //expect(getByText('Filter Tasks').parent.props.style.backgroundColor).toBe('#333');
-    /* render(
-        <NavigationContainer>
-            <ThemeProvider>
-            <HomeScreen />
-            </ThemeProvider>
-        </NavigationContainer>
-      ); */
-      await waitFor(() => {
-        expect(screen.getByText('All tasks completed!')).toBeTruthy(); // Assuming this is the message shown when no tasks are present
-    });
+    // Simulate clicking the 'Notes' button to open the modal
+    fireEvent.press(screen.getByTestId('notes-button-1')); // Assuming you have set testID='notes-button-1' for the Notes button
+
+    // Check if the modal is displayed with the correct notes
+    await waitFor(() => expect(screen.getByText('This is a note for Task 1')).toBeTruthy());
+
+    // Simulate clicking the 'Close' button to close the modal
+    fireEvent.press(screen.getByText('Close'));
+
+    // Check if the modal is closed
+    await waitFor(() => expect(screen.queryByText('This is a note for Task 1')).toBeNull());
   });
 });

@@ -8,6 +8,20 @@ import EditUserProfileScreen from './EditUserProfileScreen';
 // Mock axios, AsyncStorage, and navigation
 jest.mock('axios');
 
+// Mock implementation of useTheme
+jest.mock('./ThemeContext', () => ({
+  useTheme: () => ({
+    theme: {
+      colors: {
+        background: '#fff',
+        text: '#000',
+        primary: '#6200ee',
+        accent: '#03dac4',
+      },
+    },
+  }),
+}));
+
 describe('EditUserProfileScreen', () => {
   beforeEach(() => {
   axios.get.mockResolvedValue({

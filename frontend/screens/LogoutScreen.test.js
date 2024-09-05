@@ -33,7 +33,7 @@ describe('LogoutScreen', () => {
     const { getByText } = render(
       <LogoutScreen navigation={mockNavigation} onLogout={mockOnLogout} />
     );
-    const button = getByText('Logout');
+    const button = getByText('Logging out...');
     expect(button).toBeTruthy();
   });
 
@@ -41,7 +41,7 @@ describe('LogoutScreen', () => {
     const { getByText } = render(
       <LogoutScreen navigation={mockNavigation} onLogout={mockOnLogout} />
     );
-    const button = getByText('Logout');
+    const button = getByText('Logging out...');
 
     fireEvent.press(button);
 
@@ -58,7 +58,7 @@ describe('LogoutScreen', () => {
     const { getByText } = render(
       <LogoutScreen navigation={mockNavigation} onLogout={mockOnLogout} />
     );
-    const button = getByText('Logout');
+    const button = getByText('Logging out...');
 
     fireEvent.press(button);
 

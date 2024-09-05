@@ -15,6 +15,20 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 
 jest.mock('axios');
+
+// Mock implementation of useTheme
+jest.mock('./ThemeContext', () => ({
+  useTheme: () => ({
+    theme: {
+      colors: {
+        background: '#fff',
+        text: '#000',
+        primary: '#6200ee',
+        accent: '#03dac4',
+      },
+    },
+  }),
+}));
 jest.mock('expo-image-picker', () => ({
   requestMediaLibraryPermissionsAsync: jest.fn(),
   launchImageLibraryAsync: jest.fn(),

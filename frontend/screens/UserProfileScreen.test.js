@@ -5,8 +5,23 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import UserProfileScreen from './UserProfileScreen';
 
+
 // Mock axios, AsyncStorage, and other necessary modules
 jest.mock('axios');
+
+// Mock implementation of useTheme
+jest.mock('./ThemeContext', () => ({
+  useTheme: () => ({
+    theme: {
+      colors: {
+        background: '#fff',
+        text: '#000',
+        primary: '#6200ee',
+        accent: '#03dac4',
+      },
+    },
+  }),
+}));
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(),
 }));

@@ -20,6 +20,10 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 
 // Mock axios
 jest.mock('axios');
+jest.mock('@expo/vector-icons', () => ({
+  FontAwesome5: 'FontAwesome5',
+  MaterialIcons: 'MaterialIcons',
+}));
 
 // Mock react-native-calendars Calendar component
 jest.mock('react-native-calendars', () => ({

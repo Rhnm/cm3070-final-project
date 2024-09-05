@@ -10,6 +10,9 @@ import * as FileSystem from 'expo-file-system';
 import { useFocusEffect } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useTheme } from './ThemeContext';
+import { getAccessibilityCheckedState } from '@testing-library/react-native/build/helpers/accessibility';
+import WeatherScreen from './WeatherScreen';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 const HomeScreen = () => {
@@ -35,6 +38,9 @@ const HomeScreen = () => {
   const [pomodoroTime, setPomodoroTime] = useState(25*60); // timeframe minutes in seconds
   const [timerRunning, setTimerRunning] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
+
+  const [weatherModalVisible, setweatherModalVisible] = useState(false);
+
 
   const fetchTasks = async () => {
     try {
@@ -85,7 +91,7 @@ const HomeScreen = () => {
       fetchTasks();
       fetchSharedTasks();
     }
-  }, [userId, selectedPriority, selectedType, selectedDateRange, showOverdue]);
+  }, [userId,fetchTasks,fetchSharedTasks, selectedPriority, selectedType, selectedDateRange, showOverdue]);
 
   useEffect(() => {
     if (pomodoroTask) {
@@ -362,7 +368,7 @@ const HomeScreen = () => {
 
   const PomodoroTimer = () => (
     <View style={styles.timerContainer}>
-      <Text style={styles.timerText}>Pomodoro Timer</Text>
+      <Text style={styles.timerText}>PulseTimer AI</Text>
       <Text style={styles.timerDisplay}>{formatTime(pomodoroTime)}</Text>
       <View style={styles.timerButtons}>
         <TouchableOpacity onPress={startTimer} style={styles.timerButton}>
@@ -380,20 +386,25 @@ const HomeScreen = () => {
 
 
   const renderItemPomodoro = ({ item, isShared }) => (
-    <TouchableOpacity style={[styles.taskCard, { backgroundColor: theme === 'dark' ? '#333' : '#fff' }]} onPress={() => openModal(item)}>
+    <TouchableOpacity testID='taskCard' style={[styles.taskCard, { backgroundColor: theme === 'dark' ? '#333' : '#fff3da' },{borderColor:theme === 'dark' ? '#555' : '#7E64FF'},{shadowColor:theme === 'dark' ? '#000' : '#7E64FF'}]} onPress={() => openModal(item)}>
       <View style={styles.taskHeader}>
-        <Text style={styles.title}>{item.title}</Text>
-        {isShared && <MaterialIcons name="share" size={24} color="blue" />}
+        <Text style={[styles.title,{color: theme === 'dark' ? '#fff' : '#000'}]}>{item.title}</Text>
+        {isShared && <MaterialIcons name="share" size={24} color={theme === 'dark' ? '#fff' : '#000'} />}
       </View>
-      <Text style={styles.description}>{item.description}</Text>
-      <Text style={styles.dueDate}>Task Priority: {item.priority}</Text>
-      <Text style={styles.dueDate}>Task type: {item.type}</Text>
-      <Text style={styles.dueDate}>TimeFrame: {item.timeframe} minutes</Text>
-      <Text style={styles.dueDate}>Due Date: {formatDueDate(item.due_date)}</Text>
-      <Text style={styles.completeButton} onPress={() => completeTask(item.id)}>Complete</Text>
-        <TouchableOpacity onPress={() => openNotesModal(item)}>
-          <Text style={styles.notesButton}>Notes</Text>
+      <Text style={[styles.description,{color: theme === 'dark' ? '#fff' : '#000'}]}>{item.description}</Text>
+      <Text style={[styles.dueDate,{color: theme === 'dark' ? '#fff' : '#000'}]}><Text style={styles.initialTxt}>Task Priority:</Text>{item.priority}</Text>
+      <Text style={[styles.dueDate,{color: theme === 'dark' ? '#fff' : '#000'}]}><Text style={styles.initialTxt}>Task type:</Text> {item.type}</Text>
+      <Text style={[styles.dueDate,{color: theme === 'dark' ? '#fff' : '#000'}]}><Text style={styles.initialTxt}>TimeFrame:</Text> {item.timeframe} minutes</Text>
+      <Text style={[styles.dueDate,{color: theme === 'dark' ? '#fff' : '#000'}]}><Text style={styles.initialTxt}>Due Date:</Text> {formatDueDate(item.due_date)}</Text>
+      <View style={styles.completecontainer}>
+      <TouchableOpacity onPress={() => completeTask(item.id)}>
+        <Text style={[styles.completeButton,{backgroundColor:theme === 'dark' ? '#fff' : '#7E64FF'},{color:theme === 'dark' ? '#000' : '#fff'}]}> ✓ Complete</Text>
+      </TouchableOpacity>
+      <TouchableOpacity testId="notes-button-1" onPress={() => openNotesModal(item)}>
+          <Text style={[styles.notesButton,{backgroundColor:theme === 'dark' ? '#fff' : '#C0C78C'},{color:theme === 'dark' ? '#000' : '#000'}]}>🖊 Notes</Text>
         </TouchableOpacity>
+      </View>
+        
     </TouchableOpacity>
   );
 
@@ -418,11 +429,54 @@ const HomeScreen = () => {
     setNotes('');
   };
 
+  const handleShowWeather = async () => {
+    setweatherModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setweatherModalVisible(false);
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
-      <TouchableOpacity onPress={openFilterModal} accessibilityLabel="filter-list" style={styles.filterIcon}>
-        <MaterialIcons name="filter-list" size={30} color="black" />
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={openFilterModal} accessibilityLabel="filter-list" style={styles.filterIcon}>
+          <MaterialIcons name="filter-list" size={30}  color= {theme === 'dark' ? '#fff' : '#000'}  />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleShowWeather}
+          accessible='true'
+          accessibilityLabel="Show weather information"
+          testID='weatherInfo'
+        >
+          <MaterialIcons name="cloud" size={30}  color= {theme === 'dark' ? '#fff' : '#000'}  />
+        </TouchableOpacity>
+      </View>
+      <Modal
+        visible={weatherModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleCloseModal}
+      >
+        <View style={styles.weathermodalContainer}>
+          <View style={styles.weathermodalContent}>
+            <ScrollView>
+            <WeatherScreen />
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={handleCloseModal}
+              accessible
+              accessibilityLabel="Close weather information"
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       
       {combinedTasks.length === 0 ? (
         <View style={[styles.noTasksContainer, { backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
@@ -475,12 +529,12 @@ const HomeScreen = () => {
         {pomodoroTask && <PomodoroTimer />}
           {selectedTask && (
             <View style={styles.modalContent} testID="task-detail-modal">
-              <Text style={styles.modalTitle}>{selectedTask.title}</Text>
-              <Text style={styles.modalDescription} testID="task-description">{selectedTask.description}</Text>
-              <Text style={styles.dueDate}>Task Priority: {selectedTask.priority}</Text>
-              <Text style={styles.dueDate}>Task type: {selectedTask.type}</Text>
-              <Text style={styles.dueDate}>TimeFrame: {selectedTask.timeframe} minutes</Text>
-              <Text style={styles.modalDueDate}>Due Date: {formatDueDate(selectedTask.due_date)}</Text>
+              <Text style={styles.title}>{selectedTask.title}</Text>
+              <Text style={styles.description} testID="task-description">{selectedTask.description}</Text>
+              <Text style={styles.dueDate}><Text style={styles.initialTxt}>Task Priority:</Text> {selectedTask.priority}</Text>
+              <Text style={styles.dueDate}><Text style={styles.initialTxt}>Task type:</Text> {selectedTask.type}</Text>
+              <Text style={styles.dueDate}><Text style={styles.initialTxt}>TimeFrame:</Text> {selectedTask.timeframe} minutes</Text>
+              <Text style={styles.dueDate}><Text style={styles.initialTxt}>Due Date:</Text> {formatDueDate(selectedTask.due_date)}</Text>
               <Text style={styles.closeButton} onPress={closeModal} testID="modal-close-button">Close</Text>
             </View>
           )}
@@ -493,15 +547,15 @@ const HomeScreen = () => {
         transparent={true}
         animationType="slide"
         onRequestClose={closeFilterModal}
-        style={{backgroundColor: theme === 'dark' ? '#333' : '#fff',}}
+        style={[{backgroundColor: theme === 'dark' ? '#333' : '#fff'}]}
       >
         <View style={styles.filterModalContainer}>
           <View style={[styles.filterModalContent,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
-            <Text style={styles.filterModalTitle}>Filter Tasks</Text>
+            <Text style={[styles.filterModalTitle]}>Filter Tasks</Text>
             
-            <Text style={styles.filterModalSubtitle}>Priority</Text>
+            <Text style={[styles.filterModalSubtitle]}>Priority</Text>
             {['High', 'Medium', 'Low'].map(priority => (
-              <View key={priority} style={styles.filterCheckboxContainer}>
+              <View key={priority} style={[styles.filterCheckboxContainer,{color:theme === 'dark' ? '#fff' : '#000'}]}>
                 <CheckBox
                   value={selectedPriority.includes(priority)}
                   onValueChange={() => {
@@ -567,24 +621,24 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  completecontainer:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+  },
   completeButton: {
     marginTop: 10,
-    color: '#1E90FF',
     fontWeight: 'bold',
+    padding: 10,
+    borderRadius:5,
   },
-  filterIcon: {
-    alignSelf: 'flex-end',
-    marginBottom: 10,
-  },
+  
   taskCard: {
     marginBottom: 20,
     padding: 15,
     marginVertical: 8,
     borderWidth: 1,
-    borderColor: '#ddd',
-    backgroundColor: '#f9f9f9',
     borderRadius: 5,
-    elevation: 2,
+    elevation: 4,
   },
   taskHeader: {
     flexDirection: 'row',
@@ -595,18 +649,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#666',
   },
   description: {
     marginBottom: 10,
     marginVertical: 8,
     fontSize: 14,
-    color: '#666',
   },
   dueDate: {
     marginBottom: 5,
     fontSize: 14,
-    color: '#888',
+  },
+  initialTxt: {
+    marginBottom: 5,
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   noTasksContainer: {
     flex: 1,
@@ -654,6 +710,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
+    color:'#fff',
   },
   closeButtonText: {
     color: 'white',
@@ -744,16 +801,50 @@ const styles = StyleSheet.create({
   },
   notesButton: {
     marginTop: 10,
-    color: '#1E90FF',
     fontWeight: 'bold',
     padding: 10,
-    backgroundColor:'#CEDF9F'
+    borderRadius:5,
   },
   attachmentImage: {
     width: 150,
     height: 150,
     marginTop: 10,
     borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  buttonContainer: {
+    flexDirection:'row',
+    justifyContent:'space-between',
+  },
+  filterIcon: {
+    alignSelf: 'flex-end',
+    marginBottom: 10,
+    color: '#000',
+    fontSize: 15,
+  },
+  weatherbuttonText: {
+    alignSelf: 'flex-start',
+    color: '#000',
+    fontSize: 20,
+
+  },
+  weathermodalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent', // Semi-transparent background
+    height:'auto',
+  },
+  weathermodalContent: {
+    backgroundColor: 'transparent',
+    padding: 20,
+    borderRadius: 10,
+    width: '90%',
+    maxHeight:'90%',
+    alignItems: 'center',
   },
 });
 

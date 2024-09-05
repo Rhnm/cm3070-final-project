@@ -7,8 +7,10 @@ import { AntDesign } from '@expo/vector-icons';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig';
+import { useTheme } from './ThemeContext';
 
 const UserProfileScreen = () => {
+  const { theme } = useTheme();
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [profileImage, setProfileImage] = useState('');
@@ -183,7 +185,7 @@ const UserProfileScreen = () => {
   }, [userId]);
   return (
     <ScrollView 
-      style={styles.container} 
+      style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]} 
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -203,18 +205,18 @@ const UserProfileScreen = () => {
           <Text style={styles.noImageText}>No image available</Text>
         </View>
       )}
-        <TouchableOpacity style={styles.editIconContainer} onPress={handleImageUpload}>
-          <AntDesign name="edit" size={20} color="white" />
+        <TouchableOpacity style={[styles.editIconContainer,{backgroundColor: theme === 'dark' ? '#fff' : '#7E64FF' }]} onPress={handleImageUpload}>
+          <AntDesign name="edit" size={20} style={[{backgroundColor: theme === 'dark' ? '#fff' : '#7E64FF', },{color: theme === 'dark' ? '#000' : '#fff', }]} />
         </TouchableOpacity>
       </View>
 
      
-      <Text style={styles.username}>{username}</Text>
-      <Text style={styles.email}>{email}</Text>
+      <Text style={[styles.username,{color: theme === 'dark' ? '#fff' : '#000', }]}>{username}</Text>
+      <Text style={[styles.email,{color: theme === 'dark' ? '#fff' : '#000', }]}>{email}</Text>
 
     
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EditUserProfile')}>
-        <Text style={styles.buttonText}>Edit Profile</Text>
+      <TouchableOpacity style={[styles.button,{backgroundColor: theme === 'dark' ? '#fff' : '#7E64FF', }]} onPress={() => navigation.navigate('EditUserProfile')}>
+        <Text style={[styles.buttonText,{color: theme === 'dark' ? '#000' : '#fff', }]}>Edit Profile</Text>
       </TouchableOpacity>
   
     </ScrollView>
@@ -258,6 +260,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4287f5', // Theme color
     borderRadius: 20,
     padding: 5,
+    marginRight:2,
   },
   username: {
     fontSize: 24,

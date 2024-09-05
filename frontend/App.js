@@ -36,7 +36,7 @@ const UserProfileStack = createStackNavigator();
 const UserProfileStackScreen = () => (
   <UserProfileStack.Navigator>
     <UserProfileStack.Screen name="UserProfile" options={{ headerShown: false }}  component={UserProfileScreen} />
-    <UserProfileStack.Screen name="EditUserProfile" component={EditUserProfileScreen} />
+    <UserProfileStack.Screen name="EditUserProfile" component={EditUserProfileScreen} options={{headerShown: false }} />
   </UserProfileStack.Navigator>
 );
 
@@ -59,8 +59,8 @@ const MainTabs = ({ onTabChange }) => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarStyle: { backgroundColor: theme === 'dark' ? '#333' : '#fff' }, // Set the tab bar color based on theme
-        tabBarActiveTintColor: theme === 'dark' ? '#fff' : '#000', // Set the active tab color
-        tabBarInactiveTintColor: theme === 'dark' ? '#888' : '#999', // Set the inactive tab color
+        tabBarActiveTintColor: theme === 'dark' ? '#fff' : '#7E64FF', // Set the active tab color
+        tabBarInactiveTintColor: theme === 'dark' ? '#888' : '#000', // Set the inactive tab color
       })}
       
     >
@@ -70,7 +70,7 @@ const MainTabs = ({ onTabChange }) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="home" size={size} color={color} />
+            <FontAwesome5 name="home" size={size*1.2} color={color} />
           ),
         }}
         listeners={{
@@ -83,7 +83,7 @@ const MainTabs = ({ onTabChange }) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="calendar-alt" size={size} color={color} />
+            <FontAwesome5 name="calendar-alt" size={size*1.2} color={color} />
           ),
         }}
         listeners={{
@@ -111,7 +111,7 @@ const MainTabs = ({ onTabChange }) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="sticky-note" size={size} color={color} />
+            <FontAwesome5 name="sticky-note" size={size*1.2} color={color} />
           ),
         }}
         listeners={{
@@ -124,7 +124,7 @@ const MainTabs = ({ onTabChange }) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="users" size={size} color={color} />
+            <FontAwesome5 name="users" size={size*1.2} color={color} />
           ),
         }}
         listeners={{
@@ -209,7 +209,9 @@ const App = () => {
                 fontSize: 18, // Ensure title fits well within the header
                 backgroundColor: theme === 'dark' ? 'transparent' : 'transparent',
               },
+              drawerActiveTintColor: theme === 'dark' ? '#fff' : '#7E64ff',
               drawerStyle: {
+                color: theme === 'dark' ? '#333' : '#fff',
                 backgroundColor: theme === 'dark' ? '#333' : '#fff',
               },
               drawerLabelStyle: {
@@ -251,6 +253,7 @@ const App = () => {
                 children={props => (
                   <LogoutScreen {...props} onLogout={() => setIsLoggedIn(false)} />
                 )}
+                
                 options={{
                   headerTitle: 'Logout',
                 }}
@@ -261,8 +264,11 @@ const App = () => {
           <Drawer.Screen
                 name="Login"
                 children={props => <LoginScreen {...props} onLogin={() => setIsLoggedIn(true)} />}
+                options={{
+                  headerTitle: 'Login',
+                }}
               />
-          <Drawer.Screen name="Register" component={RegisterScreen} />
+          <Drawer.Screen name="Register" component={RegisterScreen} options={{headerTitle:'Register',}} />
           </>
           )}
         </Drawer.Navigator>

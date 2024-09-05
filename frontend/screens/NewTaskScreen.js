@@ -8,11 +8,13 @@ import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig';
-import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from './ThemeContext';
+import { Ionicons,FontAwesome } from '@expo/vector-icons';
 
 const NewTaskScreen = () => { // Define a functional component called NewTaskScreen
   // Initialize states for task title, description, duedate and priority using the useState hook
   const [title, setTitle] = useState(''); 
+  const { theme } = useTheme();
   const [description, setDescription] = useState(''); 
   const [dueDate, setDueDate] = useState(null); 
   const [priority, setPriority] = useState('Low'); 
@@ -436,26 +438,27 @@ const validateInput = () => {
   }
 
   return ( 
-    <ScrollView style={styles.scrollContainer}>
-      <View style={styles.container}> 
+    <ScrollView style={[styles.scrollContainer,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
+      <View style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}> 
         <View style={styles.labelContainer}>
           
           {/* Plus icon to show/hide email input */}
           <TouchableOpacity style={styles.iconContainer} onPress={toggleVisibility}>
             <Ionicons name={isVisible ? 'remove-circle-outline' : 'add-circle-outline'} size={24} color="#4630EB" />
-            <Text style={styles.iconLabel}>Assign Tasks:</Text>
+            <Text style={[styles.iconLabel,{color: theme === 'dark' ? '#fff' : '#000'}]}>Assign Tasks:</Text>
           </TouchableOpacity>
           {/* Conditionally render the email input field */}
           {isVisible && (
             <TextInput
-              style={styles.emailInput}
+              style={[styles.emailInput,{color: theme === 'dark' ? '#fff' : '#000'}]}
               value={emailInput}
               onChangeText={handleEmailInput}
               placeholder="Enter email to share task"
+              placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
             />
           )}
           {emailSuggestions.length > 0 && (
-            <View style={styles.suggestionsContainer}>
+            <View style={[styles.suggestionsContainer,{color: theme === 'dark' ? '#fff' : '#000'}]}>
               <FlatList
                 data={emailSuggestions}
                 keyExtractor={(item, index) => index.toString()}
@@ -470,7 +473,7 @@ const validateInput = () => {
           )}
         </View>
 
-        <View style={styles.selectedEmailsContainer}>
+        <View style={[styles.selectedEmailsContainer,{backgroundColor: theme === 'dark' ? 'transparent' : 'transparent'}]}>
           {selectedEmails.map((email, index) => (
             <View key={index} style={styles.selectedContainer}>
               <Image source={{ uri: selectedImages[index] }} style={styles.selectedImage} />
@@ -515,11 +518,11 @@ const validateInput = () => {
           </Modal>
         )} */}
         <View style={styles.labelContainer}>
-          <Text style={styles.label}>Task Type</Text>
+          <Text style={[styles.label,{color: theme === 'dark' ? '#fff' : '#000'}]}>Task Type</Text>
           <View style={styles.pickerContainer}>
             <Picker 
               selectedValue={taskType} 
-              style={styles.picker} 
+              style={[styles.picker,{color: theme === 'dark' ? '#fff' : '#000'}]} 
               onValueChange={(itemValue) => setTaskType(itemValue)}
               testID='taskTypePicker'
             >
@@ -529,12 +532,12 @@ const validateInput = () => {
             </Picker>
           </View>
         </View>
-        <View style={styles.labelContainer}>
-          <Text style={styles.label}>Task Priority</Text>
+        <View style={[styles.labelContainer,{color: theme === 'dark' ? '#fff' : '#000'}]}>
+          <Text style={[styles.label,{color: theme === 'dark' ? '#fff' : '#000'}]}>Task Priority</Text>
           <View style={styles.pickerContainer}>
             <Picker 
               selectedValue={priority} 
-              style={styles.picker} 
+              style={[styles.picker,{color: theme === 'dark' ? '#fff' : '#000'}]} 
               onValueChange={(itemValue) => setPriority(itemValue)}
             >
               {priorities.map((priority) => (
@@ -545,14 +548,16 @@ const validateInput = () => {
         </View>
         
         <TextInput 
-          style={styles.input} 
+          style={[styles.input,{color: theme === 'dark' ? '#fff' : '#000'}]} 
           placeholder="Task Title" 
           value={title} 
+          placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
           onChangeText={setTitle} 
         />
         <TextInput 
-          style={styles.input} 
+          style={[styles.input,{color: theme === 'dark' ? '#fff' : '#000'}]} 
           placeholder="Task Description" 
+          placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
           value={description}
           onChangeText={(text) => {
             setDescription(text);
@@ -565,11 +570,18 @@ const validateInput = () => {
           multiline 
         />
         <View style={styles.labelContainer}>
-          <Text style={styles.label}>Task Due Date</Text>
-          <Button title="Select Due Date" onPress={openDatePicker} /> 
+          <Text style={[styles.label,{color: theme === 'dark' ? '#fff' : '#000'}]}>Task Due Date</Text>
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: theme === 'dark' ? '#fff' : '#7E64FF' }]} 
+            onPress={openDatePicker}
+          >
+            <Text style={[styles.buttonText, { color: theme === 'dark' ? '#000' : '#fff' }]}>Select Due Date</Text>
+          </TouchableOpacity>
+          
           {showDatePicker && (
             <DateTimePicker
               value={dueDate || new Date()}
+              backgroundColor={theme === 'dark' ? '#fff' : '#000'}
               mode="date"
               onChange={handleDateChange}
             />
@@ -578,13 +590,19 @@ const validateInput = () => {
         </View>
 
         <View style={styles.labelContainer}>
-          <Text style={styles.label}>Predicted Timeframe</Text>
-          <Text style={styles.timeframeText}>
+
+          <Text style={[styles.label,{color: theme === 'dark' ? '#fff' : '#000'}]}><FontAwesome name='microchip' size={15} color="#7E64FF" /> AI Predicted Timeframe</Text>
+          <Text style={[styles.timeframeText,{color: theme === 'dark' ? '#fff' : '#000'}]}>
             {timeframe ? `${timeframe} minutes` : 'Not predicted yet'}
           </Text>
         </View>
         
-        <Button title="Save Task" onPress={saveTask} />
+        <TouchableOpacity 
+          style={[styles.button, { backgroundColor: theme === 'dark' ? '#fff' : '#7E64FF' }]} 
+          onPress={saveTask}
+        >
+          <Text style={[styles.buttonText, { color: theme === 'dark' ? '#000' : '#fff' }]}>Save Task</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -599,7 +617,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
-    marginTop: 10,
+    
   },
   input: { 
     borderWidth: 1, 
@@ -763,6 +781,18 @@ const styles = StyleSheet.create({
   message: {
     fontSize: 16,
     color: '#333',
+  },
+  button: {
+    padding: 10,             // Add padding to make the button larger
+    borderRadius: 5,         // Rounded corners for the button
+    alignItems: 'center',    // Center the text inside the button
+    justifyContent: 'center', // Center the content vertically
+    marginVertical: 10,      // Space above and below the button
+  },
+  buttonText: {
+    color: '#fff',           // White text color (you can change this based on theme)
+    fontSize: 16,            // Font size of the button text
+    fontWeight: 'bold',      // Bold text for emphasis
   },
 });
 

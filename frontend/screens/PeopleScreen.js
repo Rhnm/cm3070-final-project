@@ -7,8 +7,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig'; // Make sure this path is correct
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from './ThemeContext';
 
 const PeopleScreen = () => {
+  const { theme } = useTheme();
   const [contacts, setContacts] = useState([]);
 
   const [sharedUsers, setSharedUsers] = useState([]);
@@ -286,12 +288,13 @@ const PeopleScreen = () => {
   }
 
   return (
-    <ScrollView style={styles.scrollContainer}>
-    <View style={styles.container}>
+    <ScrollView style={[styles.scrollContainer,{backgroundColor: theme === 'dark' ? '#333' : '#fff'}]}>
+    <View style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff'}]}>
       <TextInput
-        style={styles.emailInput}
+        style={[styles.emailInput,{color: theme === 'dark' ? '#fff' : '#000'}]}
         value={emailInput}
         onChangeText={handleEmailInput}
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
         placeholder="Enter email to share task"
         testID='getTestEmail'
       />
@@ -320,7 +323,7 @@ const PeopleScreen = () => {
               </TouchableOpacity>
             
             <TouchableOpacity style={styles.emailContainer} key={index} onPress={() => handlePress(email)}>
-              <Text style={styles.selectedEmail}>Assign</Text>
+              <Text style={styles.selectedEmail}>+</Text>
             </TouchableOpacity>
           </View>
         ))}
@@ -334,7 +337,7 @@ const PeopleScreen = () => {
             <Text style={styles.selectedName} testID='getSharedTestEmail'>{sharedNames[indexx]}</Text>
          
           <TouchableOpacity testID='testing-assign' style={styles.emailContainer} key={indexx} onPress={() => handlePress(email)}>
-            <Text style={styles.selectedEmail}>Assign</Text>
+            <Text style={styles.selectedEmail}>+</Text>
           </TouchableOpacity>
         </View>
         ))}
@@ -348,7 +351,7 @@ const PeopleScreen = () => {
           onRequestClose={() => setModalVisible(false)}
           testID="test-modal"
         >
-          <ScrollView testID="modal-scroll">
+          
           <View style={styles.modalContainer} testID="modal-container">
             <View style={styles.modalContent}>
               <Text style={styles.selectedContactName} testID="modal-contact-name">{selectedContact.name}</Text>
@@ -360,12 +363,12 @@ const PeopleScreen = () => {
                 testID="modal-task-list"
               />
               <View style={styles.buttonContainer} testID="modal-buttons">
-                <Button title="Share Task" color="#ef9c66" onPress={handleShare} testID="share-button" />
-                <Button title="Close" color="#78aba8" onPress={() => setModalVisible(false)} testID="close-button" />
+                <Button title="Share Task" color="#7E64FF" onPress={handleShare} testID="share-button" />
+                <Button title="Close" color="#d9534f" onPress={() => setModalVisible(false)} testID="close-button" />
               </View>
             </View>
           </View>
-          </ScrollView>
+          
         </Modal>
       )}
     </View>
@@ -380,7 +383,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
-    marginTop: 10,
+    
   },
   listContainer: {
     alignItems: 'flex-start',
@@ -460,9 +463,8 @@ const styles = StyleSheet.create({
     borderColor: '#cce0ac',
     backgroundColor:'#cce0ac',
     borderWidth: 2,
-    width:'20%',
+    padding: 10,
     margin: '1%',
-    padding: '2%',
     fontWeight: '400',
   },
   selectedContainer: {
@@ -472,7 +474,6 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 5,
     borderRadius: 10,
-
     marginBottom: 15,
     padding: 10,
     borderWidth: 1,
@@ -498,7 +499,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   selectedEmail: {
-    fontSize: 10,
+    fontSize: 20,
     fontWeight:'bold',
     marginBottom: 5,
     color: '#555',

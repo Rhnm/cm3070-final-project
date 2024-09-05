@@ -1,5 +1,5 @@
 import React,{useEffect} from 'react';
-import { View, Text, StyleSheet, Animated,TouchableOpacity } from 'react-native';
+import { View, Text,Image, StyleSheet, Animated,TouchableOpacity } from 'react-native';
 
 
 const SplashScreen = () => {
@@ -17,6 +17,7 @@ const SplashScreen = () => {
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]} accessible accessibilityLabel="Splash screen logo">
       <View style={styles.container}>
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
         <Text style={styles.title}>Task Management & To-Do List</Text>
         
           <TouchableOpacity  style={styles.button}>
@@ -35,6 +36,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff', // Set your desired background color
+  },
+  logo: {
+    width: 200, // Set your desired width
+    height: 200, // Set your desired height
+    resizeMode: 'contain', // Ensure the logo retains its aspect ratio
   },
   title: {
     fontSize: 24,

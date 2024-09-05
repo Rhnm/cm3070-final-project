@@ -8,8 +8,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome5 } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+import { useTheme } from './ThemeContext';
 
 const NotesScreen = () => {
+  const { theme } = useTheme();
   const [note, setNote] = useState('');
   const [notesList, setNotesList] = useState([]);
   const [userId, setUserId] = useState(null);
@@ -174,19 +176,19 @@ const NotesScreen = () => {
   };
 
   const renderNoteItem = ({ item }) => (
-    <TouchableOpacity onPress={() => showNoteModal(item)} style={styles.noteItem}>
+    <TouchableOpacity onPress={() => showNoteModal(item)} style={[styles.noteItem, { backgroundColor: theme === 'dark' ? '#333' : '#fff3da' }]}>
       <View style={styles.noteTextContainer}>
-        <Text style={styles.noteText}>{item.note_text}</Text>
+        <Text style={[styles.noteText,{color: theme === 'dark' ? '#fff' : '#000'}]}>{item.note_text}</Text>
         {item.attachment && (
           <Image source={{ uri: FileSystem.documentDirectory + item.attachment }} style={styles.attachmentImage} />
         )}
       </View>
       <View style={styles.noteActions}>
         <TouchableOpacity onPress={() => startEditNote(item)} style={styles.iconContainer}>
-          <FontAwesome5 name="edit" size={30} color="blue" />
+          <FontAwesome5 name="edit" size={30} color="#7E64FF" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => deleteNote(item.id)}>
-          <FontAwesome5 name="trash" size={30} color="red" />
+          <FontAwesome5 name="trash" size={30} color="#d9534f" />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -203,9 +205,10 @@ const NotesScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
       <TextInput
-        style={styles.input}
+        style={[styles.input,{color: theme === 'dark' ? '#fff' : '#000', },{borderColor: theme === 'dark' ? '#333' : '#7E64FF', },{shadowColor: theme === 'dark' ? '#333' : '#7E64FF', }]}
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
         placeholder="Write a note..."
         multiline
         value={note}
@@ -217,7 +220,7 @@ const NotesScreen = () => {
       {/* Picker for selecting task */}
       <Picker
         selectedValue={selectedTaskId}
-        style={styles.picker}
+        style={[styles.picker,{backgroundColor: theme === 'dark' ? '#333' : '#fff'},{color: theme === 'dark' ? '#fff' : '#000'}]}
         onValueChange={(itemValue) => setSelectedTaskId(itemValue)}
       >
         <Picker.Item label="Select a task" value={null} />
@@ -226,19 +229,19 @@ const NotesScreen = () => {
         ))}
       </Picker>
       <View style={styles.buttonContainer}>
-        <Button title="Add Attachment" color="#bec6a0" onPress={handleAttachment} />  
+        <Button title="+ Attachment" color="#9ca986" onPress={handleAttachment} />  
         {isEditing ? (
           <>
             <Button title="Cancel" color="#d9534f" onPress={cancelEdit} />
-            <Button title="Update Note" color="#9ca986" onPress={addNote} />
+            <Button title="Update Note" color="#7E64FF" onPress={addNote} />
           </>
         ) : (
-          <Button title="Save Note" color="#9ca986" onPress={addNote} />
+          <Button title="Save Note" color="#7E64ff" onPress={addNote} style={{borderRadius:5,}} />
         )}
       </View>
       
       <View style={styles.notesList}>
-        <Text style={styles.heading}>Your Notes</Text>
+        <Text style={[styles.heading,{color: theme === 'dark' ? '#fff' : '#000'}]}>Your Notes</Text>
         {notesList.length === 0 ? (
           <Text style={styles.noNotesText}>No notes available.</Text>
         ) : (
@@ -288,6 +291,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     minHeight: 60,
     textAlignVertical: 'top',
+    elevation: 2,
   },
   notesList: {
     marginTop: 20,

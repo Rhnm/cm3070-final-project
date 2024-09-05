@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Image, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig';
@@ -11,30 +11,44 @@ const Login = ({ navigation,onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const validateInput = () => {
+    if (username.trim() === '') {
+      Alert.alert('Validation Error', 'Username is required.');
+      return false;
+    }
+    if (password.trim() === '') {
+      Alert.alert('Validation Error', 'Password is required.');
+      return false;
+    }
+    return true;
+  };
+
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`${baseURL}:3001/main/login`, {
-        username,
-        password,
-      });
-      // Ensure the response structure is as expected
-      console.log('Login response:', response.data);
-
-      if (response.data.Login) {
-        // Navigate to the Home screen or another authenticated screen
-        console.log('User ID:', response.data.uid);
-        await AsyncStorage.setItem('isLoggedIn', JSON.stringify(response.data.Login));
-        await AsyncStorage.setItem('uid',JSON.stringify(response.data.uid));
-        onLogin(); // Notify App.js about the login
-        setError('');
-        navigation.navigate('HomePage', {
-          screen: 'Home',
-          params: {
-            userId: response.data.uid, // You can pass any parameters you need here
-          },
+      if(validateInput()){
+        const response = await axios.post(`${baseURL}:3001/main/login`, {
+          username,
+          password,
         });
-      } else {
-        Alert.alert('Login Failed', 'Incorrect username or password');
+        // Ensure the response structure is as expected
+        console.log('Login response:', response.data);
+
+        if (response.data.Login) {
+          // Navigate to the Home screen or another authenticated screen
+          console.log('User ID:', response.data.uid);
+          await AsyncStorage.setItem('isLoggedIn', JSON.stringify(response.data.Login));
+          await AsyncStorage.setItem('uid',JSON.stringify(response.data.uid));
+          onLogin(); // Notify App.js about the login
+          setError('');
+          navigation.navigate('Home Page', {
+            screen: 'Home',
+            params: {
+              userId: response.data.uid, // You can pass any parameters you need here
+            },
+          });
+        } else {
+          Alert.alert('Login Failed', 'Incorrect username or password');
+        }
       }
     } catch (error) {
       setError(error.response?.data?.message || 'Login failed');
@@ -45,23 +59,27 @@ const Login = ({ navigation,onLogin }) => {
 
   return (
     <View style={[styles.container,{ backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
+      
+      <Image source={require('../assets/logo.png')} style={styles.logo} />
       <TextInput
-        style={styles.input}
+        style={[styles.input,{borderColor:theme === 'dark' ? '#fff' : '#000'}]}
         placeholder="Username"
-        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
+        color={theme === 'dark' ? '#fff' : '#000'}
         value={username}
         onChangeText={setUsername}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input,{borderColor:theme === 'dark' ? '#fff' : '#000'}]}
         placeholder="Password"
-        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
+        color={theme === 'dark' ? '#fff' : '#000'}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity style={[styles.button,{backgroundColor:theme === 'dark' ? '#fff' : '#000'},]} onPress={handleLogin}>
+        <Text style={[styles.buttonText,{color:theme === 'dark' ? '#000' : '#fff'}]}>Login</Text>
       </TouchableOpacity>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
@@ -71,19 +89,23 @@ const Login = ({ navigation,onLogin }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
+  },
+  logo: {
+    width: 200, // Set your desired width
+    height: 200, // Set your desired height
+    resizeMode: 'contain', // Ensure the logo retains its aspect ratio
+    marginBottom: "10%",
   },
   input: {
     width: '80%',
     padding: 15,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 5,
   },
   button: {
-    backgroundColor: '#603ae1',
     padding: 15,
     borderRadius: 5,
     width: '80%',

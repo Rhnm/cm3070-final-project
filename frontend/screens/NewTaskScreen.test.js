@@ -11,6 +11,19 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(),
 }));
 jest.mock('expo-checkbox', () => 'CheckBox'); // Mock expo-checkbox
+// Mock implementation of useTheme
+jest.mock('./ThemeContext', () => ({
+  useTheme: () => ({
+    theme: {
+      colors: {
+        background: '#fff',
+        text: '#000',
+        primary: '#6200ee',
+        accent: '#03dac4',
+      },
+    },
+  }),
+}));
 
 // Mock expo-file-system
 jest.mock('expo-file-system', () => ({

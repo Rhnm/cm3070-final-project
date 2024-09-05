@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Alert, TextInput, FlatList, Modal, Button, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Alert, TextInput, FlatList, Modal, Button,RefreshControl, ScrollView, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import axios from 'axios';
 import { useNavigation, useFocusEffect } from '@react-navigation/native'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { baseURL } from '../apiConfig'; // Make sure this path is correct
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -65,7 +66,20 @@ const CalendarScreen = () => {
         const markedDatesTemp = {};
         [...formattedTasks, ...formattedSharedTasks].forEach((task) => {
           if (task.due_date) {
-            markedDatesTemp[task.due_date] = { selected: true, marked: true, dotColor: task.isShared ? '#b60071' : 'orange' };
+            // Initialize or update the entry for the date
+            if (!markedDatesTemp[task.due_date]) {
+              markedDatesTemp[task.due_date] = {
+                selected: true,
+                marked: true,
+                dots: [] // Use an array to hold multiple dots
+              };
+            }
+            
+            // Add the appropriate dot color based on whether the task is shared
+            const dotColor = task.isShared ? '#b60071' : 'orange';
+            if (!markedDatesTemp[task.due_date].dots.some(dot => dot.color === dotColor)) {
+              markedDatesTemp[task.due_date].dots.push({ color: dotColor });
+            }
           }
         });
         setMarkedDates(markedDatesTemp);
@@ -104,16 +118,20 @@ const CalendarScreen = () => {
     }, [userId,fetchTasks])
   );
 
+  /* useEffect(() => {
+    // Initial fetch on component mount
+    if (userId) {
+      fetchTasks();
+    }
+  }, [userId]); */
+
   const onDayPress = (day) => {
     const tasksForDate = tasks.filter((task) => task.due_date === day.dateString);
     const sharedTasksForDate = sharedTasks.filter((task) => task.due_date === day.dateString);
     setSelectedDate([...tasksForDate, ...sharedTasksForDate]);
   };
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchTasks();
-  };
+  
 
   const handleEdit = async () => {
     if (editedTask) {
@@ -164,6 +182,9 @@ const CalendarScreen = () => {
     );
   };
 
+
+
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -198,13 +219,56 @@ const CalendarScreen = () => {
     return item.id + "_" + new Date().getTime();
   };
 
+  const allTasks = [
+    ...regular_Tasks.map(task => ({ ...task, isShared: false })),  // Mark regular tasks
+    ...shared_Tasks.map(task => ({ ...task, isShared: true }))     // Mark shared tasks
+  ];
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchTasks();
+  };
+
+   /* const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      if (userId) {
+        fetchTasks();
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to refresh data');
+    } finally {
+      setRefreshing(false);
+    }
+  }, [userId]); */
+  
+  
+
   return (
+    <View style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
+    <View style={styles.legendContainer}>
+      <View style={styles.legendItem}>
+        <View style={[styles.legendColorBox, { backgroundColor: 'orange' }]} />
+        <Text style={[styles.legendText,{color: theme === 'dark' ? '#fff' : '#000', }]}>Regular Task</Text>
+      </View>
+      <View style={styles.legendItem}>
+        <View style={[styles.legendColorBox, { backgroundColor: '#b60071' }]} />
+        <Text style={[styles.legendText,{color: theme === 'dark' ? '#fff' : '#000', }]}>Shared Task</Text>
+      </View>
+    </View>
     <View style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]} testID="loaded-calendar">
+      <View key={theme.mode}>
       <Calendar
         onDayPress={onDayPress}
+        backgroundColor={theme === 'dark' ? '#333' : '#fff'}
+        calendarBackground={theme === 'dark' ? '#333' : '#fff'}
         markedDates={markedDates}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
+        markingType={'multi-dot'}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         theme={{
           backgroundColor: theme === 'dark' ? '#333' : '#fff',
           calendarBackground: theme === 'dark' ? '#333' : '#fff',
@@ -220,107 +284,70 @@ const CalendarScreen = () => {
           selectedDotColor: theme === 'dark' ? '#fff' : '#000',
         }}
       />
-      <ScrollView style={styles.scrollContainer}>
-      {selectedDate.length > 0 && (
-        <FlatList
-        style={styles.regularList}
-          data={regular_Tasks}
-          keyExtractor={(item) => uniqueKey(item)}
-          horizontal
-          renderItem={({ item }) => (
-            
-            <View style={[styles.taskCard,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
-              <View>
-                <Text style={styles.regularHeader}>REGULAR</Text>
-              </View>
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.description}>{item.description}</Text>
-              <Text style={styles.priority}>Priority: {item.priority}</Text>
-              <Text style={styles.priority}>TimeFrame: {item.timeframe} minutes</Text>
-              <Text style={styles.taskType}>Task Type: {item.type}</Text>
-              <Text style={[styles.taskStatus, item.status === 'Completed' ? styles.completed : styles.pending]}>
-                Status: {item.status}
-              </Text>
-              <Text style={styles.dueDate}>Due Date: {item.due_date}</Text>
-              <View style={styles.buttonContainer}>
-                <Button title="Delete" color="#c5705d" onPress={() => handleDelete(item.id)} />
-                <Button title="Edit" color="#4CAF50" onPress={() => {
-                  setEditedTask(item);
-                  setTitle(item.title);
-                  setDescription(item.description);
-                  setPriority(item.priority);
-                  setTimeframe(item.timeframe);
-                  setType(item.type);
-                  setDueDate(new Date(item.due_date)); // Convert to Date object
-                  setEditModalVisible(true);
-                }} />
-                
-              </View>
-            </View>
-          )}
-        />
-        )}
-        {shared_Tasks.length > 0 && (
-          <FlatList
-          style={styles.sharedList}
-            data={shared_Tasks}
-            keyExtractor={(item) => uniqueKey(item)}
-            horizontal
-            renderItem={({ item }) => (
-              
-              <View style={[styles.taskCard,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
-                <View>
-                  <Text style={styles.sharedHeader}>SHARED</Text>
-                </View>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.description}>{item.description}</Text>
-                <Text style={styles.priority}>Priority: {item.priority}</Text>
-                <Text style={styles.priority}>TimeFrame: {item.timeframe} minutes</Text>
-                <Text style={styles.taskType}>Task Type: {item.type}</Text>
-                <Text style={[styles.taskStatus, item.status === 'Completed' ? styles.completed : styles.pending]}>
-                  Status: {item.status}
-                </Text>
-                <Text style={styles.dueDate}>Due Date: {item.due_date}</Text>
-                <View style={styles.buttonContainer}>
-                    <Button title="Delete" color="#c5705d" onPress={() => handleDelete(item.id)} />
-                    <Button title="Edit" color="#4CAF50" onPress={() => {
-                        setEditedTask(item);
-                        setTitle(item.title);
-                        setDescription(item.description);
-                        setPriority(item.priority);
-                        setTimeframe(item.timeframe);
-                        setType(item.type);
-                        setDueDate(new Date(item.due_date)); // Convert to Date object
-                        setEditModalVisible(true);
-                    }} />
-                  
-                </View>
-              </View>
-            )}
-          />
-          )}
-        </ScrollView>
+      </View>
+      
+      <FlatList
+  style={styles.taskList}
+  data={allTasks}
+  keyExtractor={(item) => uniqueKey(item)}
+  renderItem={({ item }) => (
+    <View style={[styles.taskCard, { backgroundColor: theme === 'dark' ? '#333' : '#fff3da' },{ borderColor: theme === 'dark' ? '#fff' : '#7E64FF' },{ shadowColor: theme === 'dark' ? '#fff' : '#7E64FF' }]}>
+      <View>
+        <Text style={item.isShared ? styles.sharedHeader : styles.regularHeader}>
+          {item.isShared ? 'SHARED' : 'REGULAR'}
+        </Text>
+      </View>
+      <Text style={[styles.title, { color: theme === 'dark' ? '#fff' : '#000' }]}>{item.title}</Text>
+      <Text style={[styles.description, { color: theme === 'dark' ? '#fff' : '#000' }]}>{item.description}</Text>
+      <Text style={[styles.priority, { color: theme === 'dark' ? '#fff' : '#000' }]}>Priority: {item.priority}</Text>
+      <Text style={[styles.priority, { color: theme === 'dark' ? '#fff' : '#000' }]}>TimeFrame: {item.timeframe} minutes</Text>
+      <Text style={[styles.taskType, { color: theme === 'dark' ? '#fff' : '#000' }]}>Task Type: {item.type}</Text>
+      <Text style={[styles.taskStatus, item.status === 'Completed' ? styles.completed : styles.pending]}>
+        Status: {item.status}
+      </Text>
+      <Text style={[styles.dueDate,{ color: theme === 'dark' ? '#fff' : '#000' }]}>Due Date: {item.due_date}</Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={() => handleDelete(item.id)}>
+          <FontAwesome5 name="trash" size={30} color="#d9534f" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+          setEditedTask(item);
+          setTitle(item.title);
+          setDescription(item.description);
+          setPriority(item.priority);
+          setTimeframe(item.timeframe);
+          setType(item.type);
+          setDueDate(new Date(item.due_date)); // Convert to Date object
+          setEditModalVisible(true);
+        }} style={styles.iconContainer}>
+          <FontAwesome5 name="edit" size={30} color="#7E64FF" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  )}
+/>
+        
 
       {/* Edit Modal */}
       <Modal visible={editModalVisible} animationType="slide">
-        <ScrollView style={styles.scrollContainer}>
+        <ScrollView style={[styles.scrollContainer,{backgroundColor: theme === 'dark' ? '#333' : '#fff'}]}>
           <View style={[styles.modalContainer,{ backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
-            <Text style={[styles.modalTitle,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}>Edit Task</Text>
+            <Text style={[styles.modalTitle,{ color: theme === 'dark' ? '#fff' : '#000' }]}>Edit Task</Text>
             <TextInput
-              style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
+              style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#000' }]}
               placeholder="Title"
               value={title}
               onChangeText={setTitle}
             />
             <TextInput
-              style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
+              style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#000' }]}
               placeholder="Description"
               value={description}
               onChangeText={setDescription}
             />
             <Picker
               selectedValue={priority}
-              style={[styles.pickerContainer,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
+              style={[styles.pickerContainer,{ color: theme === 'dark' ? '#fff' : '#000' }]}
               onValueChange={(itemValue) => setPriority(itemValue)}
               itemStyle = {{backgroundColor: theme === 'dark' ? '#ccc' : '#fff'}}
             >
@@ -334,7 +361,7 @@ const CalendarScreen = () => {
             </Picker>
             <Picker
               selectedValue={type}
-              style={[styles.pickerContainer,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
+              style={[styles.pickerContainer,{ color: theme === 'dark' ? '#fff' : '#000' }]}
               onValueChange={(itemValue) => setType(itemValue)}
             >
               <Picker.Item label="Professional" value="Professional" />
@@ -342,7 +369,7 @@ const CalendarScreen = () => {
               <Picker.Item label="Other" value="Other" />
             </Picker>
             <TextInput
-              style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}
+              style={[styles.input,{ color: theme === 'dark' ? '#fff' : '#000' }]}
               placeholder="Timeframe (minutes)"
               value={timeframe}
               keyboardType="numeric"
@@ -350,7 +377,7 @@ const CalendarScreen = () => {
             />
             <View>
               <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                <Text style={[styles.datePickerText,{ color: theme === 'dark' ? '#fff' : '#ccc' }]}>Due Date: {dueDate.toDateString()}</Text>
+                <Text style={[styles.datePickerText,{ color: theme === 'dark' ? '#fff' : '#000' }]}>Due Date: {dueDate.toDateString()}</Text>
               </TouchableOpacity>
               {showDatePicker && (
                 <DateTimePicker
@@ -376,6 +403,7 @@ const CalendarScreen = () => {
         </ScrollView>
       </Modal>
     </View>
+    </View>
   );
 };
 
@@ -389,6 +417,16 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'white',
   },
+  completecontainer:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+  },
+  completeButton: {
+    marginTop: 10,
+    fontWeight: 'bold',
+    padding: 10,
+    borderRadius:5,
+  },
   modalTitle: {
     fontSize: 24,
     marginBottom: 20,
@@ -401,8 +439,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection:'row',
+    justifyContent:'space-between',
   },
   picker: {
     height: 50,
@@ -424,21 +462,22 @@ const styles = StyleSheet.create({
     padding:15,
   },
   scrollContainer: {
-    flex: 1,
-    marginTop: 10,
+    flexGrow:1,
+    
+    width:"100%",
+  },
+  flatListContainer: {
+    flex:1,
+    width: '100%', // Ensures the FlatList takes up the full width
   },
   taskCard: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    padding: 16,
-    flexWrap:'wrap',
-    backgroundColor: '#ccc',
-    padding: 5,
-    marginBottom: 10,
-    borderColor:'#CCC',
-    borderWidth: 2,
-    margin:3,
+    marginBottom: 20,
+    padding: 15,
+    marginVertical: 8,
+    borderWidth: 1,
+    backgroundColor: '#f9f9f9',
     borderRadius: 5,
+    elevation: 4,
   },
   title: {
     fontSize: 18,
@@ -476,22 +515,37 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   sharedHeader: {
-    backgroundColor: 'green',
+    backgroundColor: '#c0c78c',
     padding: 4,
     marginBottom: 5,
     color: 'white',
+    borderRadius:5,
   },
   regularHeader: {
-    backgroundColor: 'orange',
+    backgroundColor: '#7e64ff',
     padding: 4,
     marginBottom: 5,
     color: 'white',
+    borderRadius:5,
   },
-  sharedList: {
-    marginBottom: 20,
+  legendContainer: {
+    flexDirection: 'row',
+    marginVertical: 5,
+    padding: 5,
   },
-  regularList: {
-    marginBottom: 20,
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  legendColorBox: {
+    width: 10,
+    height: 10,
+    borderRadius: 10, // To make it a circle
+    marginRight: 5,
+  },
+  legendText: {
+    fontSize: 10,
   },
 });
 

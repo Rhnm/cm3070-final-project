@@ -13,6 +13,8 @@ const CompletedTaskScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
+
+
   const fetchCompletedTasks = async () => {
     try {
       const response = await axios.get(`${baseURL}:3001/resources/getCompletedTasks/${userId}`);
@@ -28,7 +30,7 @@ const CompletedTaskScreen = () => {
       setUserId(uid);
     };
     fetchUserId();
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     if (userId) {

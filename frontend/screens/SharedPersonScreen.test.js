@@ -17,6 +17,20 @@ jest.mock('expo-checkbox', () => ({
 
   jest.mock('axios');
 
+  // Mock implementation of useTheme
+jest.mock('./ThemeContext', () => ({
+  useTheme: () => ({
+    theme: {
+      colors: {
+        background: '#fff',
+        text: '#000',
+        primary: '#6200ee',
+        accent: '#03dac4',
+      },
+    },
+  }),
+}));
+
   // Mock expo-file-system
 jest.mock('expo-file-system', () => ({
     readAsStringAsync: jest.fn(() => Promise.resolve('mock file content')),

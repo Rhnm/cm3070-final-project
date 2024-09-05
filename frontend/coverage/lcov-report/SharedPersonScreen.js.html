@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/40</span>
+                <span class='fraction'>0/41</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/30</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/37</span>
+                <span class='fraction'>0/38</span>
             </div>
         
             
@@ -244,13 +244,17 @@
 <a name='L179'></a><a href='#L179'>179</a>
 <a name='L180'></a><a href='#L180'>180</a>
 <a name='L181'></a><a href='#L181'>181</a>
-<a name='L182'></a><a href='#L182'>182</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -431,8 +435,10 @@ import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { baseURL } from '../apiConfig';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from './ThemeContext';
 &nbsp;
 const SharedPersonScreen = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+    const { theme } = <span class="cstat-no" title="statement not covered" >useTheme();</span>
     const [sharedTasks, setSharedTasks] = <span class="cstat-no" title="statement not covered" >useState([]);</span>
     const [loading, setLoading] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
 &nbsp;
@@ -503,20 +509,20 @@ const SharedPersonScreen = <span class="cstat-no" title="statement not covered" 
         const userToIds = <span class="cstat-no" title="statement not covered" >item.user_to_ids.split(',').filter(<span class="fstat-no" title="function not covered" >id</span> =&gt; <span class="cstat-no" title="statement not covered" >id.trim() !== '')</span>;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return (</span>
-            &lt;View style={styles.taskContainer}&gt;
-                &lt;Text style={styles.taskTitle}&gt;{item.task_title}&lt;/Text&gt;
+            &lt;View style={[styles.taskContainer,{backgroundColor: theme === 'dark' ? '#333' : '#fff'}]}&gt;
+                &lt;Text style={[styles.taskTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}&gt;{item.task_title}&lt;/Text&gt;
                 
                 {/* Display the user who created the task */}
-                &lt;Text style={styles.sectionTitle}&gt;Assigned By:&lt;/Text&gt;
-                &lt;Text style={styles.userInfo}&gt;{item.user_from_names}&lt;/Text&gt;
+                &lt;Text style={[styles.sectionTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}&gt;Assigned By:&lt;/Text&gt;
+                &lt;Text style={[styles.userInfo,{color: theme === 'dark' ? '#fff' : '#000'}]}&gt;{item.user_from_names}&lt;/Text&gt;
                 
                 {/* Display users the task is assigned to */}
                 {userToNames.length &gt; 0 &amp;&amp; (
                     &lt;&gt;
-                        &lt;Text style={styles.sectionTitle}&gt;Assigned To:&lt;/Text&gt;
+                        &lt;Text style={[styles.sectionTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}&gt;Assigned To:&lt;/Text&gt;
                         {userToNames.map(<span class="fstat-no" title="function not covered" >(n</span>ame, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                            &lt;View key={`to-${index}`} style={styles.userContainer}&gt;</span>
-                                &lt;Text style={styles.userInfo}&gt;
+<span class="cstat-no" title="statement not covered" >                            &lt;View key={`to-${index}`} style={[styles.userContainer,{color: theme === 'dark' ? '#fff' : '#000'}]}&gt;</span>
+                                &lt;Text style={[styles.userInfo,{color: theme === 'dark' ? '#fff' : '#000'}]}&gt;
                                 {name}&lt;/Text&gt;
                                     &lt;TouchableOpacity onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >handleDelete(item.task_id,userToIds[index], name)}</span>&gt;
                                         &lt;Ionicons name="remove-circle-outline" size={24} color="red" /&gt;
@@ -530,8 +536,8 @@ const SharedPersonScreen = <span class="cstat-no" title="statement not covered" 
                 {/* Display shared date */}
                 {item.shared_ats &amp;&amp; (
                     &lt;&gt;
-                        &lt;Text style={styles.sectionTitle}&gt;Shared At:&lt;/Text&gt;
-                        &lt;Text style={styles.sharedAt}&gt;{new Date(item.shared_ats).toLocaleString()}&lt;/Text&gt;
+                        &lt;Text style={[styles.sectionTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}&gt;Shared At:&lt;/Text&gt;
+                        &lt;Text style={[styles.sharedAt,{color: theme === 'dark' ? '#fff' : '#000'}]}&gt;{new Date(item.shared_ats).toLocaleString()}&lt;/Text&gt;
                     &lt;/&gt;
                 )}
             &lt;/View&gt;
@@ -547,7 +553,7 @@ const SharedPersonScreen = <span class="cstat-no" title="statement not covered" 
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return (</span>
-        &lt;ScrollView style={styles.container} horizontal&gt;
+        &lt;ScrollView style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff'}]} horizontal&gt;
             &lt;FlatList
                 data={sharedTasks}
                 keyExtractor={<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item.task_id.toString()}</span>
@@ -613,7 +619,7 @@ export default SharedPersonScreen;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-08-31T14:40:10.381Z
+                at 2024-09-02T17:57:53.662Z
             </div>
         <script src="prettify.js"></script>
         <script>

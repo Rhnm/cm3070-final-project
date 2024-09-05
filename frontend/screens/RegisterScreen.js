@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet,Image, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
 import { baseURL } from '../apiConfig';
 import { useTheme } from './ThemeContext';
@@ -12,8 +12,29 @@ const Register = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [msg,setmsg] = useState('');
 
+  const validateInput = () => {
+    if (username.trim() === '') {
+      Alert.alert('Validation Error', 'Username is required.');
+      return false;
+    }
+    if (password.trim() === '') {
+      Alert.alert('Validation Error', 'Password is required.');
+      return false;
+    }
+    if (email.trim() === '') {
+      Alert.alert('Validation Error', 'Email is required.');
+      return false;
+    }
+    if (name.trim() === '') {
+      Alert.alert('Validation Error', 'Name is required.');
+      return false;
+    }
+    return true;
+  };
+
   const handleRegister = async () => {
     try {
+      if(validateInput()){
       const response = await axios.post(`${baseURL}:3001/main/register`, {
         name,
         email,
@@ -29,6 +50,7 @@ const Register = ({ navigation }) => {
         Alert.alert('Error', 'Failed to register');
         setmsg('User registration failed');
       }
+    }
     } catch (error) {
       setmsg('User registration failed');
       console.error('Register error:', error);
@@ -38,37 +60,42 @@ const Register = ({ navigation }) => {
 
   return (
     <View style={[styles.container,{ backgroundColor: theme === 'dark' ? '#333' : '#fff' }]}>
+      <Image source={require('../assets/logo.png')} style={styles.logo} />
       <TextInput
-        style={styles.input}
+        style={[styles.input,{borderColor:theme === 'dark' ? '#fff' : '#000'}]}
         placeholder="Name"
-        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
+        color={theme === 'dark' ? '#fff' : '#000'}
         value={name}
         onChangeText={setName}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input,{borderColor:theme === 'dark' ? '#fff' : '#000'}]}
         placeholder="Email"
-        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
+        color={theme === 'dark' ? '#fff' : '#000'}
         value={email}
         onChangeText={setEmail}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input,{borderColor:theme === 'dark' ? '#fff' : '#000'}]}
         placeholder="Username"
-        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
+        color={theme === 'dark' ? '#fff' : '#000'}
         value={username}
         onChangeText={setUsername}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input,{borderColor:theme === 'dark' ? '#fff' : '#000'}]}
         placeholder="Password"
-        placeholderTextColor={theme === 'dark' ? '#fff' : '#ccc'}
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
+        color={theme === 'dark' ? '#fff' : '#000'}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Register</Text>
+      <TouchableOpacity style={[styles.button,{backgroundColor:theme === 'dark' ? '#fff' : '#000'},]} onPress={handleRegister}>
+        <Text style={[styles.buttonText,{color:theme === 'dark' ? '#000' : '#fff'}]}>Register</Text>
       </TouchableOpacity>
       <Text style={styles.msgText}>{msg}</Text>
     </View>
@@ -78,19 +105,23 @@ const Register = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
+  },
+  logo: {
+    width: 200, // Set your desired width
+    height: 200, // Set your desired height
+    resizeMode: 'contain', // Ensure the logo retains its aspect ratio
+    marginBottom: "10%",
   },
   input: {
     width: '80%',
     padding: 15,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 5,
   },
   button: {
-    backgroundColor: '#603ae1',
     padding: 15,
     borderRadius: 5,
     width: '80%',

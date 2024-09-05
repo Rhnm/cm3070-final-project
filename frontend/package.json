@@ -14,7 +14,7 @@
     "preset": "react-native",
     "testEnvironment": "jsdom",
     "setupFilesAfterEnv": [
-      "<rootDir>/jest.setup.js",
+      "./jest.setup.js",
       "@testing-library/jest-native/extend-expect"
     ],
     "transformIgnorePatterns": [

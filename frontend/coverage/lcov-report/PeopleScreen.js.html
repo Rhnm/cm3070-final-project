@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/179</span>
+                <span class='fraction'>0/180</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/169</span>
+                <span class='fraction'>0/170</span>
             </div>
         
             
@@ -582,7 +582,8 @@
 <a name='L517'></a><a href='#L517'>517</a>
 <a name='L518'></a><a href='#L518'>518</a>
 <a name='L519'></a><a href='#L519'>519</a>
-<a name='L520'></a><a href='#L520'>520</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L520'></a><a href='#L520'>520</a>
+<a name='L521'></a><a href='#L521'>521</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -592,6 +593,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -883,6 +886,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -958,8 +962,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1110,8 +1112,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig'; // Make sure this path is correct
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from './ThemeContext';
 &nbsp;
 const PeopleScreen = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+  const { theme } = <span class="cstat-no" title="statement not covered" >useTheme();</span>
   const [contacts, setContacts] = <span class="cstat-no" title="statement not covered" >useState([]);</span>
 &nbsp;
   const [sharedUsers, setSharedUsers] = <span class="cstat-no" title="statement not covered" >useState([]);</span>
@@ -1389,12 +1393,13 @@ const PeopleScreen = <span class="cstat-no" title="statement not covered" ><span
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
-    &lt;ScrollView style={styles.scrollContainer}&gt;
-    &lt;View style={styles.container}&gt;
+    &lt;ScrollView style={[styles.scrollContainer,{backgroundColor: theme === 'dark' ? '#333' : '#fff'}]}&gt;
+    &lt;View style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff'}]}&gt;
       &lt;TextInput
-        style={styles.emailInput}
+        style={[styles.emailInput,{color: theme === 'dark' ? '#fff' : '#000'}]}
         value={emailInput}
         onChangeText={handleEmailInput}
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
         placeholder="Enter email to share task"
         testID='getTestEmail'
       /&gt;
@@ -1423,7 +1428,7 @@ const PeopleScreen = <span class="cstat-no" title="statement not covered" ><span
               &lt;/TouchableOpacity&gt;
             
             &lt;TouchableOpacity style={styles.emailContainer} key={index} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >handlePress(email)}</span>&gt;
-              &lt;Text style={styles.selectedEmail}&gt;Assign&lt;/Text&gt;
+              &lt;Text style={styles.selectedEmail}&gt;+&lt;/Text&gt;
             &lt;/TouchableOpacity&gt;
           &lt;/View&gt;
         ))}
@@ -1437,7 +1442,7 @@ const PeopleScreen = <span class="cstat-no" title="statement not covered" ><span
             &lt;Text style={styles.selectedName} testID='getSharedTestEmail'&gt;{sharedNames[indexx]}&lt;/Text&gt;
          
           &lt;TouchableOpacity testID='testing-assign' style={styles.emailContainer} key={indexx} onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >handlePress(email)}</span>&gt;
-            &lt;Text style={styles.selectedEmail}&gt;Assign&lt;/Text&gt;
+            &lt;Text style={styles.selectedEmail}&gt;+&lt;/Text&gt;
           &lt;/TouchableOpacity&gt;
         &lt;/View&gt;
         ))}
@@ -1451,7 +1456,7 @@ const PeopleScreen = <span class="cstat-no" title="statement not covered" ><span
           onRequestClose={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setModalVisible(false)}</span>
           testID="test-modal"
         &gt;
-          &lt;ScrollView testID="modal-scroll"&gt;
+          
           &lt;View style={styles.modalContainer} testID="modal-container"&gt;
             &lt;View style={styles.modalContent}&gt;
               &lt;Text style={styles.selectedContactName} testID="modal-contact-name"&gt;{selectedContact.name}&lt;/Text&gt;
@@ -1463,12 +1468,12 @@ const PeopleScreen = <span class="cstat-no" title="statement not covered" ><span
                 testID="modal-task-list"
               /&gt;
               &lt;View style={styles.buttonContainer} testID="modal-buttons"&gt;
-                &lt;Button title="Share Task" color="#ef9c66" onPress={handleShare} testID="share-button" /&gt;
-                &lt;Button title="Close" color="#78aba8" onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setModalVisible(false)}</span> testID="close-button" /&gt;
+                &lt;Button title="Share Task" color="#7E64FF" onPress={handleShare} testID="share-button" /&gt;
+                &lt;Button title="Close" color="#d9534f" onPress={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setModalVisible(false)}</span> testID="close-button" /&gt;
               &lt;/View&gt;
             &lt;/View&gt;
           &lt;/View&gt;
-          &lt;/ScrollView&gt;
+          
         &lt;/Modal&gt;
       )}
     &lt;/View&gt;
@@ -1483,7 +1488,7 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
   },
   scrollContainer: {
     flex: 1,
-    marginTop: 10,
+    
   },
   listContainer: {
     alignItems: 'flex-start',
@@ -1563,9 +1568,8 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
     borderColor: '#cce0ac',
     backgroundColor:'#cce0ac',
     borderWidth: 2,
-    width:'20%',
+    padding: 10,
     margin: '1%',
-    padding: '2%',
     fontWeight: '400',
   },
   selectedContainer: {
@@ -1575,7 +1579,6 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
     padding: 10,
     marginVertical: 5,
     borderRadius: 10,
-&nbsp;
     marginBottom: 15,
     padding: 10,
     borderWidth: 1,
@@ -1601,7 +1604,7 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
     marginVertical: 10,
   },
   selectedEmail: {
-    fontSize: 10,
+    fontSize: 20,
     fontWeight:'bold',
     marginBottom: 5,
     color: '#555',
@@ -1627,7 +1630,7 @@ export default PeopleScreen;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-08-31T14:40:10.381Z
+                at 2024-09-02T17:57:53.662Z
             </div>
         <script src="prettify.js"></script>
         <script>

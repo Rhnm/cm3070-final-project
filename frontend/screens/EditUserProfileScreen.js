@@ -4,8 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseURL } from '../apiConfig';
+import { useTheme } from './ThemeContext';
 
 const EditUserProfileScreen = () => {
+  const { theme } = useTheme();
   const navigation = useNavigation();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -45,6 +47,10 @@ const EditUserProfileScreen = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigation.goBack();
+  }
+
   const handleSave = async () => {
     if (!username || !email) {
       Alert.alert('Error', 'Please fill in all fields');
@@ -77,28 +83,34 @@ const EditUserProfileScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Username:</Text>
+    <View style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>
+      <Text style={[styles.label,{color: theme === 'dark' ? '#fff' : '#000', }]}>Username:</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input,{color: theme === 'dark' ? '#fff' : '#000', }]}
         value={username}
         onChangeText={setUsername}
         placeholder="Enter your username"
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
       />
 
-      <Text style={styles.label}>Email:</Text>
+      <Text style={[styles.label,{color: theme === 'dark' ? '#fff' : '#000', }]}>Email:</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input,{color: theme === 'dark' ? '#fff' : '#000', }]}
         value={email}
         onChangeText={setEmail}
         placeholder="Enter your email"
+        placeholderTextColor={theme === 'dark' ? '#fff' : '#000'}
         keyboardType="email-address"
       />
-
-      <TouchableOpacity style={styles.button} onPress={handleSave}>
-        <Text style={styles.buttonText}>Save Changes</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={[styles.button,{backgroundColor: theme === 'dark' ? '#fff' : '#7E64FF', }]} onPress={handleCancel}>
+          <Text style={[styles.buttonText,{color: theme === 'dark' ? '#000' : '#fff', }]}>Cancel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button,{backgroundColor: theme === 'dark' ? '#fff' : '#7E64FF', }]} onPress={handleSave}>
+          <Text style={[styles.buttonText,{color: theme === 'dark' ? '#000' : '#fff', }]}>Save Changes</Text>
+        </TouchableOpacity>
       {error ? <Text style={styles.errorText}>Error: {error}</Text> : null}
+      </View>
     </View>
   );
 };
@@ -119,6 +131,10 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     marginBottom: 20,
+  },
+  buttonContainer: {
+    flexDirection:'row',
+    justifyContent:'space-between',
   },
   button: {
     backgroundColor: '#4287f5',
