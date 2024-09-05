@@ -27,13 +27,6 @@ function requireLogin(req, res, next) {
     }
   }
 
-
-
-router.get('/login', (req, res) => {
-    res.render('login',{ errorMessage: '' });
-    
-  });
-
 router.post('/register', async(req, res) => {
   console.log("Here in register");
   const name = req.body.name;
@@ -82,45 +75,49 @@ router.post('/login', async(req, res) => {
   const username = req.body.username;
 
   const usernameQuery = 'SELECT * FROM Users WHERE username = ?';
+  if(username != null){
+    db.get(usernameQuery, [username], (err, row) => {
+      if (err) {
+        console.error('Error checking username:', err);
+        //res.status(500).send('Error checking username');
+        res.send("Incorrect");
+        return;
+      }
+      if (!row) {
+        res.send("Incorrect");
+        return;
+      }
 
-  db.get(usernameQuery, [username], (err, row) => {
-    if (err) {
-      console.error('Error checking username:', err);
-      //res.status(500).send('Error checking username');
-      res.send("Incorrect");
-      return;
-    }
-    if (!row) {
-      res.send("Incorrect");
-      return;
-    }
-
-    if (row) {
-      // Username already exists
-      bcrypt.compare(password, row.password_hash, function(err, result) {
-        if (err) {
-          // Handle error
-          console.error(err);
-          return;
-        }
-      
-        if (result) {
-          // Passwords match, user is authenticated
-          req.session.username = username;
-          req.session.isLoggedIn = true;
-          req.session.uid = row.id;
-          
-          res.json({'Login':req.session.isLoggedIn,'uid':req.session.uid});
-          
-          return; 
-        } else {
-          // Passwords do not match, authentication failed
-          res.send('Incorrect'); 
-          return; 
-        }
-      });
-    }
-  });
+      if (row) {
+        // Username already exists
+        bcrypt.compare(password, row.password_hash, function(err, result) {
+          if (err) {
+            // Handle error
+            console.error(err);
+            return;
+          }
+        
+          if (result) {
+            // Passwords match, user is authenticated
+            req.session.username = username;
+            req.session.isLoggedIn = true;
+            req.session.uid = row.id;
+            
+            res.json({'Login':req.session.isLoggedIn,'uid':req.session.uid});
+            
+            return; 
+          } else {
+            // Passwords do not match, authentication failed
+            res.send('Incorrect'); 
+            return; 
+          }
+        });
+      }
+    
+    });
+  }else{
+    res.status(400).send('Error validating username!');
+  }
 });
 
 

@@ -9,11 +9,11 @@ const port = 3001;
 const sqlite3 = require('sqlite3').verbose();
 const axios = require('axios');
 
-const trainModel = require('./trainModel');
-const predictTaskPriority = require('./predict');
+const trainModel = require('./training_Models/trainModel');
+const predictTaskPriority = require('./predict/predict');
 
-const trainTimeframeModel = require('./trainTimeframeModel');
-const predictTaskTimeframe = require('./Predicttimeframe');
+const trainTimeframeModel = require('./training_Models/trainTimeframeModel');
+const predictTaskTimeframe = require('./predict/Predicttimeframe');
 
 // Allow requests from the frontend (replace with your frontend's URL)
 const corsOptions = {
