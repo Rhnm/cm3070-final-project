@@ -1,6 +1,6 @@
 Design System: TaskPulse
 
-This folder houses the core design assets and guidelines for the TaskMaster task management application. TaskMaster's design system aims to deliver a streamlined, intuitive, and visually pleasing user experience across all platforms.
+This folder houses the core design assets and guidelines for the TaskPulse task management application. TaskPulse's design system aims to deliver a streamlined, intuitive, and visually pleasing user experience across platforms and is built using ReactNative.
 
 Key Design Principles
 
@@ -8,18 +8,14 @@ Clarity: Emphasis on clear visual hierarchy, concise labeling, and unambiguous a
 Efficiency: Prioritizing ease of navigation, quick task creation, and uncluttered information display.
 Aesthetics: A modern and polished look utilizing a balanced color palette, subtle gradients, and considered typography.
 Accessibility: Focus on appropriate color contrast, sufficient font sizes, and responsiveness for a variety of devices and screen resolutions.
+
 Folder Structure
 
-components/
-Contains individual UI component designs (buttons, input fields, task cards, navigation elements, etc.).
-Each component has its own folder with:
-Design files (.sketch, .fig, .xd)
-Image assets (.png, .svg)
-Component documentation (.txt or .md) outlining states (default, hover, disabled), variants, and basic usage.
-layouts/
-Houses screen-level layout designs and wireframes.
+
+/frontend
+Houses screen-level front end designs.
 Includes key screens such as:
-Dashboard view (overview of tasks)
+HomeScreen.js - overview of tasks for the current user
 Project-specific views
 Individual task view
 Settings and profile screens
@@ -32,14 +28,20 @@ spacing.scss: Definition of consistent spacing units and padding guidelines.
 icons.svg: Library of all icons used throughout the application.
 Design Workflow
 
+/designs
 Ideation: Collaborative brainstorming, low-fidelity wireframing (hand-drawn or using tools like Balsamiq)
 Mid-Fidelity Wireframes: Detailed layout structure, navigation flows (created in Figma, Sketch, or similar tools).
 High-Fidelity Design: Polished UI, applying design system components, colors, and styles.
 Prototyping: Linking screens in tools like InVision or Principle to simulate interactions and user flows.
 Usability Testing: Gathering feedback from target users on design effectiveness and intuitive functionality.
 Version Control
+/components
+Contains individual UI component designs (buttons, input fields, task cards, navigation elements, etc.).
+Each component has its own folder with:
+Design files (.sketch, .fig, .xd)
+Image assets (.png, .svg)
+Component documentation (.txt or .md) outlining states (default, hover, disabled), variants, and basic usage.
 
-This design folder utilizes Git for version control and collaboration.
 
 Branching: Use feature branches for specific component or screen updates.
 Commits: Clear and descriptive commit messages.
@@ -51,3 +53,4 @@ Strive for consistency and maintainability.
 Submit detailed design descriptions and rationales with any proposed changes.
 Engage in collaborative reviews to ensure alignment with the application's overall design direction.
 
+This application utilizes Git for version control and collaboration.
