@@ -5,10 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import EditUserProfileScreen from './EditUserProfileScreen';
 
-// Mock axios, AsyncStorage, and navigation
+// Mocking axios, AsyncStorage, and navigation
 jest.mock('axios');
 
-// Mock implementation of useTheme
+// Mocking implementation of useTheme
 jest.mock('./ThemeContext', () => ({
   useTheme: () => ({
     theme: {
@@ -38,7 +38,7 @@ describe('EditUserProfileScreen', () => {
       </NavigationContainer>
     );
 
-    // Check if the username and email fields are present
+    // Checking if the username and email fields are present
     expect(screen.getByPlaceholderText('Enter your username')).toBeTruthy();
     expect(screen.getByPlaceholderText('Enter your email')).toBeTruthy();
     expect(screen.getByText('Save Changes')).toBeTruthy();
@@ -60,17 +60,16 @@ describe('EditUserProfileScreen', () => {
     </NavigationContainer>
   );
 
-  // Update only one field
+  // Updating only one field
   fireEvent.changeText(screen.getByPlaceholderText('Enter your username'), 'John Doe');
 
-  // Check if the button is present and press it
+  // Checking if the button is present and press it
   const saveButton = screen.getByText('Save Changes');
   expect(saveButton).toBeTruthy();
   fireEvent.press(saveButton);
 
-  // Wait for the error alert to be shown
+  // Waiting for the error alert to be shown
   await waitFor(() => {
-    // Combine both the "Error: " and the actual error message text in a single check
     expect(screen.getByText('Error: Please fill in all fields')).toBeTruthy();
   });
 });
@@ -83,7 +82,7 @@ describe('EditUserProfileScreen', () => {
       },
     });
 
-    // Mock the API response for saving user profile
+    // Mocking the API response for saving user profile
     axios.post.mockResolvedValueOnce({
       data: {
         success: false,
@@ -97,16 +96,16 @@ describe('EditUserProfileScreen', () => {
       </NavigationContainer>
     );
 
-    // Update the username and email fields
+    // Updating the username and email fields
     fireEvent.changeText(screen.getByPlaceholderText('Enter your username'), 'John Doe');
     fireEvent.changeText(screen.getByPlaceholderText('Enter your email'), 'john.doe@example.com');
 
-    // Check if the button is present and press it
+    // Checking if the button is present and press it
     const saveButton = screen.getByText('Save Changes');
     expect(saveButton).toBeTruthy();
     fireEvent.press(saveButton);
 
-    // Wait for the error alert to be shown
+    // Waiting for the error alert to be shown
     await waitFor(() => {
       expect(screen.getByText('Error: User not found')).toBeTruthy();
     });

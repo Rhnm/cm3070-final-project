@@ -1,42 +1,42 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react-native';
-import CalendarScreen from './CalendarScreen'; // Update the path
-import { ThemeProvider,useTheme } from './ThemeContext'; // Update the path
+import CalendarScreen from './CalendarScreen'; 
+import { ThemeProvider,useTheme } from './ThemeContext'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { NavigationContainer } from '@react-navigation/native';
 
-// Mock ThemeContext
+// Mocking ThemeContext
 jest.mock('./ThemeContext', () => ({
   useTheme: () => ({
-    theme: 'light', // or 'dark', depending on what you want to test
+    theme: 'light', 
   }),
 }));
 
-// Mock AsyncStorage
+// Mocking AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(),
 }));
 
-// Mock axios
+// Mocking axios
 jest.mock('axios');
 jest.mock('@expo/vector-icons', () => ({
   FontAwesome5: 'FontAwesome5',
   MaterialIcons: 'MaterialIcons',
 }));
 
-// Mock react-native-calendars Calendar component
+// Mocking react-native-calendars Calendar component
 jest.mock('react-native-calendars', () => ({
     Calendar: () => null, // Simple mock that renders nothing
   }));
 
-// Mock react-native-community datetimepicker DatetimePicker component
+// Mocking react-native-community datetimepicker DatetimePicker component
 jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
 
 describe('CalendarScreen', () => {
   it('renders loading indicator while fetching data', async () => {
-    AsyncStorage.getItem.mockResolvedValue('true'); // Simulate user logged in
-    axios.get.mockResolvedValue({ data: [] }); // Simulate empty task data
+    AsyncStorage.getItem.mockResolvedValue('true'); // Simulating user logged in
+    axios.get.mockResolvedValue({ data: [] }); // Simulating empty task data
 
     render(
         <NavigationContainer>
@@ -44,17 +44,17 @@ describe('CalendarScreen', () => {
         </NavigationContainer>
     );
 
-    // Check if loading indicator is displayed
+    // Checking if loading indicator is displayed
     expect(screen.getByTestId('loadingIndicator')).toBeTruthy();
 
-    // Wait for loading to complete
+    // Waiting for loading to complete
     await waitFor(() => {
         expect(screen.getByTestId('loaded-calendar')).toBeTruthy();
       });
   });
 
   it('displays message when user is not logged in', async () => {
-    AsyncStorage.getItem.mockResolvedValue('false'); // Simulate user not logged in
+    AsyncStorage.getItem.mockResolvedValue('false'); // Simulating user not logged in
 
     render(
         <NavigationContainer>
@@ -62,7 +62,7 @@ describe('CalendarScreen', () => {
         </NavigationContainer>
     );
 
-    // Wait for the component to render and check for the message
+    // Waiting for the component to render and check for the message
     await waitFor(() => {
       expect(screen.getByText('You need to be logged in to view your tasks.')).toBeTruthy();
     });

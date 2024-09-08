@@ -16,9 +16,8 @@ const SharedPersonScreen = () => {
             try {
                 const response = await axios.get(`${baseURL}:3001/resources/sharedpersonslist`);
                 setSharedTasks(response.data);
-                console.log(response.data);
             } catch (error) {
-                console.error('Error fetching shared tasks:', error);
+                Alert.alert('Error fetching shared tasks:', error);
             } finally {
                 setLoading(false);
             }
@@ -27,12 +26,6 @@ const SharedPersonScreen = () => {
         useEffect(() => {
             fetchSharedTasks();
         }, []);
-        
-    /* useFocusEffect(
-        useCallback(() => {
-            fetchSharedTasks();
-        }, [fetchSharedTasks])
-      ); */
 
     const handleDelete = async (taskId,userIdTo,userName) => {
         Alert.alert(
@@ -46,24 +39,24 @@ const SharedPersonScreen = () => {
                         try {
                             const response = await axios.delete(`${baseURL}:3001/resources/sharedtasks/${taskId}/${userIdTo}`);
                             Alert.alert(response.data);
-                            // Remove the specific user from the local state
+                            // Removing the specific user from the local state
                             setSharedTasks(prevTasks =>
                                 prevTasks.reduce((acc, task) => {
                                     if (task.task_id === taskId) {
                                         const updatedNames = task.user_to_names.split(',').filter(name => name.trim() !== userName).join(',');
                                         if (updatedNames) {
-                                            // If there are still names left, update the task
+                                            // Updating the task for leftover names
                                             acc.push({ ...task, user_to_names: updatedNames });
                                         }
                                     } else {
-                                        // If it's not the task that was affected, just add it to the result
+                                        // adding the task that was not affected to the result
                                         acc.push(task);
                                     }
                                     return acc;
                                 }, [])
                             );
                         } catch (error) {
-                            console.error('Error deleting user:', error);
+                            Alert.alert('Error deleting user:', error);
                         }
                     }
                 }
@@ -73,7 +66,7 @@ const SharedPersonScreen = () => {
 
 
     const renderTaskItem = ({ item }) => {
-        // Split concatenated user names and dates into arrays
+        // Spliting the concatenated user names and dates into arrays
         const userToNames = item.user_to_names.split(',').filter(name => name.trim() !== '');
         const userToIds = item.user_to_ids.split(',').filter(id => id.trim() !== '');
 
@@ -81,11 +74,11 @@ const SharedPersonScreen = () => {
             <View style={[styles.taskContainer,{backgroundColor: theme === 'dark' ? '#333' : '#fff'}]}>
                 <Text style={[styles.taskTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}>{item.task_title}</Text>
                 
-                {/* Display the user who created the task */}
+                {/* Displaying the user who created the task */}
                 <Text style={[styles.sectionTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}>Assigned By:</Text>
                 <Text style={[styles.userInfo,{color: theme === 'dark' ? '#fff' : '#000'}]}>{item.user_from_names}</Text>
                 
-                {/* Display users the task is assigned to */}
+                {/* Displaying users the task is assigned to */}
                 {userToNames.length > 0 && (
                     <>
                         <Text style={[styles.sectionTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}>Assigned To:</Text>
@@ -102,7 +95,7 @@ const SharedPersonScreen = () => {
                     </>
                 )}
                 
-                {/* Display shared date */}
+                {/* Displaying shared date */}
                 {item.shared_ats && (
                     <>
                         <Text style={[styles.sectionTitle,{color: theme === 'dark' ? '#fff' : '#000'}]}>Shared At:</Text>

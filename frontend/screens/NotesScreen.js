@@ -50,14 +50,14 @@ const NotesScreen = () => {
           const attachmentUri = FileSystem.documentDirectory + note.attachment;
           const fileInfo = await FileSystem.getInfoAsync(attachmentUri);
           if (fileInfo.exists) {
-            return { ...note, attachmentUri }; // Update with the local path
+            return { ...note, attachmentUri };
           }
         }
         return note;
       }));
       setNotesList(notesWithAttachments);
     } catch (error) {
-      console.error('Error fetching notes:', error);
+      Alert.alert('Error fetching notes:', error);
     }
   };
 
@@ -66,11 +66,10 @@ const NotesScreen = () => {
     try {
       if (userId != null) {
         const response = await axios.get(`${baseURL}:3001/resources/gettasks/${userId}`);
-        setTasks(response.data);
-        console.log("in peoples tasks: " + response.data);
+        setTasks(response.data)
       }
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      Alert.alert('Error fetching tasks:', error);
     } 
   }, [userId]);
 
@@ -91,13 +90,12 @@ const NotesScreen = () => {
             to: newPath,
           });
         } else {
-          // If source and destination are the same, use the existing path
           attachmentName = attachment.split('/').pop();
         }
       }
 
       if (editingNote) {
-        // Edit existing note
+        // Editing existing note
         alert(note);
         await axios.put(`${baseURL}:3001/resources/editnote/${editingNote.id}`, {
           note_text: note,
@@ -110,9 +108,9 @@ const NotesScreen = () => {
             : n
         ));
         setEditingNote(null);
-        setIsEditing(false); // Reset edit mode
+        setIsEditing(false);
       } else {
-        // Add new note
+        // Adding new note
         const response = await axios.post(`${baseURL}:3001/resources/notes`, {
           user_id: userId,
           note_text: note,
@@ -126,7 +124,7 @@ const NotesScreen = () => {
       setAttachment(null);
       setSelectedTaskId(null);
     } catch (error) {
-      console.error('Error adding note:', error);
+      Alert.alert('Error adding note:', error);
     }
   };
 
@@ -155,7 +153,7 @@ const NotesScreen = () => {
       await axios.delete(`${baseURL}:3001/resources/deletenote/${noteId}`);
       setNotesList(notesList.filter((item) => item.id !== noteId));
     } catch (error) {
-      console.error('Error deleting note:', error);
+      Alert.alert('Error deleting note:', error);
     }
   };
 
@@ -163,7 +161,7 @@ const NotesScreen = () => {
     setNote(note.note_text);
     setAttachment(note.attachment ? FileSystem.documentDirectory + note.attachment : null);
     setEditingNote(note);
-    setIsEditing(true); // Set edit mode
+    setIsEditing(true);
     setSelectedTaskId(note.task_id || null);
   };
 
@@ -346,7 +344,7 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
   },
   iconContainer: {
-    marginRight: 15, // Adjust this value to your preference
+    marginRight: 15, 
   },
   modalBackground: {
     flex: 1,
@@ -358,8 +356,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 20,
     borderRadius: 10,
-    width: '90%', // Increased width to make the modal larger
-    maxHeight: '80%', // Set a max height for the modal
+    width: '90%', 
+    maxHeight: '80%', 
     alignItems: 'center',
   },
   modalNoteText: {

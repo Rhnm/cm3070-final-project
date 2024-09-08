@@ -5,7 +5,7 @@ import * as FileSystem from 'expo-file-system';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { baseURL } from '../apiConfig'; // Make sure this path is correct
+import { baseURL } from '../apiConfig'; 
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
 
@@ -22,7 +22,7 @@ const PeopleScreen = () => {
 
   const [selectedContact, setSelectedContact] = useState(null);
   const [tasks, setTasks] = useState([]);
-  const [selectedTask, setSelectedTask] = useState([]); // Ensure it's an array
+  const [selectedTask, setSelectedTask] = useState([]); 
   const [modalVisible, setModalVisible] = useState(false);
   const [emailInput, setEmailInput] = useState('');
 
@@ -48,9 +48,9 @@ const PeopleScreen = () => {
         setUserIdFrom(uid);
         setIsLoggedIn(value === 'true');
       } catch (error) {
-        console.error('Error checking login status:', error);
+        Alert.alert('Login Status could not be validated', error);
       } finally {
-        setLoading(false); // Stop loading spinner even if there's an error
+        setLoading(false); 
       }
     };
 
@@ -66,28 +66,18 @@ const PeopleScreen = () => {
     }, [userIdFrom,fetchTasks,fetchSharedUsers])
   );
 
-  /* useEffect(() => {
-    if (isLoggedIn) {
-      fetchTasks();
-      fetchContacts();
-      fetchSharedUsers();
-    }
-  }, [isLoggedIn, fetchTasks]);
- */
   const fetchContacts = async () => {
     try {
       const response = await axios.get(`${baseURL}:3001/resources/getUsers/${userIdFrom}`);
       setContacts(response.data);
-      console.log(response.data);
     } catch (error) {
-      console.error('Error fetching contacts:', error);
+      Alert.alert('Error fetching contacts:', error);
     } 
   };
 
   const fetchSharedUsers = async () => {
     try{
       const response = await axios.get(`${baseURL}:3001/resources/getSharedUsers/${userIdFrom}`);
-      console.log("Data from people test: ",response.data);
       const ids = response.data.map(item => item.id);
       const emails = response.data.map(item => item.email);
       const names = response.data.map(item => item.name);
@@ -97,16 +87,9 @@ const PeopleScreen = () => {
       setSharedEmails(emails);
       setSharedImages(images);
       setSharedNames(names);
-
-      /* setSelectedIds(ids);
-      setSelectedEmails(emails);
-      setSelectedNames(names);
-      setSelectedImages(images); */
-
       setSharedUsers(response.data);
-      console.log(response.data);
     }catch(error){
-      console.error('Error fetching shared users:',error);
+      Alert.alert('Error fetching shared users:',error);
     }
   };
 
@@ -116,10 +99,9 @@ const PeopleScreen = () => {
       if (userIdFrom != null) {
         const response = await axios.get(`${baseURL}:3001/resources/gettasks/${userIdFrom}`);
         setTasks(response.data);
-        console.log("in peoples tasks: " + response.data);
       }
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      Alert.alert('Error fetching tasks:', error);
     } finally {
       setLoading(false);
     }
@@ -139,8 +121,6 @@ const PeopleScreen = () => {
       const response = await axios.get(`${baseURL}:3001/resources/getUserIdByEmail/${selectedContact}`); 
       setSelectedIds(response.data);
       const getUserId = response.data;
-      console.log("Getting id: ",response.data);
-      console.log("Selected Ids: ",selectedIds);
       const responses = await Promise.all(
         selectedTask.map(taskId => 
           axios.post(`${baseURL}:3001/resources/shareTasks`, {
@@ -152,7 +132,6 @@ const PeopleScreen = () => {
       );
       responses.forEach((response) => {
         Alert.alert(response.data.message);
-        console.log("Getting data from sharetasks:", response.data.message);
       });
       
       setModalVisible(false);
@@ -164,7 +143,7 @@ const PeopleScreen = () => {
       setEmailInput('');
       setSelectedTask([]);
     } catch (error) {
-      console.error('Error sharing tasks:', error.message);
+      Alert.alert('Error sharing tasks:', error.message);
     }
   };
 
@@ -185,7 +164,7 @@ const PeopleScreen = () => {
         setImageSuggestions(images);
 
       } catch (error) {
-        console.error('Error fetching email suggestions:', error);
+        Alert.alert('Error fetching email suggestions:', error);
       }
     } else {
       setIdSuggestions([]);
@@ -197,26 +176,24 @@ const PeopleScreen = () => {
 
   const handleSelectEmail = (email) => {
 
-    // Find the index of the selected email in the suggestions list
+    // Finding the index of the selected email in the suggestions list
     const index = emailSuggestions.indexOf(email);
 
-
     if (selectedEmails.includes(email) || sharedEmails.includes(email)) {
-      // If it is, show an alert
       Alert.alert('Already Added', 'This email has already been added.');
     } else {
       if (index !== -1) {
-        // Get the corresponding name and image using the index
+        // Getting the corresponding name and image using the index
         const selectedId = idSuggestions[index];
         const selectedName = nameSuggestions[index];
         const selectedImage = imageSuggestions[index];
 
-        // Update state for selected emails, names, and images
+        // Updating state for selected emails, names, and images
         setSelectedIds([...selectedIds, selectedId]);
         setSelectedEmails([...selectedEmails, email]);
         setSelectedNames([...selectedNames, selectedName]);
         setSelectedImages([...selectedImages, selectedImage]);
-        setModalVisible(true); // Show modal when an email is selected
+        setModalVisible(true); // Showing modal when an email is selected
       }
     }
 
@@ -231,19 +208,19 @@ const PeopleScreen = () => {
     const updatedImages = [...selectedImages];
     const updatedIds = [...selectedIds];
 
-    // Remove the item at the specified index
+    // Removing the item at the specified index
     updatedEmails.splice(index, 1);
     updatedNames.splice(index, 1);
     updatedImages.splice(index, 1);
     updatedIds.splice(index, 1);
 
-    // Update the state with the new arrays
+    // Updating the state with the new arrays
     setEmailSuggestions(updatedEmails);
     setNameSuggestions(updatedNames);
     setImageSuggestions(updatedImages);
     setIdSuggestions(updatedIds);
 
-    // Update the state with the new selected arrays
+    // Updating the state with the new selected arrays
     setSelectedEmails(updatedEmails);
     setSelectedNames(updatedNames);
     setSelectedImages(updatedImages);

@@ -11,10 +11,9 @@ const LogoutScreen = ({ navigation,onLogout }) => {
     try {
       await AsyncStorage.removeItem('isLoggedIn');
       await AsyncStorage.removeItem('uid');
-      onLogout(); // Notify App.js about the logout
+      onLogout(); // Notifying App.js about the logout
       navigation.navigate('Login'); // Navigate to the 'Login' screen
     } catch (error) {
-      console.error('Error during logout:', error);
       Alert.alert('Logout Error', 'Failed to log out. Please try again.');
     }
   };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen,fireEvent, waitFor } from '@testing-library/react-native';
 import axios from 'axios';
-import PeopleScreen from './PeopleScreen'; // Adjust the import path as necessary
+import PeopleScreen from './PeopleScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -16,10 +16,10 @@ jest.mock('expo-checkbox', () => ({
     ),
   }));
 
-  // Mock axios
+  // Mocking axios
 jest.mock('axios');
 
-// Mock implementation of useTheme
+// Mocking implementation of useTheme
 jest.mock('./ThemeContext', () => ({
   useTheme: () => ({
     theme: {
@@ -33,12 +33,12 @@ jest.mock('./ThemeContext', () => ({
   }),
 }));
 
-// Mock AsyncStorage
+// Mocking AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(),
 }));
 
-  // Mock expo-file-system
+  // Mocking expo-file-system
 jest.mock('expo-file-system', () => ({
     readAsStringAsync: jest.fn(() => Promise.resolve('mock file content')),
     writeAsStringAsync: jest.fn(() => Promise.resolve()),
@@ -51,11 +51,7 @@ jest.mock('expo-file-system', () => ({
     cacheDirectory: '/mock/cache/directory/',
   }));
 
-  jest.mock('@react-native-async-storage/async-storage', () => ({
-    getItem: jest.fn(),
-  }));
-
-  // Mock @expo/vector-icons
+  // Mocking @expo/vector-icons
 jest.mock('@expo/vector-icons', () => {
     const mockComponent = ({ name, ...rest }) => {
       return <div {...rest}>Icon: {name}</div>;
@@ -63,15 +59,13 @@ jest.mock('@expo/vector-icons', () => {
   
     return {
       Ionicons: mockComponent,
-      // Add other icons if needed
       MaterialIcons: mockComponent,
       FontAwesome: mockComponent,
-      // Add any other icons or components used in your tests
     };
   });
 
 test('renders loading spinner when loading is true', async() => {
-  // Mock the useState hook to set loading to true
+  // Mocking the useState hook to set loading to true
   jest.spyOn(React, 'useState')
     .mockImplementationOnce(initial => [true, jest.fn()]);
 
@@ -81,19 +75,15 @@ test('renders loading spinner when loading is true', async() => {
     </NavigationContainer>
     );
 
-  // Check if the ActivityIndicator (spinner) is present
-  /* const spinner = screen.getByTestId('loading-spinner');
-  expect(spinner).toBeTruthy(); */
-
-  // Check if the login message is present
+  // Checking if the loader is active
   const message = screen.getByTestId('loadingIndicator');
   expect(message).toBeTruthy();
 });
 test('displays login message when not logged in', async() => {
-    // Mock the useState hook to set isLoggedIn to false
+    // Mocking the useState hook to set isLoggedIn to false
     jest.spyOn(React, 'useState')
-      .mockImplementationOnce(() => [false, jest.fn()]) // isLoggedIn
-      .mockImplementationOnce(() => [null, jest.fn()]); // userIdFrom
+      .mockImplementationOnce(() => [false, jest.fn()]) 
+      .mockImplementationOnce(() => [null, jest.fn()]); 
   
       render(
         <NavigationContainer>
@@ -104,17 +94,17 @@ test('displays login message when not logged in', async() => {
     
 
 
-    // Check if loading indicator is displayed
+    // Checking if loading indicator is displayed
   expect(screen.getByTestId('loadingIndicator')).toBeTruthy();
 
-  // Wait for loading to complete
+  // Waiting for loading to complete
   await waitFor(() => {
       expect(screen.getByText('You need to be logged in to view your tasks.')).toBeTruthy();
     });
   });
 
   test('Email is displayed correctly after inserting to email field', async () => {
-    // Mock data for testing
+    // Mocking data for testing
     const mockUserData = {
       name: 'John Doe',
       id: '1',
@@ -126,7 +116,7 @@ test('displays login message when not logged in', async() => {
       { id: '2', title: 'Task 2' },
     ];
   
-    // Mock API responses
+    // Mocking API responses
     axios.get.mockImplementation((url) => {
       if (url.includes('getUsers')) {
         return Promise.resolve({ data: [mockUserData] });
@@ -140,7 +130,7 @@ test('displays login message when not logged in', async() => {
       return Promise.reject(new Error('Not Found'));
     });
   
-    // Mock AsyncStorage
+    // Mocking AsyncStorage
     AsyncStorage.getItem.mockImplementation((key) => {
       if (key === 'isLoggedIn') return Promise.resolve('true');
       if (key === 'uid') return Promise.resolve('123');
@@ -148,7 +138,7 @@ test('displays login message when not logged in', async() => {
       return Promise.resolve(null);
     });
   
-    // Render the component
+    // Rendering the component
     render(
       <NavigationContainer>
           <PeopleScreen />
@@ -168,7 +158,7 @@ test('displays login message when not logged in', async() => {
   });
 
   test('Modal is displayed correctly after pressing email field', async () => {
-    // Mock data for testing
+    // Mocking data for testing
     const mockUserData = {
       name: 'John Doe',
       id: '1',
@@ -180,7 +170,7 @@ test('displays login message when not logged in', async() => {
       { id: '2', title: 'Task 2' },
     ];
   
-    // Mock API responses
+    // Mocking API responses
     axios.get.mockImplementation((url) => {
       if (url.includes('getUsers')) {
         return Promise.resolve({ data: [mockUserData] });
@@ -194,7 +184,7 @@ test('displays login message when not logged in', async() => {
       return Promise.reject(new Error('Not Found'));
     });
   
-    // Mock AsyncStorage
+    // Mocking AsyncStorage
     AsyncStorage.getItem.mockImplementation((key) => {
       if (key === 'isLoggedIn') return Promise.resolve('true');
       if (key === 'uid') return Promise.resolve('123');
@@ -202,7 +192,7 @@ test('displays login message when not logged in', async() => {
       return Promise.resolve(null);
     });
   
-    // Render the component
+    // Rendering the component
     render(
       <NavigationContainer>
           <PeopleScreen />
@@ -217,22 +207,22 @@ test('displays login message when not logged in', async() => {
     const selectEmailButton = screen.getByTestId('getSharedTestEmail');
     fireEvent.changeText(selectEmailButton, 'john.doe@example.com');
 
-    // Simulate selecting an email
+    // Simulating selecting an email
     const selectEmail = screen.getByTestId('testing-assign');
     fireEvent.press(selectEmail);
 
-    // Open the modal
+    // Opening the modal
     const modal = screen.getByTestId('test-modal');
     expect(modal).toBeTruthy();
 
-    // Check the buttons in the modal
+    // Checking the buttons in the modal
     const shareButton = screen.getByTestId('share-button');
     const closeButton = screen.getByTestId('close-button');
 
     expect(shareButton).toBeTruthy();
     expect(closeButton).toBeTruthy();
 
-    // Simulate pressing the close button
+    // Simulating pressing the close button
     fireEvent.press(closeButton);
     await waitFor(() => {
       expect(screen.queryByTestId('test-modal')).toBeNull();

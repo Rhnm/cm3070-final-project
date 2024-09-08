@@ -23,10 +23,10 @@ const EditUserProfileScreen = () => {
           fetchUserDetails(uid);
         } else {
           navigation.navigate('Login');
-          console.log('No user ID found');
+          Alert.alert('No user ID found');
         }
       } catch (error) {
-        console.error('Error fetching user ID:', error);
+        Alert.alert('Error fetching user ID:', error);
       }
     };
 
@@ -40,10 +40,10 @@ const EditUserProfileScreen = () => {
         setUsername(response.data[0].name);
         setEmail(response.data[0].email);
       } else {
-        console.log('No user details found');
+        Alert.alert('No user details found');
       }
     } catch (error) {
-      console.error('Error fetching profile data:', error);
+      Alert.alert('Error fetching profile data:', error);
     }
   };
 
@@ -70,14 +70,11 @@ const EditUserProfileScreen = () => {
         navigation.goBack();
         setError('');
       } else {
-        //Alert.alert('Error', 'Failed to update profile');
         Alert.alert('Error', response.data.message || 'Failed to update profile');
         setError('User not found');
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
       setError('User not found');
-      //Alert.alert('Error', 'Failed to update profile');
       Alert.alert('Error', error.response?.data?.message || 'Failed to update profile');
     }
   };

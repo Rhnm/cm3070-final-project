@@ -53,7 +53,6 @@ const Register = ({ navigation }) => {
     }
     } catch (error) {
       setmsg('User registration failed');
-      console.error('Register error:', error);
       Alert.alert('Error', 'Failed to register');
     }
   };
@@ -109,9 +108,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 200, // Set your desired width
-    height: 200, // Set your desired height
-    resizeMode: 'contain', // Ensure the logo retains its aspect ratio
+    width: 200, 
+    height: 200, 
+    resizeMode: 'contain', 
     marginBottom: "10%",
   },
   input: {

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, Image } from 'react-native';
 import * as Location from 'expo-location';
 
-const API_KEY = '985da39d6270872630a22f14f07ac994'; // Replace with your OpenWeatherMap API key
+const API_KEY = '985da39d6270872630a22f14f07ac994'; // OpenWeatherMap API key
 const WEATHER_API = 'https://api.openweathermap.org/data/2.5/weather';
 const AIR_QUALITY_API = 'https://api.openweathermap.org/data/2.5/air_pollution';
 
 const WeatherScreen = () => {
-  const [locationError, setLocationError] = useState(null);
+  const [locationError, setLocationError] = useState('');
   const [weatherData, setWeatherData] = useState(null);
   const [airQualityData, setAirQualityData] = useState(null);
   const [unitPreference, setUnitPreference] = useState('metric');

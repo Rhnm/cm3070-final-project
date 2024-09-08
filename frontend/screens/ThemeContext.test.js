@@ -1,9 +1,8 @@
 import React from 'react';
 import { render, act } from '@testing-library/react-native';
-import { ThemeProvider, useTheme } from './ThemeContext'; // Adjust the import path accordingly
+import { ThemeProvider, useTheme } from './ThemeContext'; 
 import { Text, Button } from 'react-native';
 
-// A simple component to consume the ThemeContext
 const TestComponent = () => {
   const { theme, toggleTheme } = useTheme();
   return (

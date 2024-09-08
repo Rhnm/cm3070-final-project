@@ -20,7 +20,7 @@ const CompletedTaskScreen = () => {
       const response = await axios.get(`${baseURL}:3001/resources/getCompletedTasks/${userId}`);
       setTasks(response.data);
     } catch (error) {
-      console.error('Error fetching completed tasks:', error);
+      Alert.alert('Error fetching completed tasks:', error);
     }
   };
 

@@ -9,14 +9,14 @@ import * as FileSystem from 'expo-file-system'
 import { baseURL } from '../apiConfig';;
 import { Alert } from 'react-native';
 
-// Mock dependencies
+// Mocking dependencies
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(),
 }));
 
 jest.mock('axios');
 
-// Mock implementation of useTheme
+// Mocking implementation of useTheme
 jest.mock('./ThemeContext', () => ({
   useTheme: () => ({
     theme: {
@@ -65,7 +65,7 @@ describe('NotesScreen', () => {
         id: 3, 
         user_id: mockUserId, 
         note_text: 'New Note', 
-        created_at: new Date().toISOString() // Match backend format
+        created_at: new Date().toISOString()
     }  
     });
   axios.put.mockResolvedValue({});
@@ -83,7 +83,7 @@ describe('NotesScreen', () => {
 
     await findByText('Your Notes');
 
-    // Check initial notes are fetched and displayed
+    // Checking if initial notes are fetched and displayed
     expect(axios.get).toHaveBeenCalledWith(`${baseURL}:3001/resources/getnotes/mockUserId`);
     expect(getByText('Note 1')).toBeTruthy();
     expect(getByText('Note 2')).toBeTruthy();

@@ -6,10 +6,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import UserProfileScreen from './UserProfileScreen';
 
 
-// Mock axios, AsyncStorage, and other necessary modules
+// Mocking axios
 jest.mock('axios');
 
-// Mock implementation of useTheme
+// Mocking implementation of useTheme
 jest.mock('./ThemeContext', () => ({
   useTheme: () => ({
     theme: {
@@ -44,10 +44,10 @@ describe('UserProfileScreen', () => {
   });
 
   it('should fetch and display user details', async () => {
-    // Mock AsyncStorage to return a fake userId
+    // Mocking AsyncStorage to return a fake userId
     AsyncStorage.getItem.mockResolvedValue('1234');
 
-    // Mock axios to return user details
+    // Mocking axios to return user details
     axios.get.mockImplementation((url) => {
       if (url.includes('getUserDetails')) {
         return Promise.resolve({
@@ -66,11 +66,11 @@ describe('UserProfileScreen', () => {
       </NavigationContainer>
     );
 
-    // Wait for the username and email to be fetched and displayed
+    // Waiting for the username and email to be fetched and displayed
     await waitFor(() => {
       expect(getByText('Jane Doe')).toBeTruthy();
       expect(getByText('jane.doe@example.com')).toBeTruthy();
     });
     
-  }, 10000); // Set timeout to 10 seconds
+  }, 10000); // Setting timeout to 10 seconds
 });

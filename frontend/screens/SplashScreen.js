@@ -6,7 +6,7 @@ const SplashScreen = () => {
   const fadeAnim = new Animated.Value(0);
 
   useEffect(() => {
-    // Start the fade-in animation when the component mounts
+    // Starting the fade-in animation when the component mounts
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 2000,
@@ -35,12 +35,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff', // Set your desired background color
+    backgroundColor: '#fff', 
   },
   logo: {
-    width: 200, // Set your desired width
-    height: 200, // Set your desired height
-    resizeMode: 'contain', // Ensure the logo retains its aspect ratio
+    width: 200, 
+    height: 200, 
+    resizeMode: 'contain', 
   },
   title: {
     fontSize: 24,
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'blue', // Set your desired button color
+    backgroundColor: '#7E64FF', 
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

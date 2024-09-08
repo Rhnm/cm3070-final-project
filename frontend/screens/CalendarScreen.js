@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigation, useFocusEffect } from '@react-navigation/native'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import { baseURL } from '../apiConfig'; // Make sure this path is correct
+import { baseURL } from '../apiConfig';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useTheme } from './ThemeContext';
@@ -86,7 +86,6 @@ const CalendarScreen = () => {
   
       }
     } catch (error) {
-      console.error('Error fetching tasks:', error);
     } finally {
       setLoading(false);
       setRefreshing(false); // Stop refreshing when done
@@ -101,7 +100,7 @@ const CalendarScreen = () => {
         setUserId(uid);
         setIsLoggedIn(value === 'true');
       } catch (error) {
-        console.error('Error checking login status:', error);
+        Alert.alert('Error checking login status:', error);
       } finally {
         setLoading(false); // Stop loading spinner even if there's an error
       }
@@ -118,12 +117,6 @@ const CalendarScreen = () => {
     }, [userId,fetchTasks])
   );
 
-  /* useEffect(() => {
-    // Initial fetch on component mount
-    if (userId) {
-      fetchTasks();
-    }
-  }, [userId]); */
 
   const onDayPress = (day) => {
     const tasksForDate = tasks.filter((task) => task.due_date === day.dateString);
@@ -148,7 +141,6 @@ const CalendarScreen = () => {
         setEditModalVisible(false);
         fetchTasks(); // Refresh tasks
       } catch (error) {
-        console.error('Error updating task:', error);
         Alert.alert('Error', 'Failed to update task');
       }
     }
@@ -172,7 +164,6 @@ const CalendarScreen = () => {
               setSelectedDate(prev => prev.filter(task => task.id !== taskId)); // Remove from selected tasks
               fetchTasks(); // Refresh tasks
             } catch (error) {
-              console.error('Error deleting task:', error);
               Alert.alert('Error', 'Failed to delete task');
             }
           },
@@ -227,21 +218,6 @@ const CalendarScreen = () => {
     setRefreshing(true);
     fetchTasks();
   };
-
-   /* const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    try {
-      if (userId) {
-        fetchTasks();
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Failed to refresh data');
-    } finally {
-      setRefreshing(false);
-    }
-  }, [userId]); */
-  
-  
 
   return (
     <View style={[styles.container,{backgroundColor: theme === 'dark' ? '#333' : '#fff', }]}>

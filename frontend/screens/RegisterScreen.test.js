@@ -3,16 +3,16 @@ import { render,screen, fireEvent,getByPlaceholderText, waitFor } from '@testing
 import axios from 'axios';
 import RegisterScreen from './RegisterScreen';
 import { NavigationContainer } from '@react-navigation/native';
-import { ThemeContext } from './ThemeContext'; // Import the ThemeContext
+import { ThemeContext } from './ThemeContext';
 import { baseURL } from '../apiConfig';
 
-// Mock the navigation prop
+// Mocking the navigation prop
 const mockNavigate = jest.fn();
 const mockNavigation = {
   navigate: mockNavigate,
 };
 
-// Mock implementation of useTheme
+// Mocking implementation of useTheme
 jest.mock('./ThemeContext', () => ({
   useTheme: () => ({
     theme: {
@@ -25,7 +25,7 @@ jest.mock('./ThemeContext', () => ({
     },
   }),
 }));
-// Mock axios
+// Mocking axios
 jest.mock('axios');
 
 describe('RegisterScreen', () => {
@@ -46,7 +46,7 @@ describe('RegisterScreen', () => {
   });
 
   it('handles successful registration', async () => {
-    axios.post.mockResolvedValueOnce({ status: 200 }); // Mock axios response
+    axios.post.mockResolvedValueOnce({ status: 200 }); // Mocking axios response
 
     render(
       <NavigationContainer>
@@ -61,7 +61,7 @@ describe('RegisterScreen', () => {
 
     fireEvent.press(screen.getByText('Register'));
 
-    // Use `await waitFor` to check for success message
+    // checking for success message
     await waitFor(() => {
       expect(screen.getByText('User registered successfully')).toBeTruthy();
     });
@@ -75,7 +75,7 @@ describe('RegisterScreen', () => {
   });
 
   it('handles registration error', async () => {
-    axios.post.mockRejectedValueOnce(new Error('Failed to register')); // Mock axios error
+    axios.post.mockRejectedValueOnce(new Error('Failed to register')); // Mocking axios error
 
     render(
         <NavigationContainer>
@@ -92,7 +92,7 @@ describe('RegisterScreen', () => {
 
     fireEvent.press(screen.getByText('Register'));
 
-    // Use `await waitFor` to check for success message
+    // Checking success message
     await waitFor(() => {
         expect(screen.getByText('User registration failed')).toBeTruthy();
       });

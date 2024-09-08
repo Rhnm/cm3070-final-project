@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react-native';
 import axios from 'axios';
-import SharedPersonScreen from './SharedPersonScreen'; // Adjust the import path as necessary
+import SharedPersonScreen from './SharedPersonScreen';
 import { NavigationContainer } from '@react-navigation/native';
 
 jest.mock('expo-checkbox', () => ({
@@ -17,7 +17,7 @@ jest.mock('expo-checkbox', () => ({
 
   jest.mock('axios');
 
-  // Mock implementation of useTheme
+  // Mocking implementation of useTheme
 jest.mock('./ThemeContext', () => ({
   useTheme: () => ({
     theme: {
@@ -31,7 +31,7 @@ jest.mock('./ThemeContext', () => ({
   }),
 }));
 
-  // Mock expo-file-system
+  // Mocking expo-file-system
 jest.mock('expo-file-system', () => ({
     readAsStringAsync: jest.fn(() => Promise.resolve('mock file content')),
     writeAsStringAsync: jest.fn(() => Promise.resolve()),
@@ -44,7 +44,7 @@ jest.mock('expo-file-system', () => ({
     cacheDirectory: '/mock/cache/directory/',
   }));
 
-  // Mock @expo/vector-icons
+  // Mocking @expo/vector-icons
 jest.mock('@expo/vector-icons', () => {
     const mockComponent = ({ name, ...rest }) => {
       return <div {...rest}>Icon: {name}</div>;
@@ -52,15 +52,13 @@ jest.mock('@expo/vector-icons', () => {
   
     return {
       Ionicons: mockComponent,
-      // Add other icons if needed
       MaterialIcons: mockComponent,
       FontAwesome: mockComponent,
-      // Add any other icons or components used in your tests
     };
   });
 
 test('renders loading spinner when loading is true', () => {
-  // Mock the useState hook to set loading to true
+  // Mocking the useState hook to set loading to true
   jest.spyOn(React, 'useState')
     .mockImplementationOnce(initial => [true, jest.fn()]);
 
@@ -70,14 +68,14 @@ test('renders loading spinner when loading is true', () => {
     </NavigationContainer>
     );
 
-  // Check if the ActivityIndicator (spinner) is present
+  // Checking if the ActivityIndicator (spinner) is present
   const spinner = screen.getByTestId('loading-spinner');
   expect(spinner).toBeTruthy();
 });
 
 
 test('displays shared tasks after loading', async () => {
-    // Mock axios to return a sample response
+    // Mocking axios to return a sample response
     axios.get.mockResolvedValue({
       data: [
         {
@@ -93,14 +91,14 @@ test('displays shared tasks after loading', async () => {
   
     render(<SharedPersonScreen />);
   
-    // Wait for the loading state to be set to false and the tasks to be rendered
+    // Waiting for the loading state to be set to false and the tasks to be rendered
     await waitFor(() => screen.getByText('Sample Task 1'));
   
-    // Check if the task title is displayed
+    // Checking if the task title is displayed
     const taskTitle = screen.getByText('Sample Task 1');
     expect(taskTitle).toBeTruthy();
   
-    // Check if the assigned users are displayed
+    // Checking if the assigned users are displayed
     const user1 = screen.getByText('Jane Smith');
     const user2 = screen.getByText('Bob Brown');
     expect(user1).toBeTruthy();

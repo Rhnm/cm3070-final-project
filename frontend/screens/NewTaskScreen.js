@@ -11,8 +11,8 @@ import { baseURL } from '../apiConfig';
 import { useTheme } from './ThemeContext';
 import { Ionicons,FontAwesome } from '@expo/vector-icons';
 
-const NewTaskScreen = () => { // Define a functional component called NewTaskScreen
-  // Initialize states for task title, description, duedate and priority using the useState hook
+const NewTaskScreen = () => { 
+  // Initializing states using the useState hook
   const [title, setTitle] = useState(''); 
   const { theme } = useTheme();
   const [description, setDescription] = useState(''); 
@@ -31,7 +31,7 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
   const [contacts, setContacts] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
   const [tasks, setTasks] = useState([]);
-  const [selectedTask, setSelectedTask] = useState([]); // Ensure it's an array
+  const [selectedTask, setSelectedTask] = useState([]); 
   const [modalVisible, setModalVisible] = useState(false);
   const [emailInput, setEmailInput] = useState('');
 
@@ -56,9 +56,9 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
         setUserIdFrom(uid);
         setIsLoggedIn(value === 'true');
       } catch (error) {
-        console.error('Error checking login status:', error);
+        Alert.alert('Error checking login status:', error);
       } finally {
-        setLoading(false); // Stop loading spinner even if there's an error
+        setLoading(false); // Stopping loading spinner even if there's an error
       }
     };
 
@@ -66,18 +66,16 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
   }, []);
   
   useEffect(() => {
-    // Fetch task types from the backend
+    // Fetching task types from the backend
     const fetchTaskTypes = async () => {
       try {
         const response = await axios.get(`${baseURL}:3001/resources/tasktypes`);
         if (Array.isArray(response.data)) {
           setTaskTypes(response.data);
         } else {
-          console.error('Task types data is not an array:', response.data);
           Alert.alert('Error', 'Unexpected data format for task types');
         }
       } catch (error) {
-        console.error('Error fetching task types:', error);
         Alert.alert('Error', 'Failed to fetch task types');
       }
     };
@@ -88,11 +86,9 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
         if (Array.isArray(response.data)) {
           setPriorities(response.data);
         } else {
-          console.error('Priorities data is not an array:', response.data);
           Alert.alert('Error', 'Unexpected data format for priorities');
         }
       } catch (error) {
-        console.error('Error fetching priorities:', error);
         Alert.alert('Error', 'Failed to fetch priorities');
       }
     };
@@ -100,13 +96,12 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
       try {
         const uid = await AsyncStorage.getItem('uid');
         if (uid !== null) {
-          setUserId(uid); // Set the user ID in the state
-          console.log('User ID:', uid);
+          setUserId(uid); 
         } else {
-          console.log('No user ID found');
+          Alert.alert('No user ID found');
         }
       } catch (error) {
-        console.error('Error fetching user ID:', error);
+        Alert.alert('Error fetching user ID:', error);
       }
     };
 
@@ -129,9 +124,8 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
     try {
       const response = await axios.get(`${baseURL}:3001/resources/getUsers/${userIdFrom}`);
       setContacts(response.data);
-      console.log("User Id From: ",contacts);
     } catch (error) {
-      console.error('Error fetching contacts:', error);
+      Alert.alert('Error fetching contacts:', error);
     } 
   };
 
@@ -139,9 +133,8 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
     try{
       const response = await axios.get(`${baseURL}:3001/resources/getSharedUsers/${userIdFrom}`);
       setSharedUsers(response.data);
-      console.log("Shared Users: ",sharedUsers);
     }catch(error){
-      console.error('Error fetching shared users:',error);
+      Alert.alert('Error fetching shared users:',error);
     }
   };
 
@@ -151,10 +144,9 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
       if (userIdFrom != null) {
         const response = await axios.get(`${baseURL}:3001/resources/gettasks/${userIdFrom}`);
         setTasks(response.data);
-        console.log("in peoples tasks: " + response.data);
       }
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      Alert.alert('Error fetching tasks:', error);
     } finally {
       setLoading(false);
     }
@@ -173,57 +165,38 @@ const NewTaskScreen = () => { // Define a functional component called NewTaskScr
 
   const predictTaskPriority = async (description) => {
     try {
-        // Log the description being sent for prediction
-        console.log('Sending description for prediction:', description);
-        
-        // Send a POST request to the prediction API with the task description
+        // Sending a POST request to the prediction API with the task description
         const response = await axios.post(`${baseURL}:3001/predict`, { description });
         
-        // Log the received prediction response
-        console.log('Received prediction:', response.data);
-        
-        // Set the priority state with the received prediction
+        // Setting the priority state with the received prediction
         setPriority(response.data.priority);
     } catch (error) {
-        // Log the error for debugging purposes
-        console.error('Error:', error);
-
-        // Show an alert to the user indicating that the prediction failed
+        // Showing an alert to the user indicating that the prediction failed
         Alert.alert('Error', 'Failed to predict task priority: ' + error.message);
     }
 };
 
 const predictTaskTimeframe = async (description) => {
   try {
-      // Log the description being sent for prediction
-      console.log('Sending description for prediction:', description);
-      
-      // Send a POST request to the prediction API with the task description
+      // Sending a POST request to the prediction API with the task description
       const response = await axios.post(`${baseURL}:3001/predictTimeframe`, { description });
       
-      // Log the received prediction response
-      console.log('Received Timeframe prediction:', response.data);
-
-      // Get the predicted timeframe
+      // Getting the predicted timeframe
       let predictedTimeframe = response.data.timeframe;
 
-      // Round off to the nearest whole number and ensure it's a positive value
+      // Rounding off to the nearest whole number and ensure it's a positive value
       const roundedTimeframe = Math.abs(Math.round(predictedTimeframe));
 
-      // Set the rounded timeframe
+      // Setting the rounded timeframe
       setTimeframe(roundedTimeframe);
       
   } catch (error) {
-      // Log the error for debugging purposes
-      console.error('Error:', error);
-
-      // Show an alert to the user indicating that the prediction failed
       Alert.alert('Error', 'Failed to predict task priority: ' + error.message);
   }
 };
 
 const sanitizeData = async (data) => {
-  // Basic sanitization: trimming whitespace and removing special characters
+  // Trimming whitespace and removing special characters
   return {
     ...data,
     title: data.title.trim(),
@@ -254,14 +227,11 @@ const validateInput = () => {
 };
 
   const saveTask = async () => { 
-    console.log('Task saved:', sanitizeData({title, description, dueDate, priority, taskType })); 
     const sanitizedData = sanitizeData({title, description, dueDate, priority, taskType, timeframe });
     try {
       if (validateInput()) {
         const response = await axios.post(`${baseURL}:3001/resources/savetask`, sanitizedData);
-        console.log('Task saved Success:', response.data);
         if(response.data.message === "Data inserted successfully!"){
-          Alert.alert("Task Id Last inserted: "+response.data.taskId);
           setTaskId(response.data.taskId);
           if(selectedIds){
             await handleShare(response.data.taskId);
@@ -277,28 +247,17 @@ const validateInput = () => {
         }
       }
     } catch (error) {
-      console.error('Error saving task:', error);
       Alert.alert('Error', 'Failed to save task');
     }
   };
 
   const handleShare = async (taskId) => {
-    console.log("Selected ids: ",selectedIds);
-    
     try {
         const response = await axios.post(`${baseURL}:3001/resources/shareTask`, {
             taskId,
             userIdFrom,
             selectedIds,
           });
-          console.log(response.data);
-      
-      // Extracting the data (messages) from each response
-      /* const responseData = responses.map(response => response.data);
-
-      responseData.forEach(message => {
-        alert(message); // Logs "Task shared successfully!" or "Task already shared!"
-      }); */
       
       setSelectedEmails([]);
       setSelectedIds([]);
@@ -308,7 +267,7 @@ const validateInput = () => {
       setEmailInput('');
       setSelectedTask([]);
     } catch (error) {
-      console.error('Error sharing tasks:', error.message);
+      Alert.alert('Error sharing tasks:', error.message);
     }
   };
 
@@ -329,7 +288,7 @@ const validateInput = () => {
         setImageSuggestions(images);
 
       } catch (error) {
-        console.error('Error fetching email suggestions:', error);
+        Alert.alert('Error fetching email suggestions:', error);
       }
     } else {
       setIdSuggestions([]);
@@ -341,23 +300,18 @@ const validateInput = () => {
 
   const handleSelectEmail = (email) => {
 
-    // Find the index of the selected email in the suggestions list
+    // Finding the index of the selected email in the suggestions list
     const index = emailSuggestions.indexOf(email);
-
-    //if (!selectedEmails.includes(email)) {
-      //setSelectedEmails([...selectedEmails, email]);
-    //}
     if (selectedEmails.includes(email)) {
-      // If it is, show an alert
       Alert.alert('Already Added', 'This email has already been added.');
     } else {
       if (index !== -1) {
-        // Get the corresponding name and image using the index
+        // Getting the corresponding name and image using the index
         const selectedId = idSuggestions[index];
         const selectedName = nameSuggestions[index];
         const selectedImage = imageSuggestions[index];
 
-        // Update state for selected emails, names, and images
+        // Updating state for selected emails, names, and images
         setSelectedIds([...selectedIds, selectedId]);
         setSelectedEmails([...selectedEmails, email]);
         setSelectedNames([...selectedNames, selectedName]);
@@ -367,7 +321,6 @@ const validateInput = () => {
 
     setEmailInput('');
     setEmailSuggestions([]);
-    //setModalVisible(true); // Show modal when an email is selected
   };
 
 
@@ -377,19 +330,19 @@ const validateInput = () => {
     const updatedImages = [...selectedImages];
     const updatedIds = [...selectedIds];
 
-    // Remove the item at the specified index
+    // Removing the item at the specified index
     updatedEmails.splice(index, 1);
     updatedNames.splice(index, 1);
     updatedImages.splice(index, 1);
     updatedIds.splice(index, 1);
 
-    // Update the state with the new arrays
+    // Updating the state with the new arrays
     setEmailSuggestions(updatedEmails);
     setNameSuggestions(updatedNames);
     setImageSuggestions(updatedImages);
     setIdSuggestions(updatedIds);
 
-    // Update the state with the new selected arrays
+    // Updating the state with the new selected arrays
     setSelectedEmails(updatedEmails);
     setSelectedNames(updatedNames);
     setSelectedImages(updatedImages);
@@ -447,7 +400,7 @@ const validateInput = () => {
             <Ionicons name={isVisible ? 'remove-circle-outline' : 'add-circle-outline'} size={24} color="#4630EB" />
             <Text style={[styles.iconLabel,{color: theme === 'dark' ? '#fff' : '#000'}]}>Assign Tasks:</Text>
           </TouchableOpacity>
-          {/* Conditionally render the email input field */}
+          {/* Conditionally rendering the email input field */}
           {isVisible && (
             <TextInput
               style={[styles.emailInput,{color: theme === 'dark' ? '#fff' : '#000'}]}
@@ -485,38 +438,6 @@ const validateInput = () => {
           ))}
         </View>
 
-        {/* <View style={styles.selectedEmailsContainer}>
-          {sharedUsers.map((user, index) => (
-            <TouchableOpacity style={styles.personContainer} key={index} onPress={() => handlePress(user.email)}>
-              <Text style={styles.selectedEmail}>{user.email}</Text>
-            </TouchableOpacity>
-          ))}
-        </View> */}
-        
-        {/* {selectedContact && (
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.selectedContactName}>{selectedContact.name}</Text>
-                <FlatList
-                  data={tasks}
-                  keyExtractor={(item) => item.id.toString()}
-                  renderItem={renderTaskItem}
-                  contentContainerStyle={styles.taskListContainer}
-                />
-                <View style={styles.buttonContainer}>
-                  <Button title="Share Task" color="#ef9c66" onPress={handleShare} />
-                  <Button title="Close" color="#78aba8" onPress={() => setModalVisible(false)} />
-                </View>
-              </View>
-            </View>
-          </Modal>
-        )} */}
         <View style={styles.labelContainer}>
           <Text style={[styles.label,{color: theme === 'dark' ? '#fff' : '#000'}]}>Task Type</Text>
           <View style={styles.pickerContainer}>
@@ -667,8 +588,6 @@ const styles = StyleSheet.create({
   },
   personContainer: {
     alignItems: 'left',
-    /* marginRight: 20,
-    marginBottom: 20, */
     width: "100%",
     backgroundColor:"#ccc",
   },
@@ -730,12 +649,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   suggestionsContainer: {
-    position: 'absolute', // or 'relative' depending on your layout
-    top: 50, // Adjust as needed
+    position: 'absolute', 
+    top: 50, 
     left: 0,
     right: 0,
     backgroundColor: 'white',
-    zIndex: 1000, // Ensure it's above other components
+    zIndex: 1000, 
     width:'80%',
   },
   suggestion: {
@@ -783,16 +702,16 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    padding: 10,             // Add padding to make the button larger
-    borderRadius: 5,         // Rounded corners for the button
-    alignItems: 'center',    // Center the text inside the button
-    justifyContent: 'center', // Center the content vertically
-    marginVertical: 10,      // Space above and below the button
+    padding: 10,             
+    borderRadius: 5,         
+    alignItems: 'center',    
+    justifyContent: 'center', 
+    marginVertical: 10,      
   },
   buttonText: {
-    color: '#fff',           // White text color (you can change this based on theme)
-    fontSize: 16,            // Font size of the button text
-    fontWeight: 'bold',      // Bold text for emphasis
+    color: '#fff',           
+    fontSize: 16,            
+    fontWeight: 'bold',      
   },
 });
 

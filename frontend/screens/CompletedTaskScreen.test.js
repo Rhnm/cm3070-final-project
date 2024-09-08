@@ -5,7 +5,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from './ThemeContext';
 
-// Mock the necessary modules
+// Mocking the necessary modules
 jest.mock('axios');
 jest.mock('@react-native-async-storage/async-storage');
 jest.mock('./ThemeContext');
@@ -20,10 +20,10 @@ describe('CompletedTaskScreen', () => {
   });
 
   it('fetches and displays tasks correctly', async () => {
-    // Mock the theme context
+    // Mocking the theme context
     useTheme.mockReturnValue({ theme: 'light' });
 
-    // Mock the API call
+    // Mocking the API call
     axios.get.mockResolvedValue({
       data: [
         {
@@ -38,7 +38,7 @@ describe('CompletedTaskScreen', () => {
       ],
     });
 
-    // Mock AsyncStorage
+    // Mocking AsyncStorage
     AsyncStorage.getItem.mockResolvedValue('userId123');
 
     const { getByText } = render(<CompletedTaskScreen />);
@@ -50,13 +50,13 @@ describe('CompletedTaskScreen', () => {
   });
 
   it('displays no tasks message when there are no tasks', async () => {
-    // Mock the theme context
+    // Mocking the theme context
     useTheme.mockReturnValue({ theme: 'light' });
 
-    // Mock the API call to return an empty list
+    // Mocking the API call to return an empty list
     axios.get.mockResolvedValue({ data: [] });
 
-    // Mock AsyncStorage
+    // Mocking AsyncStorage
     AsyncStorage.getItem.mockResolvedValue('userId123');
 
     const { getByText } = render(<CompletedTaskScreen />);

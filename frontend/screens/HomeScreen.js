@@ -8,7 +8,7 @@ import { baseURL } from '../apiConfig';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import { useFocusEffect } from '@react-navigation/native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from '@react-native-community/datetimepicker'; 
 import { useTheme } from './ThemeContext';
 import { getAccessibilityCheckedState } from '@testing-library/react-native/build/helpers/accessibility';
 import WeatherScreen from './WeatherScreen';
@@ -35,53 +35,19 @@ const HomeScreen = () => {
   const [notesAttachment, setNotesAttachment] = useState('');
   
   const [pomodoroTask, setPomodoroTask] = useState('');
-  const [pomodoroTime, setPomodoroTime] = useState(25*60); // timeframe minutes in seconds
+  const [pomodoroTime, setPomodoroTime] = useState(25*60); // Default timeframe minutes in seconds
   const [timerRunning, setTimerRunning] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
 
   const [weatherModalVisible, setweatherModalVisible] = useState(false);
 
-
-  const fetchTasks = async () => {
-    try {
-      const response = await axios.get(`${baseURL}:3001/resources/getPendingTasks/${userId}`);
-      const filteredTasks = filterTasks(response.data);
-      setTasks(filteredTasks);
-      //console.log("GetPendingTasks:" + filteredTasks);
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
-    }
-  };
-
-  const fetchSharedTasks = async () => {
-    try {
-      const response = await axios.get(`${baseURL}:3001/resources/getSharedUsersTasks/${userId}`);
-      const filteredSharedTasks = filterTasks(response.data);
-      setSharedTasks(filteredSharedTasks);
-      //console.log("GetSharedTasks:" + filteredSharedTasks);
-    } catch (error) {
-      console.error('Error fetching shared tasks:', error);
-    }
-  };
-
-  const fetchTaskNotes = async (taskId) => {
-    try {
-      const response = await axios.get(`${baseURL}:3001/resources/getNotesByTask/${taskId}`);
-      if (response.status === 200) {
-        console.log(response.data.note_text);
-        return response.data;
-      }
-    } catch (error) {
-      console.error('Error fetching task notes:', error);
-    }
-    return '';
-  };
-
   useEffect(() => {
     const fetchUserId = async () => {
       const uid = await AsyncStorage.getItem('uid');
-      setUserId(uid);
-      setPomodoroTask(null); // Resetting pomodoroTask on load
+      if (uid !== userId) {
+        setUserId(uid);
+        setPomodoroTask(null); // Resetting pomodoroTask on load
+      }
     };
     fetchUserId();
   }, []);
@@ -91,7 +57,7 @@ const HomeScreen = () => {
       fetchTasks();
       fetchSharedTasks();
     }
-  }, [userId,fetchTasks,fetchSharedTasks, selectedPriority, selectedType, selectedDateRange, showOverdue]);
+  }, [userId]);
 
   useEffect(() => {
     if (pomodoroTask) {
@@ -112,17 +78,43 @@ const HomeScreen = () => {
     }, [setPomodoroTask])
   );
 
-  
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get(`${baseURL}:3001/resources/getPendingTasks/${userId}`);
+      const filteredTasks = filterTasks(response.data);
+      setTasks(filteredTasks);
+    } catch (error) {
+      Alert.alert('Error fetching tasks:', error);
+    }
+  };
+
+  const fetchSharedTasks = async () => {
+    try {
+      const response = await axios.get(`${baseURL}:3001/resources/getSharedUsersTasks/${userId}`);
+      const filteredSharedTasks = filterTasks(response.data);
+      setSharedTasks(filteredSharedTasks);
+    } catch (error) {
+      Alert.alert('Error fetching shared tasks:', error);
+    }
+  };
+
+  const fetchTaskNotes = async (taskId) => {
+    try {
+      const response = await axios.get(`${baseURL}:3001/resources/getNotesByTask/${taskId}`);
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (error) {
+      Alert.alert('Error fetching task notes:', error);
+    }
+    return '';
+  };
 
   const filterTasks = (tasks) => {
     let filtered = tasks;
 
-    // Example of logging dates to verify
-    //console.log('Current Date:', new Date());
-      
     filtered.forEach(task => {
       setdbDuedate(new Date(task.due_date));
-      //console.log('Task Due Date:', new Date(task.due_date));
     });
 
 
@@ -138,9 +130,7 @@ const HomeScreen = () => {
 
     // Filter by date range
     if (selectedDateRange) {
-      console.log("selected date range:" + selectedDateRange);
       const now = new Date();
-      console.log("Now: " + now);
 
       // Get the start and end dates for the selected date range
       const { startDate, endDate } = getStartDateForRange(selectedDateRange, now);
@@ -165,10 +155,8 @@ const HomeScreen = () => {
     // Filter overdue tasks
     if (showOverdue) {
       const now = new Date();
-      console.log('Current Date:', now.toISOString());
       filtered = filtered.filter(task => {
         const dueDate = new Date(task.due_date);
-        console.log('Task Due Date:', dueDate.toISOString());
         return dueDate < now && task.status === 'Pending';
       });
     }
@@ -227,9 +215,6 @@ const HomeScreen = () => {
         endDate = new Date(Date.UTC(0)); // Epoch end date
     }
   
-    console.log("Start Date:", startDate);
-    console.log("End Date:", endDate);
-  
     return { startDate, endDate };
   };
 
@@ -240,7 +225,6 @@ const HomeScreen = () => {
       fetchTasks(); // Refresh task list after completing a task
       fetchSharedTasks(); // Refresh shared task list after completing a task
     } catch (error) {
-      console.error('Error completing task:', error);
       Alert.alert('Error', 'Failed to complete task');
     }
   };
@@ -248,12 +232,12 @@ const HomeScreen = () => {
   const playSound = async () => {
     try {
       const { sound: soundObject } = await Audio.Sound.createAsync(
-        require('../assets/sound/pomodoro_end.mp3') // Ensure you have a sound file in this path
+        require('../assets/sound/pomodoro_end.mp3') // sound file path
       );
       setSound(soundObject);
       await soundObject.playAsync();
     } catch (error) {
-      console.error('Error playing sound:', error);
+      Alert.alert('Error playing sound:', error);
     }
   };
 
@@ -413,7 +397,7 @@ const HomeScreen = () => {
     const notes = await fetchTaskNotes(item.id);
     const notesArray = notes;
       if (Array.isArray(notesArray) && notesArray.length > 0) {
-        // Combine all note_text entries into a single string
+        // Combining all note_text entries into a single string
         const notesText = notesArray.map(note => note.note_text).join('\n\n');
         const notesAttachment = notesArray.map(note => note.attachment);
        if(notesText != null){
@@ -491,9 +475,7 @@ const HomeScreen = () => {
         />
         
       )}
-      {combinedTasks.length === 0 && (
-        <FontAwesome5 name="tasks" size={30} color="gray" style={styles.zeroTasksIcon} />
-      )}
+      
 
 
       {/* Modal for Notes Details */}
@@ -835,7 +817,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'transparent', // Semi-transparent background
+    backgroundColor: 'transparent',
     height:'auto',
   },
   weathermodalContent: {

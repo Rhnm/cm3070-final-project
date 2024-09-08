@@ -15,13 +15,13 @@ describe('WeatherScreen', () => {
     
         const { getByText, getByRole } = render(<WeatherScreen />);
         
-        // Wait for the temperature text to appear
+        // Waiting for the temperature text to appear
         await waitFor(() => {
           getByText('30°');
           getByText('Clouds');
           getByText('AQI: 3');
           getByText('Moderate');
-        }, { timeout: 10000 }); // Increased timeout to 10 seconds
+        }, { timeout: 10000 }); // Setting timeout to 10 seconds
     
         const tempText = getByText('30°');
         const conditionText = getByText('Clouds');

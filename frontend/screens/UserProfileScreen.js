@@ -27,24 +27,16 @@ const UserProfileScreen = () => {
           setUserId(uid);
         } else {
           navigation.navigate('Login');
-          console.log('No user ID found');
         }
       } catch (error) {
-        console.error('Error fetching user ID:', error);
+        Alert.alert('Error fetching user ID:', error);
       }
     };
     
     fetchUserId();
   }, [userId]);
-  
-  /* useEffect(() => {
-    if (userId) {
-      fetchUserDetails(userId);
-      getImage(userId);
-    }
-  }, [userId]); */
 
-   // Fetch user details and profile image when the screen gains focus
+   // Fetching user details and profile image when the screen gains focus
    useFocusEffect(
     useCallback(() => {
       if (userId) {
@@ -61,11 +53,11 @@ const UserProfileScreen = () => {
         setUsername(response.data[0].name);
         setEmail(response.data[0].email);
       } else {
-        console.log('No user details found');
+        Alert.alert('No user details found');
       }
     } 
     catch (error) {
-      console.error('Error fetching profile data:', error);
+      Alert.alert('Error fetching profile data:', error);
     } 
   };
   const getImage = async(userId) => {
@@ -75,22 +67,19 @@ const UserProfileScreen = () => {
         if (response.data.length > 0) {
           const imageName = response.data[0].image;
           const imageUri = FileSystem.documentDirectory + imageName;
-          // Check if the image exists at the path
+          // Checking if the image exists at the path
           const fileInfo = await FileSystem.getInfoAsync(imageUri);
           if (fileInfo.exists) {
             setProfileImage(imageName);
             setImageUri(imageUri);
-            console.log("Image Name: " + profileImage);
-            console.log('Image URI: ' + getImageUri);
           }else{
-            // Handle case where file does not exist
+            // Handling the case where file does not exist
             setImageUri('');
             Alert.alert('Image Error', 'Image file does not exist.');
           }
         } else {
           setImageUri('');
           Alert.alert('No Image Found', 'No image found for the user.');
-          console.log('No image found for the user');
         }
       }else{
         Alert.alert('Error', 'Unexpected response from server.');
@@ -98,16 +87,15 @@ const UserProfileScreen = () => {
     }
     catch (error) {
       if (error.response && error.response.status === 404) {
-        // Handle 404 error from the server
-        //Alert.alert('Not Found', 'No image found for the user.');
+        // Handling 404 error from the server
+        Alert.alert('Not Found', 'No image found for the user.');
       } else {
-          console.error('Error fetching profile image:', error);
           Alert.alert('Error', 'Failed to fetch profile image.');
       }
     } 
   };
 
-  // Image Picker Handling (Add permissions handling)
+  // Image Picker Handling
   const handleImageUpload = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
@@ -117,16 +105,15 @@ const UserProfileScreen = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [1, 1], // Enforce square aspect ratio
+      aspect: [1, 1], // Enforcing square aspect ratio
       quality: 0.8,
     });
-    console.log('Image Picker Result:',  JSON.stringify(result)); // Log the entire result
     if (result.canceled) {
       Alert.alert('Image picking was cancelled');
       return;
     }
   
-    // Extract URI from the assets array
+    // Extracting URI from the assets array
     const asset = result.assets[0];
     const uri = asset.uri;
   
@@ -135,23 +122,22 @@ const UserProfileScreen = () => {
       return;
     }
   
-    // Extract image name from URI
+    // Extracting image name from URI
     const imageName = uri.split('/').pop() || `image_${new Date().getTime()}.jpg`;
   
-    // Construct new path
+    // Constructing new path
     const newPath = FileSystem.documentDirectory + imageName;
   
     try {
-      // Save the image locally in the app's document directory
+      // Saving the image locally in the app's document directory
       await FileSystem.moveAsync({
         from: uri,
         to: newPath,
       });
   
-      // Send image name to the backend
+      // Sending image name to the backend
       uploadImage(imageName);
     } catch (error) {
-      console.error('Error handling image upload:', error);
       Alert.alert('Error', 'Failed to handle image upload');
     }
   };
@@ -165,7 +151,6 @@ const UserProfileScreen = () => {
       const response = await axios.post(`${baseURL}:3001/resources/saveProfileImage`, { imageName, userId });
       Alert.alert('Success', 'Image name uploaded successfully');
     } catch (error) {
-      console.error('Error uploading image name:', error);
       Alert.alert('Error', 'Failed to upload image name');
     }
   };
@@ -174,7 +159,7 @@ const UserProfileScreen = () => {
     setRefreshing(true);
     try {
       if (userId) {
-        await fetchUserDetails(userId); // Fetch user details on refresh
+        await fetchUserDetails(userId); // Fetching user details on refresh
         await getImage(userId);
       }
     } catch (error) {
@@ -235,7 +220,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 120,
     height: 120,
-    borderRadius: 60, // Makes image circular
+    borderRadius: 60,
     borderWidth: 2,
     borderColor: '#000',
   },
@@ -247,17 +232,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: '#000',
-    backgroundColor: '#f0f0f0', // Light gray background for better visibility
+    backgroundColor: '#f0f0f0', 
   },
   noImageText: {
     textAlign: 'center',
-    color: '#888', // Gray text color
+    color: '#888', 
   },
   editIconContainer: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#4287f5', // Theme color
+    backgroundColor: '#4287f5', 
     borderRadius: 20,
     padding: 5,
     marginRight:2,
