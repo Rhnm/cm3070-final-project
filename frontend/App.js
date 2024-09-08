@@ -52,15 +52,15 @@ const MainTabs = ({ onTabChange }) => {
 
   useEffect(() => {
     if (onTabChange) onTabChange(activeTab);
-    console.log("Active Tab1:", activeTab);
+    //Created to use the activeTab value for later improvements
   }, [activeTab, onTabChange]);
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarStyle: { backgroundColor: theme === 'dark' ? '#333' : '#fff' }, // Set the tab bar color based on theme
-        tabBarActiveTintColor: theme === 'dark' ? '#fff' : '#7E64FF', // Set the active tab color
-        tabBarInactiveTintColor: theme === 'dark' ? '#888' : '#000', // Set the inactive tab color
+        tabBarStyle: { backgroundColor: theme === 'dark' ? '#333' : '#fff' }, 
+        tabBarActiveTintColor: theme === 'dark' ? '#fff' : '#7E64FF', 
+        tabBarInactiveTintColor: theme === 'dark' ? '#888' : '#000', 
       })}
       
     >
@@ -143,7 +143,7 @@ const CustomDrawerContent = (props) => {
     <View style={{ flex: 1, height:"30%", }}>
       <DrawerContentScrollView {...props}>
 
-      {/* Render the default drawer items */}
+      {/* Rendering the default drawer items */}
       <DrawerItemList {...props} />
 
 
@@ -154,7 +154,6 @@ const CustomDrawerContent = (props) => {
           onValueChange={toggleTheme}
         />
       </View>
-      {/* Add other drawer items here if needed */}
       </DrawerContentScrollView>
     </View>
   );
@@ -164,15 +163,12 @@ const App = () => {
   const [isAppReady, setAppReady] = useState(true);
   const [userisLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState('Home');
-  //const { theme } = useTheme();
-
   useEffect(() => {
-    // Simulate loading time (you can replace this with actual loading logic)
     setTimeout(() => {
       setAppReady(false);
-    }, 2000); // Adjust the timeout duration as needed
+    }, 2000); 
 
-    // Check login status from AsyncStorage when the app starts
+    // Checking login status from AsyncStorage when the app starts
     const checkLoginStatus = async () => {
       try {
         const value = await AsyncStorage.getItem('isLoggedIn');
@@ -180,10 +176,9 @@ const App = () => {
         if (value !== null) {
           setIsLoggedIn(value === 'true');
         }
-        //setAppReady(false); // Set app ready state after checking login status
       } catch (error) {
-        console.error('Error reading login status', error);
-        setAppReady(false); // Set app ready state even if there's an error
+        Alert.alert('Login Status could not be validated - ', error);
+        setAppReady(false);
       }
     };
     checkLoginStatus();
@@ -198,15 +193,15 @@ const App = () => {
         <Drawer.Navigator
           drawerContent={(props) => <CustomDrawerContent {...props} />}
           screenOptions={({ route }) => {
-            const { theme } = useTheme();  // Access the theme from context
+            const { theme } = useTheme(); 
             return {
               headerStyle: {
                 backgroundColor: theme === 'dark' ? '#333' : '#fff',
               },
               headerTintColor: theme === 'dark' ? '#fff' : '#000',
               headerTitleStyle: {
-                fontWeight: 'bold', // Adjust text styles as needed
-                fontSize: 18, // Ensure title fits well within the header
+                fontWeight: 'bold', 
+                fontSize: 18, 
                 backgroundColor: theme === 'dark' ? 'transparent' : 'transparent',
               },
               drawerActiveTintColor: theme === 'dark' ? '#fff' : '#7E64ff',
@@ -280,21 +275,21 @@ export default App;
 
 const styles = StyleSheet.create({
   tabIconBackground: {
-    width: 70, // Adjust according to your preference
-    height: 70, // Adjust according to your preference
-    borderRadius: 50, // Make it a circle
+    width: 70, 
+    height: 70, 
+    borderRadius: 50, 
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor:'white',
     color:'black',
   },
   iconStyle: {
-    marginBottom:30, // Adjust the margin according to your preference
+    marginBottom:30, 
   },
   darkMode: {
     padding: 16,
     flexDirection: 'row',
-    alignItems: 'center', // Align items vertically in the center
+    alignItems: 'center', 
     justifyContent: 'space-between',
   },
   darkModetxt: {

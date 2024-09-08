@@ -1,3 +1,6 @@
+/**
+ * Console logs specifically retained to evaluate the AI training data
+ */
 // Import necessary libraries
 const tf = require('@tensorflow/tfjs'); // TensorFlow.js for model definition and training
 const tfs = require('@tensorflow/tfjs-node'); // TensorFlow.js for Node.js
@@ -65,7 +68,6 @@ async function trainTimeframeModel() {
 
     // Preprocess the data
     const features = data.map(row => preprocessText(row.description, tfidf, uniqueTerms));
-    //const labels = data.map(row => convertTimeframeToMinutes(row.timeframe, row.timeunits)); // Convert timeframe to minutes
     const labels = data.map(row => row.timeframe);
 
     // Normalize labels to be between 0 and 1
@@ -74,7 +76,6 @@ async function trainTimeframeModel() {
     
     // Ensure that features and labels are numeric tensors
     const X = tfs.tensor2d(features, [features.length, uniqueTerms.length]);
-    //const y = tfs.tensor1d(labels);
     const y = tfs.tensor1d(normalizedLabels);
 
     const history = await model.fit(X, y, { epochs: 10, batchSize: 32, validationSplit: 0.2 });

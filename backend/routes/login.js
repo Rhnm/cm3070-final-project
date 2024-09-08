@@ -1,8 +1,6 @@
 /**
- * These are example routes for user management
- * This shows how to correctly structure your routes for the project
+ * Console logs specifically retained to evaluate the data
  */
-
 const express = require("express");
 const router = express.Router();
 const assert = require('assert');
@@ -10,10 +8,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
-//const { default: App } = require("../../frontend/src/App");
 const expectedPassword = '0000';
-
-
 
 // Middleware to parse the form data
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -28,14 +23,13 @@ function requireLogin(req, res, next) {
   }
 
 router.post('/register', async(req, res) => {
-  console.log("Here in register");
   const name = req.body.name;
   const email = req.body.email;
   const username = req.body.username;
   const password = req.body.password;
   
   // Generate a salt to use for hashing
-  const saltRounds = 10; // You can adjust this value according to your security needs
+  const saltRounds = 10; 
   const salt = await bcrypt.genSalt(saltRounds);
 
   // Hash the plain password with the generated salt
@@ -79,7 +73,6 @@ router.post('/login', async(req, res) => {
     db.get(usernameQuery, [username], (err, row) => {
       if (err) {
         console.error('Error checking username:', err);
-        //res.status(500).send('Error checking username');
         res.send("Incorrect");
         return;
       }
@@ -125,7 +118,7 @@ router.get('/get-session', (req, res) => {
   
   req.session.name = Math.round(10*Math.random());
   
-  const sessionData = Math.round(10*Math.random()); // Adjust this based on your session structure
+  const sessionData = Math.round(10*Math.random()); 
   
   res.json(sessionData);
 });

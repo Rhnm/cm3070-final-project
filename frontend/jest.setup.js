@@ -1,7 +1,6 @@
 import 'react-native-gesture-handler/jestSetup';
 import { NativeModules } from 'react-native';
 import '@testing-library/jest-native/extend-expect';  
-console.log('Jest Root Directory:', __dirname);
 
 jest.mock('react-native-vector-icons/FontAwesome', () => 'Icon');
 jest.mock('expo-linear-gradient', () => 'LinearGradient');
@@ -67,10 +66,9 @@ NativeModules.ImagePicker = {
     launchCameraAsync: jest.fn(),
   };
 
-// Mock the necessary NativeModules
 NativeModules.SettingsManager = NativeModules.SettingsManager || {
   settings: {
-    AppleInterfaceStyle: 'light', // or 'dark' to simulate dark mode
+    AppleInterfaceStyle: 'light',
   },
   getConstants: () => ({
     AppleInterfaceStyle: 'light',

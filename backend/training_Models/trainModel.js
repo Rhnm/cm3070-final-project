@@ -1,3 +1,6 @@
+/**
+ * Console logs specifically retained to evaluate the AI training data
+ */
 // Import necessary libraries
 const tf = require('@tensorflow/tfjs'); // TensorFlow.js for model definition and training
 const tfs = require('@tensorflow/tfjs-node'); // TensorFlow.js for Node.js

@@ -1,3 +1,6 @@
+/**
+ * Console logs specifically retained to evaluate the AI training data
+ */
 const tf = require('@tensorflow/tfjs-node'); // Import TensorFlow.js for Node.js
 const { natural, WordTokenizer } = require('natural'); // Import natural language processing library
 const TfIdf = require('node-tfidf'); // Import TF-IDF library

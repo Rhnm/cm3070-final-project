@@ -15,10 +15,10 @@ const predictTaskPriority = require('./predict/predict');
 const trainTimeframeModel = require('./training_Models/trainTimeframeModel');
 const predictTaskTimeframe = require('./predict/Predicttimeframe');
 
-// Allow requests from the frontend (replace with your frontend's URL)
+// Allow requests from the frontend - Change ip address based on npx expo start (ip displayed there)
 const corsOptions = {
   origin: ['http://192.168.1.10:8081','exp://192.168.1.10:8081', 'http://192.168.0.5:8081','exp://192.168.0.5:8081'],
-  optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200,
 };
 
 trainModel()
@@ -49,33 +49,29 @@ app.use(session({
       maxAge: 1000 * 60 * 60 * 24
     }
   }));
-app.use(cors(corsOptions)); // This is important to allow sending cookies}));
+app.use(cors(corsOptions)); // This is important to allow sending cookies
 
-// middleware password
-
-const expectedPassword = '0000'; // Replace with your actual password
-
-
+// middleware password for future improvements
+const expectedPassword = '0000'; 
 
 //items in the global namespace are accessible throught out the node application
 global.db = new sqlite3.Database('./database/database.db',function(err){
   if(err){
     console.error(err);
-    process.exit(1); //Bail out we can't connect to the DB
+    process.exit(1); //Bail out when it can't connect to the DB
   }else{
     
-    global.db.run("PRAGMA foreign_keys=ON"); //This tells SQLite to pay attention to foreign key constraints
+    global.db.run("PRAGMA foreign_keys=ON"); //Informing SQLite of foreign key constraints
   }
 });
 
-//To run the schema uncomment the code
+//DB Schema (Have set IF EXISTS on the table creation so if uncommented it doesn't affect)
 const schema = fs.readFileSync('./database/schema.sql', 'utf8');
 db.exec(schema, err => {
   if (err) {
     console.error('Error executing schema:', err);
     return;
   }
-  
 });
 
 //To run the schema uncomment the code
@@ -88,8 +84,9 @@ db.exec(insert, err => {
   
 }); */
 
-// Prediction endpoint
-// Define a POST route to handle predictions
+// Task Prediction endpoint
+
+// A POST route to handle predictions
 app.post('/predict', async (req, res) => {
   
   // Extract the description from the request body
@@ -105,19 +102,22 @@ app.post('/predict', async (req, res) => {
   try {
     // Call the predictTaskPriority function to get the priority prediction
     const priority = await predictTaskPriority(description);
-    console.log("Prediction result:", priority); // Log the prediction result
+    console.log("Prediction result:", priority); // Logs the prediction result for the task inserted by the user
 
     // Respond with the prediction result in JSON format
     res.json({ priority });
   } catch (error) {
     // Catch any errors that occur during the prediction process
-    console.error("Error in prediction:", error); // Log the error for debugging
+    console.error("Error in prediction:", error); // Logging the error for debugging
 
     // Respond with a 500 Internal Server Error status and an error message
     res.status(500).json({ error: 'Failed to predict task priority' });
   }
 });
 
+// Task Timeframe endpoint
+
+// A POST route to handle task timeframe
 app.post('/predictTimeframe', async (req, res) => {
   const { description } = req.body;
   if (!description) {
@@ -126,7 +126,7 @@ app.post('/predictTimeframe', async (req, res) => {
 
   try {
       const timeframe = await predictTaskTimeframe(description);
-      console.log("Timeframe result:", timeframe);
+      console.log("Timeframe result:", timeframe); //Logs the timeframe result for the task inserted by the user
       res.json({ timeframe });
   } catch (error) {
       console.error("Error in prediction:", error);
@@ -143,10 +143,6 @@ const { randomBytes } = require('crypto');
 
 //set the app to use ejs for rendering
 app.set('view engine', 'ejs');
-
-// app.get('/', (req, res) => {
-//   res.send('Hello World!')
-// });
 
 //this adds all the userRoutes to the app under the path /user
 app.use('/', rootRoutes);

@@ -1,3 +1,6 @@
+/**
+ * Console logs specifically retained to evaluate the AI training data
+ */
 const tf = require('@tensorflow/tfjs-node');
 const { natural, WordTokenizer } = require('natural');
 const TfIdf = require('node-tfidf');
@@ -28,12 +31,8 @@ async function predictTaskTimeframe(description) {
     const prediction = model.predict(input);
     const normalizedPredictedValue = (await prediction.array())[0][0];
 
-
-    //const predictedValue = (await prediction.array())[0][0];
-    //console.log("predicted timeframe:",predictedValue);
-
     // Denormalize prediction
-    const maxLabel = 180; // Assume 180 minutes as the max duration for normalization
+    const maxLabel = 180; // Assuming 180 minutes as the max duration for normalization
     const predictedValue = normalizedPredictedValue * maxLabel;
     
     console.log("Predicted timeframe:", predictedValue);

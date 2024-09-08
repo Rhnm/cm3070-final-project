@@ -1,8 +1,6 @@
 /**
- * These are example routes for user management
- * This shows how to correctly structure your routes for the project
+ * The file is retained for furthur improvements
  */
-
 const express = require("express");
 const router = express.Router();
 const assert = require('assert');
