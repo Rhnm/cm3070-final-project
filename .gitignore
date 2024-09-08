@@ -4,7 +4,7 @@
 node_modules/
 
 # coverage data
-coverage/lcov-report/
+frontend/coverage/lcov-report
 
 # package-lock
 backend/package-lock.json
