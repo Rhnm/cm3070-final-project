@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert, FlatList, Image, Modal, Pressable } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Platform, TouchableOpacity, Alert, FlatList, Image, Modal, Pressable } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { useNavigation,useFocusEffect } from '@react-navigation/native'; 
@@ -216,16 +216,21 @@ const NotesScreen = () => {
           <Image source={{ uri: attachment }} style={styles.attachmentPreview} />
       )}
       {/* Picker for selecting task */}
-      <Picker
-        selectedValue={selectedTaskId}
-        style={[styles.picker,{backgroundColor: theme === 'dark' ? '#333' : '#fff'},{color: theme === 'dark' ? '#fff' : '#000'}]}
-        onValueChange={(itemValue) => setSelectedTaskId(itemValue)}
-      >
-        <Picker.Item label="Select a task" value={null} />
-        {tasks.map((task) => (
-          <Picker.Item key={task.id} label={task.title} value={task.id} />
-        ))}
-      </Picker>
+      
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={selectedTaskId}
+          style={[styles.picker,{backgroundColor: theme === 'dark' ? '#333' : '#fff'},{color: theme === 'dark' ? '#fff' : '#000'}]}
+          onValueChange={(itemValue) => setSelectedTaskId(itemValue)}
+        >
+          
+          <Picker.Item label="Select a task" value={null} />
+          {tasks.map((task) => (
+            <Picker.Item key={task.id} label={task.title} value={task.id} />
+          ))}
+        </Picker>
+      </View>
+      
       <View style={styles.buttonContainer}>
         <Button title="+ Attachment" color="#9ca986" onPress={handleAttachment} />  
         {isEditing ? (
@@ -380,13 +385,23 @@ const styles = StyleSheet.create({
   modalCloseText: {
     color: '#333',
   },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    width: '100%',
+    ...Platform.select({
+      ios: {
+        height: 200,
+        marginBottom: 10,
+      },
+    }),
+  },
   picker: {
     height: 50,
     width: '100%',
     marginBottom: 10,
     backgroundColor: '#fff',
-    borderColor: '#9ca986',
-    borderWidth: 1,
     borderRadius: 5,
   },
 });
